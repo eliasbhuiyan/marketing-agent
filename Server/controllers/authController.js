@@ -1,0 +1,76 @@
+const bcrypt = require("bcryptjs");
+const userSchema = require("../models/User");
+const {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyRefreshToken,
+} = require("../utils/jwt");
+
+// ✅ Google Callback (signup + login)
+const googleCallback = async (req, res) => {
+  const accessToken = generateAccessToken(req.user);
+  const refreshToken = generateRefreshToken(req.user);
+
+  res.cookie("_optimise_access_token", accessToken, {
+    httpOnly: true,
+    secure: false, // set true in production
+    sameSite: "none",
+    // Access token is short-lived; let browser manage via expiry in token as well
+  });
+  res.cookie("_optimise_refresh_token", refreshToken, {
+    httpOnly: true,
+    secure: false, // set true in production
+    sameSite: "none",
+    // 30d default, align with token expiry
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+  });
+
+  res.redirect(`${process.env.CLIENT_URL}/auth/success`);
+};
+
+const userProfile = async (req, res) => {
+  const userData = await userSchema.findOne({ email: req.user.email }).select("-googleId");
+  if(!userData) return res.status(404).send({ error: "User not found" });
+  res.status(200).json({message: "User profile fetched successfully", user: userData});
+};
+
+const logoutUser = async (req, res) => {
+  res.clearCookie("_optimise_access_token");
+  res.clearCookie("_optimise_refresh_token");
+  res.status(200).json("Logged out successfully");
+};
+
+// ✅ Refresh access token using refresh token cookie
+const refreshAccessToken = async (req, res) => {
+  try {
+    const token = req.cookies["_optimise_refresh_token"];
+    if (!token) return res.status(401).json({ error: "No refresh token" });
+    const decoded = verifyRefreshToken(token);
+    
+    // Optional: ensure the user still exists
+    const user = await userSchema.findById(decoded.id).select("_id email");
+    if (!user) return res.status(401).json({ error: "Invalid refresh token" });
+
+    // Rotate refresh token for better security
+    const newRefresh = generateRefreshToken(user);
+    const newAccess = generateAccessToken(user);
+
+    res.cookie("_optimise_access_token", newAccess, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "none",
+    });
+    res.cookie("_optimise_refresh_token", newRefresh, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "none",
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    return res.status(401).json({ error: "Invalid refresh token" });
+  }
+};
+
+module.exports = { googleCallback, userProfile, logoutUser, refreshAccessToken };
