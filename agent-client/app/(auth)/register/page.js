@@ -95,6 +95,20 @@ export default function RegisterPage() {
             Sign in
           </a>
         </div>
+        <div className="my-4 flex items-center">
+          <div className="h-px flex-1 bg-gray-200" />
+          <span className="px-3 text-gray-500 text-sm">or</span>
+          <div className="h-px flex-1 bg-gray-200" />
+        </div>
+        <Button
+          type="button"
+          className="w-full"
+          onClick={() => {
+            window.location.href = `${process.env.NEXT_PUBLIC_API_URL || ''}/google`;
+          }}
+        >
+          Continue with Google
+        </Button>
       </CardContent>
     </Card>
   );

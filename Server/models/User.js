@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
   avatar: String,
   brandList: [
     {
-      brand: { type: mongoose.Schema.Types.ObjectId, ref: "BrandSettings" },
+      brand: { type: mongoose.Schema.Types.ObjectId, ref: "BrandSetting" },
       role: { type: String, enum: ["admin", "editor"], required: true },
       status: { type: String, enum: ["active", "invited"], default: "invited" }
     }

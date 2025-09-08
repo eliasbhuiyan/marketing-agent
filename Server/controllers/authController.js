@@ -14,24 +14,47 @@ const googleCallback = async (req, res) => {
   res.cookie("_optimise_access_token", accessToken, {
     httpOnly: true,
     secure: false, // set true in production
-    sameSite: "none",
+    // sameSite: "none",
     // Access token is short-lived; let browser manage via expiry in token as well
   });
   res.cookie("_optimise_refresh_token", refreshToken, {
     httpOnly: true,
     secure: false, // set true in production
-    sameSite: "none",
+    // sameSite: "none",
     // 30d default, align with token expiry
     maxAge: 30 * 24 * 60 * 60 * 1000,
   });
 
-  res.redirect(`${process.env.CLIENT_URL}/auth/success`);
+  res.redirect(`${process.env.CLIENT_URL}/success`);
 };
 
 const userProfile = async (req, res) => {
-  const userData = await userSchema.findOne({ email: req.user.email }).select("-googleId");
+  console.log("userData");
+  const userData = await userSchema
+    .findOne({ email: req.user.email })
+    .select("-googleId")
+    .populate({ path: "brandList.brand", select: "companyName _id" });
   if(!userData) return res.status(404).send({ error: "User not found" });
-  res.status(200).json({message: "User profile fetched successfully", user: userData});
+  
+  const simplifiedBrands = (userData.brandList || []).map((entry) => ({
+    brandId: entry.brand?._id,
+    companyName: entry.brand?.companyName || "Untitled brand",
+    role: entry.role,
+    status: entry.status,
+  }));
+
+  res.status(200).json({
+    message: "User profile fetched successfully",
+    user: {
+      _id: userData._id,
+      fullName: userData.fullName,
+      email: userData.email,
+      avatar: userData.avatar,
+      brandList: simplifiedBrands,
+      createdAt: userData.createdAt,
+      updatedAt: userData.updatedAt,
+    },
+  });
 };
 
 const logoutUser = async (req, res) => {
@@ -58,12 +81,12 @@ const refreshAccessToken = async (req, res) => {
     res.cookie("_optimise_access_token", newAccess, {
       httpOnly: true,
       secure: false,
-      sameSite: "none",
+      // sameSite: "none",
     });
     res.cookie("_optimise_refresh_token", newRefresh, {
       httpOnly: true,
       secure: false,
-      sameSite: "none",
+      // sameSite: "none",
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 

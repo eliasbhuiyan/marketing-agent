@@ -4,6 +4,7 @@ const passport = require('passport');
 const { googleCallback, userProfile, logoutUser, refreshAccessToken } = require('../controllers/authController');
 const authMiddleware = require('../middleware/authMiddleware');
 const { generalLimiter, aiLimiter, authLimiter } = require('../middleware/rateLimiter');
+const { createBrandSettings } = require('../controllers/brandSettingsController');
 const upload = multer()
 const router = express.Router();
 
@@ -14,9 +15,6 @@ router.get('/', (req, res) => {
   res.redirect(process.env.CLIENT_URL)
 });
 
-// AI endpoints with stricter rate limiting
-
-
 // Google OAuth with auth rate limiting
 router.get("/google", authLimiter, passport.authenticate("google", { scope: ["profile", "email"] }));
 router.get("/google/callback", authLimiter, passport.authenticate("google", { session: false }), googleCallback);
@@ -25,6 +23,11 @@ router.get("/google/callback", authLimiter, passport.authenticate("google", { se
 router.get("/auth/profile", authLimiter, authMiddleware, userProfile);
 router.post("/auth/logout", logoutUser);
 router.post("/auth/refresh", refreshAccessToken);
+
+router.post("createbrand", authMiddleware, createBrandSettings)
+
+
+
 
 router.use((req, res)=>{
     res.status(404).send("Page not found!")

@@ -29,4 +29,4 @@ const BrandSettingsSchema = new mongoose.Schema({
     ]
 }, { timestamps: true });
 
-module.exports = mongoose.model("BrandSettings", BrandSettingsSchema);
+module.exports = mongoose.model("BrandSetting", BrandSettingsSchema);
