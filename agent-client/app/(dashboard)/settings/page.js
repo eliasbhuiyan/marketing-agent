@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,6 +33,15 @@ import {
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('profile');
   const [showPassword, setShowPassword] = useState(false);
+  const [apiBusy, setApiBusy] = useState(false);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
+
+  // Brand state
+  const [brandId, setBrandId] = useState(null);
+  const [brandCompanyName, setBrandCompanyName] = useState('');
+  const [brandDetails, setBrandDetails] = useState('');
+  const [brandColors, setBrandColors] = useState({ primary: '#3B82F6', secondary: '#1E40AF', accent: '#F59E0B' });
+  const [brandFonts, setBrandFonts] = useState({ headingFont: 'Inter', bodyFont: 'Inter' });
   const [connectedAccounts, setConnectedAccounts] = useState([
     { id: 1, platform: 'instagram', name: 'Instagram', connected: true, username: '@yourbrand' },
     { id: 2, platform: 'facebook', name: 'Facebook', connected: true, username: 'Your Brand Page' },
@@ -64,6 +73,79 @@ export default function SettingsPage() {
   const handleSaveSettings = () => {
     // Handle saving settings
     console.log('Saving settings...');
+  };
+
+  // Load existing brand (if any)
+  useEffect(() => {
+    // Initialize brandId from localStorage so UI reflects Update when applicable
+    try {
+      const stored = typeof window !== 'undefined' ? (localStorage.getItem('brandId') || localStorage.getItem('selectedBrandId')) : null;
+      if (stored) setBrandId(stored);
+    } catch {}
+
+    const fetchBrand = async () => {
+      try {
+        setApiBusy(true);
+        const res = await fetch(`http://localhost:8000/brand`, { credentials: 'include' });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data?.brand) {
+          setBrandId(data.brand._id);
+          if (typeof window !== 'undefined' && data.brand._id) {
+            window.localStorage.setItem('brandId', data.brand._id);
+          }
+          setBrandCompanyName(data.brand.companyName || '');
+          setBrandDetails(data.brand.details || '');
+          setBrandColors({
+            primary: data.brand.colors?.primary || '#3B82F6',
+            secondary: data.brand.colors?.secondary || '#1E40AF',
+            accent: data.brand.colors?.accent || '#F59E0B',
+          });
+          setBrandFonts({
+            headingFont: data.brand.fonts?.headingFont || 'Inter',
+            bodyFont: data.brand.fonts?.bodyFont || 'Inter',
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setApiBusy(false);
+      }
+    };
+    fetchBrand();
+  }, []);
+
+  const saveBrand = async () => {
+    try {
+      setApiBusy(true);
+      const res = await fetch(`http://localhost:8000/brand`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          brandId: brandId || undefined,
+          companyName: brandCompanyName,
+          details: brandDetails,
+          colors: brandColors,
+          fonts: brandFonts,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        if (data.brand?._id) {
+          setBrandId(data.brand._id);
+          if (typeof window !== 'undefined') {
+            window.localStorage.setItem('brandId', data.brand._id);
+          }
+        }
+      } else {
+        console.error(data?.message || 'Failed to save brand');
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setApiBusy(false);
+    }
   };
 
   const getPlatformIcon = (platform) => {
@@ -138,15 +220,7 @@ export default function SettingsPage() {
                   <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center">
                     <User className="h-10 w-10 text-gray-400" />
                   </div>
-                  <div>
-                    <Button variant="outline" size="sm">
-                      <Upload className="h-4 w-4 mr-2" />
-                      Change Avatar
-                    </Button>
-                    <p className="text-sm text-gray-500 mt-1">JPG, PNG or GIF. Max size 2MB.</p>
-                  </div>
                 </div>
-
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <Label htmlFor="first-name">First Name</Label>
@@ -157,31 +231,10 @@ export default function SettingsPage() {
                     <Input id="last-name" defaultValue="Doe" />
                   </div>
                 </div>
-
                 <div>
                   <Label htmlFor="email">Email Address</Label>
                   <Input id="email" type="email" defaultValue="john.doe@example.com" />
                 </div>
-
-                <div>
-                  <Label htmlFor="company">Company</Label>
-                  <Input id="company" defaultValue="Your Company Name" />
-                </div>
-
-                <div>
-                  <Label htmlFor="bio">Bio</Label>
-                  <textarea
-                    id="bio"
-                    className="w-full p-3 border border-gray-300 rounded-md h-24 resize-none"
-                    placeholder="Tell us about yourself..."
-                    defaultValue="Marketing professional with 5+ years of experience in digital marketing and content creation."
-                  />
-                </div>
-
-                <Button onClick={handleSaveSettings}>
-                  <Save className="h-4 w-4 mr-2" />
-                  Save Changes
-                </Button>
               </CardContent>
             </Card>
           )}
@@ -189,6 +242,24 @@ export default function SettingsPage() {
           {/* Brand Kit */}
           {activeTab === 'brand' && (
             <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    Brand Info
+                  </CardTitle>
+                  <CardDescription>Define your brand's Information</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="company">Company Name</Label>
+                  <Input id="company" value={brandCompanyName} onChange={(e) => setBrandCompanyName(e.target.value)} />
+                </div>
+                <div>
+                  <Label htmlFor="company">Company Details</Label>
+                  <textarea id="company" value={brandDetails} onChange={(e) => setBrandDetails(e.target.value)} className='"flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'/>
+                </div>
+                </CardContent>
+              </Card>
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
@@ -205,10 +276,11 @@ export default function SettingsPage() {
                         <input
                           type="color"
                           id="primary-color"
-                          defaultValue="#3B82F6"
+                          value={brandColors.primary}
+                          onChange={(e) => setBrandColors({ ...brandColors, primary: e.target.value })}
                           className="w-12 h-12 rounded border"
                         />
-                        <Input defaultValue="#3B82F6" />
+                        <Input value={brandColors.primary} onChange={(e) => setBrandColors({ ...brandColors, primary: e.target.value })} />
                       </div>
                     </div>
                     <div>
@@ -217,10 +289,11 @@ export default function SettingsPage() {
                         <input
                           type="color"
                           id="secondary-color"
-                          defaultValue="#1E40AF"
+                          value={brandColors.secondary}
+                          onChange={(e) => setBrandColors({ ...brandColors, secondary: e.target.value })}
                           className="w-12 h-12 rounded border"
                         />
-                        <Input defaultValue="#1E40AF" />
+                        <Input value={brandColors.secondary} onChange={(e) => setBrandColors({ ...brandColors, secondary: e.target.value })} />
                       </div>
                     </div>
                     <div>
@@ -229,10 +302,11 @@ export default function SettingsPage() {
                         <input
                           type="color"
                           id="accent-color"
-                          defaultValue="#F59E0B"
+                          value={brandColors.accent}
+                          onChange={(e) => setBrandColors({ ...brandColors, accent: e.target.value })}
                           className="w-12 h-12 rounded border"
                         />
-                        <Input defaultValue="#F59E0B" />
+                        <Input value={brandColors.accent} onChange={(e) => setBrandColors({ ...brandColors, accent: e.target.value })} />
                       </div>
                     </div>
                   </div>
@@ -251,7 +325,8 @@ export default function SettingsPage() {
                       <select
                         id="heading-font"
                         className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-                        defaultValue="Inter"
+                        value={brandFonts.headingFont}
+                        onChange={(e) => setBrandFonts({ ...brandFonts, headingFont: e.target.value })}
                       >
                         <option value="Inter">Inter</option>
                         <option value="Roboto">Roboto</option>
@@ -264,7 +339,8 @@ export default function SettingsPage() {
                       <select
                         id="body-font"
                         className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-                        defaultValue="Inter"
+                        value={brandFonts.bodyFont}
+                        onChange={(e) => setBrandFonts({ ...brandFonts, bodyFont: e.target.value })}
                       >
                         <option value="Inter">Inter</option>
                         <option value="Roboto">Roboto</option>
@@ -292,6 +368,12 @@ export default function SettingsPage() {
                   </div>
                 </CardContent>
               </Card>
+              <div className="pt-2">
+                <Button onClick={saveBrand} disabled={apiBusy} className="w-full">
+                  <Save className="h-4 w-4 mr-2" />
+                  {brandId ? 'Update Brand' : 'Create Brand'}
+                </Button>
+              </div>
             </div>
           )}
 

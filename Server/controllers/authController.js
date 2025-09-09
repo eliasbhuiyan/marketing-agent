@@ -8,8 +8,8 @@ const {
 
 // ✅ Google Callback (signup + login)
 const googleCallback = async (req, res) => {
-  const accessToken = generateAccessToken(req.user);
-  const refreshToken = generateRefreshToken(req.user);
+  const accessToken = generateAccessToken(req.user, undefined);
+  const refreshToken = generateRefreshToken(req.user, undefined);
 
   res.cookie("_optimise_access_token", accessToken, {
     httpOnly: true,
@@ -75,8 +75,8 @@ const refreshAccessToken = async (req, res) => {
     if (!user) return res.status(401).json({ error: "Invalid refresh token" });
 
     // Rotate refresh token for better security
-    const newRefresh = generateRefreshToken(user);
-    const newAccess = generateAccessToken(user);
+    const newRefresh = generateRefreshToken(user, decoded.brandId);
+    const newAccess = generateAccessToken(user, decoded.brandId);
 
     res.cookie("_optimise_access_token", newAccess, {
       httpOnly: true,
@@ -96,4 +96,32 @@ const refreshAccessToken = async (req, res) => {
   }
 };
 
-module.exports = { googleCallback, userProfile, logoutUser, refreshAccessToken };
+// ✅ Set active brand and re-issue tokens with brandId
+const setActiveBrand = async (req, res) => {
+  try {
+    const { brandId } = req.body || {};
+    const decoded = req.user; // from access token
+    if (!decoded?.id) return res.status(401).json({ error: "Unauthorized" });
+
+    const user = await userSchema.findById(decoded.id).select("_id email brandList");
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    // Ensure user belongs to the brandId if provided
+    if (brandId) {
+      const belongs = user.brandList?.some((e) => String(e.brand) === String(brandId));
+      if (!belongs) return res.status(403).json({ error: "Forbidden: not a member of this brand" });
+    }
+
+    const newRefresh = generateRefreshToken(user, brandId);
+    const newAccess = generateAccessToken(user, brandId);
+
+    res.cookie("_optimise_access_token", newAccess, { httpOnly: true, secure: false });
+    res.cookie("_optimise_refresh_token", newRefresh, { httpOnly: true, secure: false, maxAge: 30 * 24 * 60 * 60 * 1000 });
+
+    return res.status(200).json({ success: true });
+  } catch (e) {
+    return res.status(500).json({ error: "Failed to set brand" });
+  }
+};
+
+module.exports = { googleCallback, userProfile, logoutUser, refreshAccessToken, setActiveBrand };

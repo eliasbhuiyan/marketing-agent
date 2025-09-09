@@ -1,10 +1,11 @@
 const express = require('express');
 const multer = require('multer');
 const passport = require('passport');
-const { googleCallback, userProfile, logoutUser, refreshAccessToken } = require('../controllers/authController');
+const { googleCallback, userProfile, logoutUser, refreshAccessToken, setActiveBrand } = require('../controllers/authController');
 const authMiddleware = require('../middleware/authMiddleware');
 const { generalLimiter, aiLimiter, authLimiter } = require('../middleware/rateLimiter');
-const { createBrandSettings } = require('../controllers/brandSettingsController');
+const { createOrUpdateBrandSettings, getBrandSettings } = require('../controllers/brandSettingsController');
+const { checkRole } = require('../middleware/roleMiddleware');
 const upload = multer()
 const router = express.Router();
 
@@ -23,10 +24,10 @@ router.get("/google/callback", authLimiter, passport.authenticate("google", { se
 router.get("/auth/profile", authLimiter, authMiddleware, userProfile);
 router.post("/auth/logout", logoutUser);
 router.post("/auth/refresh", refreshAccessToken);
+router.post("/auth/brand", authMiddleware, setActiveBrand);
 
-router.post("createbrand", authMiddleware, createBrandSettings)
-
-
+router.get("/brand", authMiddleware, getBrandSettings)
+router.post("/brand", authMiddleware, createOrUpdateBrandSettings)
 
 
 router.use((req, res)=>{

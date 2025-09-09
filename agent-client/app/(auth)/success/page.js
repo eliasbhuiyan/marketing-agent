@@ -29,14 +29,25 @@ export default function AuthSuccessPage() {
     bootstrap();
   }, []);
 
-  const proceed = (selectedBrandId) => {
-    // Optionally persist selected brand in localStorage for app-wide use
-    if (selectedBrandId) {
-      try { localStorage.setItem("selectedBrandId", String(selectedBrandId)); } catch {}
-    } else {
-      try { localStorage.removeItem("selectedBrandId"); } catch {}
+  const proceed = async (selectedBrandId) => {
+    try {
+      if (selectedBrandId) {
+        try { localStorage.setItem("selectedBrandId", String(selectedBrandId)); } catch {}
+      } else {
+        try { localStorage.removeItem("selectedBrandId"); } catch {}
+      }
+      // Tell server to set active brand in tokens
+      await fetch(`http://localhost:8000/auth/brand`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ brandId: selectedBrandId || undefined })
+      });
+    } catch (e) {
+      // non-blocking
+    } finally {
+      router.replace("/dashboard");
     }
-    router.replace("/dashboard");
   };
 
   if (loading) {
@@ -83,7 +94,7 @@ export default function AuthSuccessPage() {
         <CardContent>
           <div className="space-y-2 mb-4">
             {brands.map((b) => (
-              <Button key={String(b.brandId)} variant="outline" className="w-full justify-start" onClick={() => proceed(b.brandId)}>
+              <Button key={String(b.brandId)} className="w-full justify-start" onClick={() => proceed(b.brandId)}>
                 {b.companyName}
               </Button>
             ))}
