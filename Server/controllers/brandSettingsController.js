@@ -64,7 +64,6 @@ const getBrandSettings = async (req, res) => {
       const tokenBrandId = req.user?.brandId;
       const selectedBrandId = tokenBrandId || brandIdQuery;
       const userId = req.user?._id || req.user?.id;
-      if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
       if (selectedBrandId) {
         const user = await userSchema.findById(userId).select("brandList");

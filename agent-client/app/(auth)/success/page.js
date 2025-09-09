@@ -14,8 +14,6 @@ export default function AuthSuccessPage() {
   useEffect(() => {
     const bootstrap = async () => {
       try {
-        // ensure access token is fresh
-        await fetch(`http://localhost:8000/auth/refresh`, { method: "POST", credentials: "include" });
         const res = await fetch(`http://localhost:8000/auth/profile`, { credentials: "include" });
         if (!res.ok) throw new Error("Failed to load profile");
         const data = await res.json();
@@ -32,17 +30,19 @@ export default function AuthSuccessPage() {
   const proceed = async (selectedBrandId) => {
     try {
       if (selectedBrandId) {
-        try { localStorage.setItem("selectedBrandId", String(selectedBrandId)); } catch {}
+        try { 
+          // Tell server to set active brand in tokens
+          await fetch(`http://localhost:8000/auth/brand`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ brandId: selectedBrandId || undefined })
+          });
+          localStorage.setItem("selectedBrandId", String(selectedBrandId)); 
+        } catch {}
       } else {
         try { localStorage.removeItem("selectedBrandId"); } catch {}
       }
-      // Tell server to set active brand in tokens
-      await fetch(`http://localhost:8000/auth/brand`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ brandId: selectedBrandId || undefined })
-      });
     } catch (e) {
       // non-blocking
     } finally {
