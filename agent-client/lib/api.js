@@ -167,6 +167,11 @@ class ApiClient {
      * Create or update brand settings
      */
     save: (brandData) => this.post('/brand', brandData),
+
+    /**
+     * Invite a team member by email
+     */
+    inviteMember: (email) => this.post('/invite', { addTeamMemberEmail: email }),
   };
 }
 

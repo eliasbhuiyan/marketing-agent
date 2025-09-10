@@ -4,7 +4,7 @@ const passport = require('passport');
 const { googleCallback, userProfile, logoutUser, refreshAccessToken, setActiveBrand } = require('../controllers/authController');
 const authMiddleware = require('../middleware/authMiddleware');
 const { generalLimiter, aiLimiter, authLimiter } = require('../middleware/rateLimiter');
-const { createOrUpdateBrandSettings, getBrandSettings } = require('../controllers/brandSettingsController');
+const { createOrUpdateBrandSettings, getBrandSettings, inviteTeamMember } = require('../controllers/brandSettingsController');
 const { checkRole } = require('../middleware/roleMiddleware');
 const upload = multer()
 const router = express.Router();
@@ -26,9 +26,10 @@ router.post("/auth/logout", logoutUser);
 router.post("/auth/refresh", refreshAccessToken);
 router.post("/auth/brand", authMiddleware, setActiveBrand);
 
+// Brand routes
 router.get("/brand", authMiddleware, getBrandSettings)
 router.post("/brand", authMiddleware, createOrUpdateBrandSettings)
-
+router.post("/inviteamember", authMiddleware, inviteTeamMember)
 
 router.use((req, res)=>{
     res.status(404).send("Page not found!")

@@ -54,7 +54,7 @@ export function removeLocalStorageItem(key) {
  * Get brand ID from localStorage (checks both possible keys)
  */
 export function getBrandId() {
-  return getLocalStorageItem('brandId') || getLocalStorageItem('selectedBrandId');
+  return getLocalStorageItem('selectedBrandId');
 }
 
 /**
@@ -62,10 +62,8 @@ export function getBrandId() {
  */
 export function setBrandId(brandId) {
   if (brandId) {
-    setLocalStorageItem('brandId', brandId);
     setLocalStorageItem('selectedBrandId', brandId);
   } else {
-    removeLocalStorageItem('brandId');
     removeLocalStorageItem('selectedBrandId');
   }
 }

@@ -1,4 +1,1 @@
 Remove user query from refreshAccessToken.
-Do not send api call if brandid dose not selected.
-Remove security portion from UI
-Simplify getBrandSettings controller

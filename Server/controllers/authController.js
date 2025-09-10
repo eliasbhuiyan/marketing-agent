@@ -29,7 +29,6 @@ const googleCallback = async (req, res) => {
 };
 
 const userProfile = async (req, res) => {
-  console.log("userData");
   const userData = await userSchema
     .findOne({ email: req.user.email })
     .select("-googleId")
@@ -69,8 +68,6 @@ const refreshAccessToken = async (req, res) => {
     const token = req.cookies["_optimise_refresh_token"];
     if (!token) return res.status(401).json({ error: "No refresh token" });
     const decoded = verifyRefreshToken(token);
-    console.log("from refreshtoken=> ",decoded);
-    
     // Optional: ensure the user still exists
     const user = await userSchema.findById(decoded.id).select("_id email");
     if (!user) return res.status(401).json({ error: "Invalid refresh token" });

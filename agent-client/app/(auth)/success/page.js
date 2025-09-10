@@ -29,9 +29,7 @@ export default function AuthSuccessPage() {
 
   const proceed = async (selectedBrandId) => {
     try {
-      if (selectedBrandId) {
-        console.log(selectedBrandId);
-        
+      if (selectedBrandId) {        
         // Tell server to set active brand in tokens
         await apiClient.auth.setActiveBrand(selectedBrandId);
         setBrandId(selectedBrandId);

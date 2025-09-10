@@ -18,7 +18,13 @@ function generateRefreshToken(user, brandId) {
     { expiresIn: REFRESH_TOKEN_TTL }
   );
 }
-
+function generateInviteToken(email, brandId){
+  return jwt.sign(
+    { email, brandId, role: "editor" },
+    process.env.JWT_SECRET,
+    { expiresIn: "1d" }
+  );
+}
 function verifyAccessToken(token) {
   return jwt.verify(token, process.env.JWT_SECRET);
 }
@@ -27,9 +33,12 @@ function verifyRefreshToken(token) {
   return jwt.verify(token, process.env.JWT_REFRESH_SECRET);
 }
 
+
+
 module.exports = {
   generateAccessToken,
   generateRefreshToken,
   verifyAccessToken,
   verifyRefreshToken,
+  generateInviteToken
 };
