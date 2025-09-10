@@ -29,6 +29,14 @@ export const useBrandData = () => {
   }, []);
 
   const fetchBrandData = useCallback(async (forceRefresh = false) => {
+    const activeBrandId = getBrandId();
+    // If no active brand is selected, skip fetching (user likely wants to create one)
+    if (!activeBrandId) {
+      setBrandData(null);
+      setError(null);
+      return null;
+    }
+
     const cacheKey = getCacheKey();
     
     // Check cache first (unless force refresh)

@@ -33,6 +33,7 @@ import {
   Users,
   RefreshCw
 } from 'lucide-react';
+import Image from 'next/image';
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('profile');
@@ -90,7 +91,7 @@ export default function SettingsPage() {
   };
 
   // Initialize brand data from cached data
-  useEffect(() => {
+  useEffect(() => {   
     console.log(brandData);
     
     if (brandData) {
@@ -632,12 +633,12 @@ export default function SettingsPage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                        <span className="text-white font-medium">JD</span>
+                      <div className="w-10 h-10 bg-blue-600 rounded-full overflow-hidden flex items-center justify-center">
+                        <Image src={brandData.owner.avatar} width={200} height={200} alt='profile'/>
                       </div>
                       <div>
-                        <h3 className="font-medium text-gray-900">John Doe</h3>
-                        <p className="text-sm text-gray-600">john.doe@example.com</p>
+                        <h3 className="font-medium text-gray-900">{brandData.owner.fullName}</h3>
+                        <p className="text-sm text-gray-600">{brandData.owner.email}</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
