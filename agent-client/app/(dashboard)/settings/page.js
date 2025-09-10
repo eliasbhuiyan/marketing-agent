@@ -5,6 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import apiClient from '@/lib/api';
+import { getBrandId, setBrandId, formatErrorMessage } from '@/lib/utils';
+import { useBrandData } from '@/lib/hooks/useBrandData';
 import { 
   Settings,
   User,
@@ -27,16 +30,27 @@ import {
   Bell,
   Shield,
   CreditCard,
-  Users
+  Users,
+  RefreshCw
 } from 'lucide-react';
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('profile');
   const [showPassword, setShowPassword] = useState(false);
   const [apiBusy, setApiBusy] = useState(false);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
+  const [error, setError] = useState('');
 
-  // Brand state
+  // Use cached brand data hook
+  const { 
+    brandData, 
+    loading: brandLoading, 
+    error: brandError, 
+    fetchBrandData, 
+    updateBrandData,
+    invalidateCache
+  } = useBrandData();
+
+  // Brand state - initialize from cached data
   const [brandId, setBrandId] = useState(null);
   const [brandCompanyName, setBrandCompanyName] = useState('');
   const [brandDetails, setBrandDetails] = useState('');
@@ -75,74 +89,57 @@ export default function SettingsPage() {
     console.log('Saving settings...');
   };
 
-  // Load existing brand (if any)
+  // Initialize brand data from cached data
   useEffect(() => {
-    // Initialize brandId from localStorage so UI reflects Update when applicable
-    try {
-      const stored = typeof window !== 'undefined' ? (localStorage.getItem('brandId') || localStorage.getItem('selectedBrandId')) : null;
-      if (stored) setBrandId(stored);
-    } catch {}
+    console.log(brandData);
+    
+    if (brandData) {
+      setBrandId(brandData._id);
+      setBrandCompanyName(brandData.companyName || '');
+      setBrandDetails(brandData.details || '');
+      setBrandColors({
+        primary: brandData.colors?.primary || '#3B82F6',
+        secondary: brandData.colors?.secondary || '#1E40AF',
+        accent: brandData.colors?.accent || '#F59E0B',
+      });
+      setBrandFonts({
+        headingFont: brandData.fonts?.headingFont || 'Inter',
+        bodyFont: brandData.fonts?.bodyFont || 'Inter',
+      });
+    } else {
+      // Initialize brandId from localStorage for UI state
+      const storedBrandId = getBrandId();
+      if (storedBrandId) setBrandId(storedBrandId);
+    }
+  }, [brandData]);
 
-    const fetchBrand = async () => {
-      try {
-        setApiBusy(true);
-        const res = await fetch(`http://localhost:8000/brand`, { credentials: 'include' });
-        if (!res.ok) return;
-        const data = await res.json();
-        if (data?.brand) {
-          setBrandId(data.brand._id);
-          if (typeof window !== 'undefined' && data.brand._id) {
-            window.localStorage.setItem('brandId', data.brand._id);
-          }
-          setBrandCompanyName(data.brand.companyName || '');
-          setBrandDetails(data.brand.details || '');
-          setBrandColors({
-            primary: data.brand.colors?.primary || '#3B82F6',
-            secondary: data.brand.colors?.secondary || '#1E40AF',
-            accent: data.brand.colors?.accent || '#F59E0B',
-          });
-          setBrandFonts({
-            headingFont: data.brand.fonts?.headingFont || 'Inter',
-            bodyFont: data.brand.fonts?.bodyFont || 'Inter',
-          });
-        }
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setApiBusy(false);
-      }
-    };
-    fetchBrand();
-  }, []);
+  // Handle brand error
+  useEffect(() => {
+    if (brandError) {
+      setError(formatErrorMessage(brandError));
+    }
+  }, [brandError]);
 
   const saveBrand = async () => {
     try {
       setApiBusy(true);
-      const res = await fetch(`http://localhost:8000/brand`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          brandId: brandId || undefined,
-          companyName: brandCompanyName,
-          details: brandDetails,
-          colors: brandColors,
-          fonts: brandFonts,
-        }),
+      setError('');
+      const data = await apiClient.brand.save({
+        brandId: brandId || undefined,
+        companyName: brandCompanyName,
+        details: brandDetails,
+        colors: brandColors,
+        fonts: brandFonts,
       });
-      const data = await res.json();
-      if (res.ok) {
-        if (data.brand?._id) {
-          setBrandId(data.brand._id);
-          if (typeof window !== 'undefined') {
-            window.localStorage.setItem('brandId', data.brand._id);
-          }
-        }
-      } else {
-        console.error(data?.message || 'Failed to save brand');
+      
+      if (data.brand?._id) {
+        setBrandId(data.brand._id);
+        // Update cache with new brand data
+        updateBrandData(data.brand);
       }
     } catch (e) {
-      console.error(e);
+      console.error('Failed to save brand:', e);
+      setError(formatErrorMessage(e));
     } finally {
       setApiBusy(false);
     }
@@ -244,8 +241,19 @@ export default function SettingsPage() {
             <div className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center">
-                    Brand Info
+                  <CardTitle className="flex items-center justify-between">
+                    <span className="flex items-center">
+                      Brand Info
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => fetchBrandData(true)}
+                      disabled={brandLoading}
+                    >
+                      <RefreshCw className={`h-4 w-4 mr-2 ${brandLoading ? 'animate-spin' : ''}`} />
+                      Refresh
+                    </Button>
                   </CardTitle>
                   <CardDescription>Define your brand's Information</CardDescription>
                 </CardHeader>
@@ -368,10 +376,15 @@ export default function SettingsPage() {
                   </div>
                 </CardContent>
               </Card>
+              {error && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+                  <p className="text-sm text-red-600">{error}</p>
+                </div>
+              )}
               <div className="pt-2">
-                <Button onClick={saveBrand} disabled={apiBusy} className="w-full">
+                <Button onClick={saveBrand} disabled={apiBusy || brandLoading} className="w-full">
                   <Save className="h-4 w-4 mr-2" />
-                  {brandId ? 'Update Brand' : 'Create Brand'}
+                  {apiBusy ? 'Saving...' : brandLoading ? 'Loading...' : (brandId ? 'Update Brand' : 'Create Brand')}
                 </Button>
               </div>
             </div>

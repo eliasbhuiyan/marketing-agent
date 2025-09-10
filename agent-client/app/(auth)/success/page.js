@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import apiClient from "@/lib/api";
+import { setBrandId } from "@/lib/utils";
 
 export default function AuthSuccessPage() {
   const router = useRouter();
@@ -14,9 +16,7 @@ export default function AuthSuccessPage() {
   useEffect(() => {
     const bootstrap = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/auth/profile`, { credentials: "include" });
-        if (!res.ok) throw new Error("Failed to load profile");
-        const data = await res.json();
+        const data = await apiClient.auth.getProfile();
         setBrands(data.user?.brandList || []);
       } catch (e) {
         setError("Could not load your profile. Please try again.");
@@ -30,18 +30,13 @@ export default function AuthSuccessPage() {
   const proceed = async (selectedBrandId) => {
     try {
       if (selectedBrandId) {
-        try { 
-          // Tell server to set active brand in tokens
-          await fetch(`http://localhost:8000/auth/brand`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ brandId: selectedBrandId || undefined })
-          });
-          localStorage.setItem("selectedBrandId", String(selectedBrandId)); 
-        } catch {}
+        console.log(selectedBrandId);
+        
+        // Tell server to set active brand in tokens
+        await apiClient.auth.setActiveBrand(selectedBrandId);
+        setBrandId(selectedBrandId);
       } else {
-        try { localStorage.removeItem("selectedBrandId"); } catch {}
+        setBrandId(null);
       }
     } catch (e) {
       // non-blocking
@@ -94,7 +89,7 @@ export default function AuthSuccessPage() {
         <CardContent>
           <div className="space-y-2 mb-4">
             {brands.map((b) => (
-              <Button key={String(b.brandId)} className="w-full justify-start" onClick={() => proceed(b.brandId)}>
+              <Button key={String(b.brandId)} variant="default" className="w-full justify-start" onClick={() => proceed(b.brandId)}>
                 {b.companyName}
               </Button>
             ))}

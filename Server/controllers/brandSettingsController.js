@@ -58,6 +58,8 @@ const createOrUpdateBrandSettings = async (req, res) => {
   };
 
 const getBrandSettings = async (req, res) => {
+  console.log("called get brand");
+  
     try {
       // Prefer active brandId from token; fallback to query; else find owner's/first brand
       const { brandId: brandIdQuery } = req.query;

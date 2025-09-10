@@ -69,6 +69,7 @@ const refreshAccessToken = async (req, res) => {
     const token = req.cookies["_optimise_refresh_token"];
     if (!token) return res.status(401).json({ error: "No refresh token" });
     const decoded = verifyRefreshToken(token);
+    console.log("from refreshtoken=> ",decoded);
     
     // Optional: ensure the user still exists
     const user = await userSchema.findById(decoded.id).select("_id email");
@@ -97,12 +98,12 @@ const refreshAccessToken = async (req, res) => {
 };
 
 // ✅ Set active brand and re-issue tokens with brandId
-const setActiveBrand = async (req, res) => {
+const setActiveBrand = async (req, res) => {  
   try {
     const { brandId } = req.body || {};
     const decoded = req.user; // from access token
     if (!decoded?.id) return res.status(401).json({ error: "Unauthorized" });
-
+    
     const user = await userSchema.findById(decoded.id).select("_id email brandList");
     if (!user) return res.status(404).json({ error: "User not found" });
 
@@ -113,11 +114,20 @@ const setActiveBrand = async (req, res) => {
     }
 
     const newRefresh = generateRefreshToken(user, brandId);
-    const newAccess = generateAccessToken(user, brandId);
-
-    res.cookie("_optimise_access_token", newAccess, { httpOnly: true, secure: false });
-    res.cookie("_optimise_refresh_token", newRefresh, { httpOnly: true, secure: false, maxAge: 30 * 24 * 60 * 60 * 1000 });
-
+    const newAccess = generateAccessToken(user, brandId);    
+    res.cookie("_optimise_access_token", newAccess, {
+      httpOnly: true,
+      secure: false, // set true in production
+      // sameSite: "none",
+      // Access token is short-lived; let browser manage via expiry in token as well
+    });
+    res.cookie("_optimise_refresh_token", newRefresh, {
+      httpOnly: true,
+      secure: false, // set true in production
+      // sameSite: "none",
+      // 30d default, align with token expiry
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
     return res.status(200).json({ success: true });
   } catch (e) {
     return res.status(500).json({ error: "Failed to set brand" });
