@@ -39,12 +39,18 @@ class ApiClient {
         }
       }
       
+      const payload = await response.json().catch(() => ({}));
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+        const backendMessage = payload?.message || payload?.error || payload?.errors?.[0] || payload?.detail;
+        const composed = backendMessage || `HTTP ${response.status}: ${response.statusText}`;
+        const err = new Error(composed);
+        err.status = response.status;
+        err.payload = payload;
+        throw err;
       }
 
-      return await response.json();
+      return payload;
     } catch (error) {
       console.error(`API request failed for ${endpoint}:`, error);
       throw error;

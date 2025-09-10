@@ -72,6 +72,10 @@ export function setBrandId(brandId) {
  * Format error message for display
  */
 export function formatErrorMessage(error) {
+  // Prefer structured backend payloads when present
+  if (error?.payload?.message) return error.payload.message;
+  if (error?.payload?.error) return error.payload.error;
+  if (Array.isArray(error?.payload?.errors) && error.payload.errors.length) return error.payload.errors[0];
   if (typeof error === 'string') return error;
   if (error?.message) return error.message;
   return 'An unexpected error occurred';

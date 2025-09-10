@@ -140,8 +140,6 @@ export default function SettingsPage() {
 
   // Initialize brand data from cached data
   useEffect(() => {
-    console.log(brandData);
-
     if (brandData) {
       setBrandId(brandData._id);
       setBrandCompanyName(brandData.companyName || "");
@@ -809,9 +807,6 @@ export default function SettingsPage() {
                         <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
                           Admin
                         </span>
-                        <Button size="sm" variant="outline">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
                       </div>
                     </div>
                     {brandData &&

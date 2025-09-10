@@ -52,15 +52,30 @@ export async function handleApiRoute(endpoint, options = {}) {
   try {
     const response = await makeBackendRequest(endpoint, options);
     
-    if (!response.ok) {
-      return NextResponse.json(
-        { error: 'Request failed' },
-        { status: response.status }
-      );
+    // Parse JSON body if present; fall back to text, then empty object
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      try {
+        const text = await response.text();
+        data = text ? { message: text } : {};
+      } catch {
+        data = {};
+      }
     }
-    
-    const data = await response.json();
-    return createApiResponse(data, response);
+
+    const nextResponse = NextResponse.json(data, { status: response.status });
+
+    // Forward new cookies from backend to client (even on error)
+    const setCookieHeaders = response.headers.getSetCookie();
+    if (setCookieHeaders) {
+      setCookieHeaders.forEach((cookie) => {
+        nextResponse.headers.append('Set-Cookie', cookie);
+      });
+    }
+
+    return nextResponse;
   } catch (error) {
     console.error(`API route error for ${endpoint}:`, error);
     return NextResponse.json(
