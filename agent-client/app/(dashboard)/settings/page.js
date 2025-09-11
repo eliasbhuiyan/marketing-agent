@@ -39,13 +39,14 @@ import {
   RefreshCw,
 } from "lucide-react";
 import Image from "next/image";
+import { useAuth } from "@/lib/hooks/useAuth";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("profile");
   const [showPassword, setShowPassword] = useState(false);
   const [apiBusy, setApiBusy] = useState(false);
   const [error, setError] = useState("");
-
+  const { userData } = useAuth();
   // Invite member state
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
@@ -185,7 +186,6 @@ export default function SettingsPage() {
         updateBrandData(data.brand);
       }
     } catch (e) {
-      console.error("Failed to save brand:", e);
       setError(formatErrorMessage(e));
     } finally {
       setApiBusy(false);
@@ -233,6 +233,7 @@ export default function SettingsPage() {
       setInviteBusy(false);
     }
   };
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -284,18 +285,35 @@ export default function SettingsPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center space-x-6">
-                  <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center">
-                    <User className="h-10 w-10 text-gray-400" />
+                  <div className="w-10 h-10 bg-blue-600 rounded-full overflow-hidden flex items-center justify-center">
+                   {
+                    userData?.avatar && (
+                      <Image
+                        src={userData?.avatar}
+                        width={200}
+                        height={200}
+                        alt="profile"
+                      />
+                    )
+                   }
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <Label htmlFor="first-name">First Name</Label>
-                    <Input id="first-name" defaultValue="John" />
+                    <Input
+                      id="first-name"
+                      defaultValue={userData?.fullName.split(" ")[0]}
+                      readOnly
+                    />
                   </div>
                   <div>
                     <Label htmlFor="last-name">Last Name</Label>
-                    <Input id="last-name" defaultValue="Doe" />
+                    <Input
+                      id="last-name"
+                      defaultValue={userData?.fullName.split(" ")[1]}
+                      readOnly
+                    />
                   </div>
                 </div>
                 <div>
@@ -303,7 +321,8 @@ export default function SettingsPage() {
                   <Input
                     id="email"
                     type="email"
-                    defaultValue="john.doe@example.com"
+                    defaultValue={userData?.email}
+                    readOnly
                   />
                 </div>
               </CardContent>
