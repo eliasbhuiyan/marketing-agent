@@ -6,7 +6,7 @@ import { getBrandId, setBrandId, isAuthenticated } from '@/lib/utils';
  * Custom hook for authentication state management
  */
 export function useAuth() {
-  const [user, setUser] = useState(null);
+  const [userData, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -63,28 +63,11 @@ export function useAuth() {
   };
 
   return {
-    user,
+    userData,
     loading,
     error,
-    isAuthenticated: !!user,
+    isAuthenticated: !!userData,
     setActiveBrand,
     logout,
-    refetch: () => {
-      setLoading(true);
-      // Re-run the useEffect logic
-      const fetchUser = async () => {
-        try {
-          setError(null);
-          const data = await apiClient.auth.getProfile();
-          setUser(data.user);
-        } catch (err) {
-          setError(err.message);
-          setUser(null);
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchUser();
-    }
   };
 }

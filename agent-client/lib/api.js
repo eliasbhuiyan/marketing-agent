@@ -32,7 +32,6 @@ class ApiClient {
           // Retry the original request with refreshed token
           return this.request(endpoint, { ...options, _retried: true });
         } catch (refreshError) {
-          console.error('Token refresh failed:', refreshError);
           // If refresh fails, redirect to login or handle as needed
           this.handleAuthFailure();
           throw new Error('Authentication failed. Please log in again.');
@@ -100,7 +99,6 @@ class ApiClient {
     // Clear any stored authentication data
     if (typeof window !== 'undefined') {
       try {
-        localStorage.removeItem('brandId');
         localStorage.removeItem('selectedBrandId');
         // Redirect to login page
         window.location.href = '/login';

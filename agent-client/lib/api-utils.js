@@ -33,13 +33,17 @@ export function getCookieHeader() {
  */
 export async function makeBackendRequest(endpoint, options = {}) {
   const cookieHeader = getCookieHeader();
-  
+
+  const isAuthProfileGet = endpoint === '/auth/profile' && (options.method || 'GET') === 'GET';
+
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
     headers: {
       'Cookie': cookieHeader,
       ...options.headers,
     },
+    // Enable Next.js fetch caching for profile endpoint
+    next: isAuthProfileGet ? { revalidate: 60 } : options.next,
   });
   
   return response;
@@ -73,6 +77,11 @@ export async function handleApiRoute(endpoint, options = {}) {
       setCookieHeaders.forEach((cookie) => {
         nextResponse.headers.append('Set-Cookie', cookie);
       });
+    }
+
+    // Apply cache headers for GET /auth/profile to enable short-lived private caching
+    if ((options.method || 'GET') === 'GET' && endpoint === '/auth/profile') {
+      nextResponse.headers.set('Cache-Control', 'private, max-age=60, stale-while-revalidate=300');
     }
 
     return nextResponse;
