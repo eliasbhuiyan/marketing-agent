@@ -177,6 +177,40 @@ class ApiClient {
      */
     inviteMember: (email) => this.post('/invite', { addTeamMemberEmail: email }),
   };
+
+  // Integration API methods
+  integrations = {
+    /**
+     * Get all integrations for the current brand
+     */
+    getAll: () => this.get('/integrations'),
+
+    /**
+     * Get details for a specific platform integration
+     */
+    getDetails: (platform) => this.get(`/integrations/${platform}`),
+
+    /**
+     * Initiate OAuth flow for a platform
+     */
+    connect: (platform) => this.post(`/integrations/${platform}/connect`),
+
+    /**
+     * Disconnect an integration
+     */
+    disconnect: (platform) => this.delete(`/integrations/${platform}`),
+
+    /**
+     * Publish content to a platform
+     */
+    publish: (platform, content, mediaUrls = []) => 
+      this.post(`/integrations/${platform}/publish`, { content, mediaUrls }),
+
+    /**
+     * Test connection for a platform
+     */
+    testConnection: (platform) => this.post(`/integrations/${platform}/test`),
+  };
 }
 
 // Create and export a singleton instance

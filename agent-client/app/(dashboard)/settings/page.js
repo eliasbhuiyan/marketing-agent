@@ -37,9 +37,12 @@ import {
   CreditCard,
   Users,
   RefreshCw,
+  Globe,
+  FileText,
 } from "lucide-react";
 import Image from "next/image";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { useIntegrations } from "@/lib/hooks/useIntegrations";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("profile");
@@ -47,6 +50,7 @@ export default function SettingsPage() {
   const [apiBusy, setApiBusy] = useState(false);
   const [error, setError] = useState("");
   const { userData } = useAuth();
+  const { integrations, connectPlatform, disconnectPlatform, getIntegrationStatus } = useIntegrations();
   // Invite member state
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
@@ -77,43 +81,41 @@ export default function SettingsPage() {
     headingFont: "Inter",
     bodyFont: "Inter",
   });
-  const [connectedAccounts, setConnectedAccounts] = useState([
+  // Define available platforms
+  const availablePlatforms = [
     {
       id: 1,
-      platform: "instagram",
-      name: "Instagram",
-      connected: true,
-      username: "@yourbrand",
+      platform: "facebook",
+      name: "Facebook",
+      description: "Connect your Facebook page to publish posts",
+      icon: Facebook,
+      color: "text-blue-600",
     },
     {
       id: 2,
-      platform: "facebook",
-      name: "Facebook",
-      connected: true,
-      username: "Your Brand Page",
+      platform: "instagram",
+      name: "Instagram",
+      description: "Connect your Instagram Business account",
+      icon: Instagram,
+      color: "text-pink-600",
     },
     {
       id: 3,
-      platform: "twitter",
-      name: "Twitter/X",
-      connected: false,
-      username: null,
+      platform: "wordpress",
+      name: "WordPress",
+      description: "Connect your WordPress.com site",
+      icon: Globe,
+      color: "text-gray-600",
     },
     {
       id: 4,
-      platform: "linkedin",
-      name: "LinkedIn",
-      connected: true,
-      username: "Your Company",
+      platform: "medium",
+      name: "Medium",
+      description: "Connect your Medium account",
+      icon: FileText,
+      color: "text-green-600",
     },
-    {
-      id: 5,
-      platform: "youtube",
-      name: "YouTube",
-      connected: false,
-      username: null,
-    },
-  ]);
+  ];
 
   const tabs = [
     { id: "profile", label: "Profile", icon: User },
@@ -124,19 +126,32 @@ export default function SettingsPage() {
     { id: "team", label: "Team", icon: Users },
   ];
 
-  const handleConnectAccount = (platform) => {
-    // Handle account connection
-    console.log("Connecting account:", platform);
+  const handleConnectAccount = async (platform) => {
+    try {
+      await connectPlatform(platform);
+    } catch (error) {
+      console.error('Failed to connect platform:', error);
+      setError(`Failed to connect ${platform}: ${error.message}`);
+    }
   };
 
-  const handleDisconnectAccount = (platform) => {
-    // Handle account disconnection
-    console.log("Disconnecting account:", platform);
+  const handleDisconnectAccount = async (platform) => {
+    try {
+      await disconnectPlatform(platform);
+    } catch (error) {
+      console.error('Failed to disconnect platform:', error);
+      setError(`Failed to disconnect ${platform}: ${error.message}`);
+    }
   };
 
   const handleSaveSettings = () => {
     // Handle saving settings
     console.log("Saving settings...");
+  };
+
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    setError(""); // Clear any errors when switching tabs
   };
 
   // Initialize brand data from cached data
@@ -193,25 +208,13 @@ export default function SettingsPage() {
   };
 
   const getPlatformIcon = (platform) => {
-    const icons = {
-      instagram: Instagram,
-      facebook: Facebook,
-      twitter: Twitter,
-      linkedin: Linkedin,
-      youtube: Youtube,
-    };
-    return icons[platform] || LinkIcon;
+    const platformData = availablePlatforms.find(p => p.platform === platform);
+    return platformData?.icon || LinkIcon;
   };
 
   const getPlatformColor = (platform) => {
-    const colors = {
-      instagram: "text-pink-600",
-      facebook: "text-blue-600",
-      twitter: "text-blue-400",
-      linkedin: "text-blue-700",
-      youtube: "text-red-600",
-    };
-    return colors[platform] || "text-gray-600";
+    const platformData = availablePlatforms.find(p => p.platform === platform);
+    return platformData?.color || "text-gray-600";
   };
 
   const handelInviteMember = async () => {
@@ -253,7 +256,7 @@ export default function SettingsPage() {
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
+                    onClick={() => handleTabChange(tab.id)}
                     className={`w-full flex items-center px-4 py-3 text-left text-sm font-medium rounded-none ${
                       activeTab === tab.id
                         ? "bg-blue-50 text-blue-700 border-r-2 border-blue-700"
@@ -556,58 +559,69 @@ export default function SettingsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <LinkIcon className="h-5 w-5 mr-2" />
-                  Social Media Integrations
+                  Platform Integrations
                 </CardTitle>
                 <CardDescription>
-                  Connect your social media accounts for seamless posting
+                  Connect your social media and content platforms for seamless publishing
                 </CardDescription>
               </CardHeader>
               <CardContent>
+                {error && (
+                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-sm text-red-600">{error}</p>
+                  </div>
+                )}
                 {!brandId ? (
-                  <div>
-                    <CardDescription className="text-center">
-                      Create your brand
+                  <div className="text-center py-8">
+                    <CardDescription>
+                      Please create your brand first to manage integrations
                     </CardDescription>
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {connectedAccounts.map((account) => {
-                      const Icon = getPlatformIcon(account.platform);
+                    {availablePlatforms.map((platform) => {
+                      const Icon = platform.icon;
+                      const status = getIntegrationStatus(platform.platform);
+                      const isConnected = status.isConnected;
+                      const isActive = status.isActive;
+                      
                       return (
                         <div
-                          key={account.id}
-                          className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
+                          key={platform.id}
+                          className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow"
                         >
                           <div className="flex items-center space-x-3">
-                            <Icon
-                              className={`h-6 w-6 ${getPlatformColor(
-                                account.platform
-                              )}`}
-                            />
+                            <Icon className={`h-6 w-6 ${platform.color}`} />
                             <div>
                               <h3 className="font-medium text-gray-900">
-                                {account.name}
+                                {platform.name}
                               </h3>
-                              {account.connected && account.username && (
-                                <p className="text-sm text-gray-600">
-                                  {account.username}
+                              <p className="text-sm text-gray-600">
+                                {platform.description}
+                              </p>
+                              {isConnected && status.accountId && (
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Account ID: {status.accountId}
                                 </p>
                               )}
                             </div>
                           </div>
                           <div className="flex items-center space-x-2">
-                            {account.connected ? (
+                            {isConnected ? (
                               <>
                                 <div className="flex items-center text-green-600">
                                   <Check className="h-4 w-4 mr-1" />
-                                  <span className="text-sm">Connected</span>
+                                  <span className="text-sm">
+                                    {isActive ? 'Connected' : 'Inactive'}
+                                  </span>
                                 </div>
                                 <Button
                                   size="sm"
                                   variant="outline"
                                   onClick={() =>
-                                    handleDisconnectAccount(account.platform)
+                                    handleDisconnectAccount(platform.platform)
                                   }
+                                  className="text-red-600 border-red-200 hover:bg-red-50"
                                 >
                                   <X className="h-4 w-4 mr-2" />
                                   Disconnect
@@ -617,8 +631,9 @@ export default function SettingsPage() {
                               <Button
                                 size="sm"
                                 onClick={() =>
-                                  handleConnectAccount(account.platform)
+                                  handleConnectAccount(platform.platform)
                                 }
+                                className="bg-blue-600 hover:bg-blue-700"
                               >
                                 <LinkIcon className="h-4 w-4 mr-2" />
                                 Connect
@@ -628,6 +643,23 @@ export default function SettingsPage() {
                         </div>
                       );
                     })}
+                    
+                    {/* Integration Status Summary */}
+                    {integrations.length > 0 && (
+                      <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                        <h4 className="font-medium text-gray-900 mb-2">Connected Platforms</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {integrations.map((integration) => (
+                            <span
+                              key={integration.platform}
+                              className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
+                            >
+                              {integration.platform.charAt(0).toUpperCase() + integration.platform.slice(1)}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </CardContent>

@@ -19,6 +19,7 @@ import {
   TrendingUp,
   Save
 } from 'lucide-react';
+import ContentPublisher from '@/components/ContentPublisher';
 
 export default function ContentPage() {
   const [activeTab, setActiveTab] = useState('captions');
@@ -275,30 +276,9 @@ export default function ContentPage() {
             </CardContent>
           </Card>
 
-          {/* Additional Options */}
-          {activeTab === 'blogs' && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Globe className="h-5 w-5 mr-2" />
-                  Publishing Options
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center space-x-2">
-                  <input type="checkbox" id="wordpress" className="rounded" />
-                  <Label htmlFor="wordpress">Publish to WordPress</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <input type="checkbox" id="medium" className="rounded" />
-                  <Label htmlFor="medium">Publish to Medium</Label>
-                </div>
-                <Button onClick={handleScheduleBlog} variant="outline" className="w-full">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Schedule Blog Post
-                </Button>
-              </CardContent>
-            </Card>
+          {/* Content Publisher */}
+          {generatedContent && (
+            <ContentPublisher content={generatedContent} />
           )}
 
           {activeTab === 'email' && (

@@ -6,6 +6,21 @@ const authMiddleware = require('../middleware/authMiddleware');
 const { generalLimiter, aiLimiter, authLimiter } = require('../middleware/rateLimiter');
 const { createOrUpdateBrandSettings, getBrandSettings, inviteTeamMember } = require('../controllers/brandSettingsController');
 const { checkRole } = require('../middleware/roleMiddleware');
+const { 
+  getIntegrations, 
+  getIntegrationDetails, 
+  initiateOAuth, 
+  handleOAuthCallback, 
+  disconnectIntegration, 
+  publishContent,
+  publishContentEnhanced,
+  publishToMultiplePlatforms,
+  getPostingStats,
+  getBrandPosts,
+  cancelScheduledPost,
+  getQueueStats,
+  testConnection 
+} = require('../controllers/integrationController');
 const upload = multer()
 const router = express.Router();
 
@@ -30,6 +45,25 @@ router.post("/auth/brand", authMiddleware, setActiveBrand);
 router.get("/brand", authMiddleware, getBrandSettings)
 router.post("/brand", authMiddleware, createOrUpdateBrandSettings)
 router.post("/inviteamember", authMiddleware, inviteTeamMember)
+
+// Integration routes
+router.get("/integrations", authMiddleware, getIntegrations)
+router.get("/integrations/:platform", authMiddleware, getIntegrationDetails)
+router.post("/integrations/:platform/connect", authMiddleware, initiateOAuth)
+router.get("/integrations/callback/:platform", handleOAuthCallback)
+router.delete("/integrations/:platform", authMiddleware, disconnectIntegration)
+router.post("/integrations/:platform/publish", authMiddleware, publishContent)
+router.post("/integrations/:platform/test", authMiddleware, testConnection)
+
+// Enhanced posting routes
+router.post("/posts/publish", authMiddleware, publishContentEnhanced)
+router.post("/posts/publish-multiple", authMiddleware, publishToMultiplePlatforms)
+router.get("/posts/stats", authMiddleware, getPostingStats)
+router.get("/posts", authMiddleware, getBrandPosts)
+router.delete("/posts/:postId/cancel", authMiddleware, cancelScheduledPost)
+
+// Queue management routes
+router.get("/queue/stats", authMiddleware, getQueueStats)
 
 router.use((req, res)=>{
     res.status(404).send("Page not found!")
