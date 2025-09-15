@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
-import apiClient from '@/lib/api';
+import { useState, useEffect } from "react";
+import apiClient from "@/lib/api";
+import { getBrandId } from "../utils";
 
 /**
  * Custom hook for managing platform integrations
@@ -14,16 +15,19 @@ export function useIntegrations() {
   }, []);
 
   const fetchIntegrations = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await apiClient.integrations.getAll();
-      setIntegrations(data.integrations || []);
-    } catch (err) {
-      console.error('Failed to fetch integrations:', err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
+    const brandID = getBrandId();
+    if (brandID) {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await apiClient.integrations.getAll();
+        setIntegrations(data.integrations || []);
+      } catch (err) {
+        console.error("Failed to fetch integrations:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -61,7 +65,11 @@ export function useIntegrations() {
 
   const publishContent = async (platform, content, mediaUrls = []) => {
     try {
-      const data = await apiClient.integrations.publish(platform, content, mediaUrls);
+      const data = await apiClient.integrations.publish(
+        platform,
+        content,
+        mediaUrls
+      );
       return data.result;
     } catch (err) {
       console.error(`Failed to publish to ${platform}:`, err);
@@ -70,12 +78,12 @@ export function useIntegrations() {
   };
 
   const getIntegrationStatus = (platform) => {
-    const integration = integrations.find(int => int.platform === platform);
+    const integration = integrations.find((int) => int.platform === platform);
     return {
       isConnected: !!integration,
       isActive: integration?.isActive || false,
       connectedAt: integration?.connectedAt,
-      accountId: integration?.accountId
+      accountId: integration?.accountId,
     };
   };
 
@@ -88,7 +96,7 @@ export function useIntegrations() {
     testConnection,
     publishContent,
     getIntegrationStatus,
-    refreshIntegrations: fetchIntegrations
+    refreshIntegrations: fetchIntegrations,
   };
 }
 
@@ -157,6 +165,6 @@ export function usePlatformIntegration(platform) {
     connect,
     disconnect,
     testConnection,
-    refreshIntegration: fetchIntegrationDetails
+    refreshIntegration: fetchIntegrationDetails,
   };
 }

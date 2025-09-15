@@ -35,6 +35,17 @@ export async function makeBackendRequest(endpoint, options = {}) {
   const cookieHeader = getCookieHeader();
 
   const isAuthProfileGet = endpoint === '/auth/profile' && (options.method || 'GET') === 'GET';
+  const isIntegrationsGet = endpoint === '/integrations' && (options.method || 'GET') === 'GET';
+
+  // Determine caching strategy based on endpoint
+  let nextConfig = options.next;
+  if (!nextConfig) {
+    if (isAuthProfileGet) {
+      nextConfig = { revalidate: 60 }; // Cache profile for 1 minute
+    } else if (isIntegrationsGet) {
+      nextConfig = { revalidate: 300 }; // Cache integrations for 5 minutes
+    }
+  }
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
@@ -42,8 +53,8 @@ export async function makeBackendRequest(endpoint, options = {}) {
       'Cookie': cookieHeader,
       ...options.headers,
     },
-    // Enable Next.js fetch caching for profile endpoint
-    next: isAuthProfileGet ? { revalidate: 60 } : options.next,
+    // Apply caching configuration
+    next: nextConfig,
   });
   
   return response;
@@ -79,9 +90,13 @@ export async function handleApiRoute(endpoint, options = {}) {
       });
     }
 
-    // Apply cache headers for GET /auth/profile to enable short-lived private caching
-    if ((options.method || 'GET') === 'GET' && endpoint === '/auth/profile') {
-      nextResponse.headers.set('Cache-Control', 'private, max-age=60, stale-while-revalidate=300');
+    // Apply cache headers for GET endpoints to enable short-lived private caching
+    if ((options.method || 'GET') === 'GET') {
+      if (endpoint === '/auth/profile') {
+        nextResponse.headers.set('Cache-Control', 'private, max-age=60, stale-while-revalidate=300');
+      } else if (endpoint === '/integrations') {
+        nextResponse.headers.set('Cache-Control', 'private, max-age=300, stale-while-revalidate=600');
+      }
     }
 
     return nextResponse;

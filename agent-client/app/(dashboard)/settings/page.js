@@ -341,7 +341,7 @@ export default function SettingsPage() {
                     <span className="flex items-center">Brand Info</span>
                   </CardTitle>
                   <CardDescription>
-                    Define your brand's Information
+                    Define your brand&apos;s Information
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -371,7 +371,7 @@ export default function SettingsPage() {
                     Brand Colors
                   </CardTitle>
                   <CardDescription>
-                    Define your brand's color palette
+                    Define your brand&apos;s color palette
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">

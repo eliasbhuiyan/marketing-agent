@@ -1,6 +1,6 @@
 const BrandSettingsSchema = require("../models/BrandSettingsSchema");
 const userSchema = require("../models/User");
-const { generateInviteToken } = require("../utils/jwt");
+const { generateInviteToken, verifyInviteToken } = require("../utils/jwt");
 const { sendInvite } = require("../utils/mail");
 const createOrUpdateBrandSettings = async (req, res) => {
   try {
@@ -138,6 +138,12 @@ const inviteTeamMember = async (req, res) => {
     const alreadyInTeam = brand.teamMembers?.some(
       (m) => m.user?.toString() === user._id.toString()
     );
+    const isOwner = brand.owner?.toString() === user._id.toString();
+    if (isOwner) {
+      return res
+        .status(404)
+        .json({ message: "You can't invite the owner of the brand." });
+    }
     if (alreadyInTeam) {
       return res
         .status(404)
@@ -148,7 +154,7 @@ const inviteTeamMember = async (req, res) => {
     const token = generateInviteToken(user.email, brand._id);
 
     // Send invite email
-    const inviteLink = `http://localhost:8000/invite?token=${token}`;
+    const inviteLink = `http://localhost:3000/acceptinvite?token=${token}`;
 
     sendInvite(req.user.email, user.email, inviteLink);
 
@@ -165,8 +171,51 @@ const inviteTeamMember = async (req, res) => {
   }
 };
 
+const acceptInvitation = async (req, res) =>{
+  try {
+    const { token } = req.query;
+    if (!token) return res.status(400).json({ message: "Token is required" });
+
+    const { email, brandId } = verifyInviteToken(token);
+    if (!email || !brandId)
+      return res.status(400).json({ message: "Invalid or expired token" });
+    const brand = await BrandSettingsSchema.findById(brandId);
+    if (!brand)
+      return res.status(400).json({ message: "Brand not found" });
+    const user = await userSchema.findOne({ email });
+    if (!user)
+      return res.status(400).json({ message: "User not found" });
+    const alreadyInTeam = brand.teamMembers?.some(
+      (m) => m.user?.toString() === user._id.toString()
+    );
+    if (alreadyInTeam) {
+      return res
+        .status(400)
+        .json({ message: "This email already in member list" });
+    }
+    brand.teamMembers.push({
+      user: user._id,
+      role: "editor",
+      status: "active",
+    });
+    await brand.save();
+    user.brandList.push({
+      brand: brand._id,
+      role: "editor",
+      status: "active",
+    });
+    await user.save();
+    return res
+      .status(200)
+      .json({ message: "Invite accepted successfully." });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 module.exports = {
   createOrUpdateBrandSettings,
   getBrandSettings,
   inviteTeamMember,
+  acceptInvitation
 };

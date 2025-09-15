@@ -32,7 +32,9 @@ function verifyAccessToken(token) {
 function verifyRefreshToken(token) {
   return jwt.verify(token, process.env.JWT_REFRESH_SECRET);
 }
-
+function verifyInviteToken(token){
+  return jwt.verify(token, process.env.JWT_SECRET);
+}
 
 
 module.exports = {
@@ -40,5 +42,6 @@ module.exports = {
   generateRefreshToken,
   verifyAccessToken,
   verifyRefreshToken,
-  generateInviteToken
+  generateInviteToken,
+  verifyInviteToken
 };
