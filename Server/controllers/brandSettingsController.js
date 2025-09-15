@@ -230,9 +230,48 @@ const acceptInvitation = async (req, res) => {
   }
 };
 
+const deleteTeamMember = async (req, res) => {
+  try {
+    const { brandId, memberId } = req.params; // brandId = brand _id, memberId = user _id of member
+    const userId = req.user._id; // logged-in user (admin)
+
+    // Check if the requester is the brand owner/admin
+    const brand = await BrandSettingsSchema.findById(brandId).select("owner");
+    if (!brand) return res.status(404).json({ message: "Brand not found" });
+
+    if (brand.owner.toString() !== userId.toString()) {
+      return res
+        .status(403)
+        .json({ message: "Only brand owner can remove members" });
+    }
+
+    // Step 1: Remove member from brand.teamMembers
+    const brandUpdate = await BrandSettingsSchema.updateOne(
+      { _id: brandId },
+      { $pull: { teamMembers: { user: memberId } } }
+    );
+
+    if (brandUpdate.modifiedCount === 0) {
+      return res.status(404).json({ message: "Member not found in this brand" });
+    }
+
+    // Step 2: Remove brand from user's brandList
+    await userSchema.updateOne(
+      { _id: memberId },
+      { $pull: { brandList: { brand: brandId } } }
+    );
+
+    return res.status(200).json({ message: "Team member removed successfully." });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 module.exports = {
   createOrUpdateBrandSettings,
   getBrandSettings,
   inviteTeamMember,
   acceptInvitation,
+  deleteTeamMember,
 };
