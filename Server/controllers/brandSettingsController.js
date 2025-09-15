@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const BrandSettingsSchema = require("../models/BrandSettingsSchema");
 const userSchema = require("../models/User");
 const { generateInviteToken, verifyInviteToken } = require("../utils/jwt");
@@ -171,51 +172,67 @@ const inviteTeamMember = async (req, res) => {
   }
 };
 
-const acceptInvitation = async (req, res) =>{
+const acceptInvitation = async (req, res) => {
   try {
-    const { token } = req.query;
+    const { token } = req.params;
     if (!token) return res.status(400).json({ message: "Token is required" });
 
     const { email, brandId } = verifyInviteToken(token);
     if (!email || !brandId)
       return res.status(400).json({ message: "Invalid or expired token" });
-    const brand = await BrandSettingsSchema.findById(brandId);
-    if (!brand)
-      return res.status(400).json({ message: "Brand not found" });
+
     const user = await userSchema.findOne({ email });
-    if (!user)
-      return res.status(400).json({ message: "User not found" });
-    const alreadyInTeam = brand.teamMembers?.some(
-      (m) => m.user?.toString() === user._id.toString()
-    );
-    if (alreadyInTeam) {
-      return res
-        .status(400)
-        .json({ message: "This email already in member list" });
+    if (!user) return res.status(400).json({ message: "User not found" });
+
+    // Step 1: Check membership status using aggregation
+    const existing = await BrandSettingsSchema.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(brandId) } },
+      { $unwind: "$teamMembers" },
+      { $match: { "teamMembers.user": user._id } },
+      { $project: { status: "$teamMembers.status" } },
+    ]);
+
+    if (existing.length > 0) {
+      const memberStatus = existing[0].status;
+
+      if (memberStatus === "active") {
+        return res
+          .status(400)
+          .json({ message: "You are already an active member." });
+      }
+
+      if (memberStatus === "invited") {
+        // Step 2: Update invited → active
+        await BrandSettingsSchema.updateOne(
+          {
+            _id: brandId,
+            "teamMembers.user": user._id,
+          },
+          { $set: { "teamMembers.$.status": "active" } }
+        );
+
+        user.brandList.push({
+          brand: brandId,
+          role: "editor",
+          status: "active",
+        });
+        await user.save();
+
+        return res
+          .status(200)
+          .json({ message: "Invite accepted successfully." });
+      }
     }
-    brand.teamMembers.push({
-      user: user._id,
-      role: "editor",
-      status: "active",
-    });
-    await brand.save();
-    user.brandList.push({
-      brand: brand._id,
-      role: "editor",
-      status: "active",
-    });
-    await user.save();
-    return res
-      .status(200)
-      .json({ message: "Invite accepted successfully." });
+
+    return res.status(500).json({ message: "Invalid request." });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}
+};
 
 module.exports = {
   createOrUpdateBrandSettings,
   getBrandSettings,
   inviteTeamMember,
-  acceptInvitation
+  acceptInvitation,
 };

@@ -211,6 +211,14 @@ class ApiClient {
      */
     testConnection: (platform) => this.post(`/integrations/${platform}/test`),
   };
+
+  // Invite API methods
+  invite = {
+    /**
+     * Accept an invitation
+     */
+    accept: (token) => this.get(`/invite/${token}`),
+  };
 }
 
 // Create and export a singleton instance
