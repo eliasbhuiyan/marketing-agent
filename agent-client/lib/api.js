@@ -14,12 +14,20 @@ class ApiClient {
    */
   async request(endpoint, options = {}) {
     const url = `${this.baseUrl}${endpoint}`;
+    const isFormDataBody = options && options.body && typeof FormData !== 'undefined' && options.body instanceof FormData;
+
+    const headers = {
+      ...options.headers,
+    };
+
+    // Only set JSON content-type when not sending FormData and content-type not already provided
+    if (!isFormDataBody && !('Content-Type' in headers)) {
+      headers['Content-Type'] = 'application/json';
+    }
+
     const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
       ...options,
+      headers,
     };
 
     try {
@@ -119,9 +127,11 @@ class ApiClient {
    * POST request
    */
   async post(endpoint, data) {
+    const isFormData = typeof FormData !== 'undefined' && data instanceof FormData;
+
     return this.request(endpoint, {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: isFormData ? data : JSON.stringify(data),
     });
   }
 
@@ -227,10 +237,13 @@ class ApiClient {
   };
 
   ai = {
-    posterDesign: (productImg, modelImg) => this.post(`/ai/posterdesign`, {
-      productImg,
-      modelImg,
-    }),
+    posterDesign: (productImg, modelImg) => {
+      const formData = new FormData();
+      // Expecting File/Blob instances
+      if (productImg) formData.append('productImg', productImg, productImg.name || 'product.jpg');
+      if (modelImg) formData.append('modelImg', modelImg, modelImg.name || 'model.jpg');
+      return this.post(`/ai/posterdesign`, formData);
+    },
   }
 }
 
