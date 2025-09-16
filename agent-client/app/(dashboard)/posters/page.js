@@ -18,12 +18,15 @@ import {
   RotateCcw,
   Settings
 } from 'lucide-react';
+import apiClient from '@/lib/api';
 
 export default function PostersPage() {
   const [productImage, setProductImage] = useState(null);
   const [modelImage, setModelImage] = useState(null);
   const [useSampleModel, setUseSampleModel] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [designMode, setDesignMode] = useState('template'); // 'template' or 'custom'
+  const [customPrompt, setCustomPrompt] = useState('');
   const productInputRef = useRef(null);
   const modelInputRef = useRef(null);
   const [brandSettings, setBrandSettings] = useState({
@@ -71,17 +74,33 @@ export default function PostersPage() {
   };
 
   const handleGeneratePoster = async () => {
-    if (!productImage) return;
-    setIsGenerating(true);
+    if (!productImage) return;    
+    // setIsGenerating(true);
+    
+    // Log which design mode is being used
+    console.log('Design Mode:', designMode);
+    if (designMode === 'template') {
+      console.log('Selected Template:', selectedTemplate);
+    } else {
+      console.log('Custom Prompt:', customPrompt);
+    }
+     
+    
     // Simulate AI generation
-    setTimeout(() => {
+    const res = await apiClient.ai.posterDesign(productImage.file, modelImage.file);
+    console.log(res);
+
+    const data = await res.json();
+    console.log(data);
+    
       setGeneratedPoster({
         id: Date.now(),
         url: '/api/placeholder/800/600',
-        caption: 'Check out our amazing new product! Perfect for your lifestyle. #NewProduct #Lifestyle #Quality'
+        caption: designMode === 'template' 
+          ? `Check out our amazing new product! Perfect for your lifestyle. #NewProduct #Lifestyle #Quality` 
+          : `Custom design created with AI: ${customPrompt.substring(0, 30)}... #CustomDesign #AICreated`
       });
       setIsGenerating(false);
-    }, 3000);
   };
 
   const handleSchedulePost = () => {
@@ -299,31 +318,82 @@ export default function PostersPage() {
         {/* Templates Section */}
         <Card>
           <CardHeader>
-            <CardTitle>Template Marketplace</CardTitle>
-            <CardDescription>Choose from pre-made templates or start from scratch</CardDescription>
+            <CardTitle>Design Options</CardTitle>
+            <CardDescription>Choose a template or create a custom design with AI</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {templates.map((template) => (
-                <div
-                  key={template.id}
-                  className={`cursor-pointer rounded-lg border-2 p-2 transition-all ${
-                    selectedTemplate?.id === template.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                  onClick={() => setSelectedTemplate(template)}
-                >
-                  <div className="aspect-[3/2] bg-gray-100 rounded-lg mb-2 flex items-center justify-center">
-                    <ImageIcon className="h-8 w-8 text-gray-400" />
-                  </div>
-                  <div className="text-center">
-                    <p className="text-sm font-medium text-gray-900">{template.name}</p>
-                    <p className="text-xs text-gray-500">{template.category}</p>
-                  </div>
-                </div>
-              ))}
+            {/* Design Mode Toggle */}
+            <div className="flex border rounded-lg mb-4 overflow-hidden">
+              <button
+                className={`flex-1 py-2 px-4 text-center ${
+                  designMode === 'template' 
+                    ? 'bg-blue-500 text-white' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+                onClick={() => setDesignMode('template')}
+              >
+                Choose Template
+              </button>
+              <button
+                className={`flex-1 py-2 px-4 text-center ${
+                  designMode === 'custom' 
+                    ? 'bg-blue-500 text-white' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+                onClick={() => setDesignMode('custom')}
+              >
+                Custom Prompt
+              </button>
             </div>
+
+            {/* Template Selection */}
+            {designMode === 'template' && (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {templates.map((template) => (
+                  <div
+                    key={template.id}
+                    className={`cursor-pointer rounded-lg border-2 p-2 transition-all ${
+                      selectedTemplate?.id === template.id
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                    onClick={() => setSelectedTemplate(template)}
+                  >
+                    <div className="aspect-[3/2] bg-gray-100 rounded-lg mb-2 flex items-center justify-center">
+                      <ImageIcon className="h-8 w-8 text-gray-400" />
+                    </div>
+                    <div className="text-center">
+                      <p className="text-sm font-medium text-gray-900">{template.name}</p>
+                      <p className="text-xs text-gray-500">{template.category}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Custom Prompt */}
+            {designMode === 'custom' && (
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="custom-prompt">Describe your design</Label>
+                  <textarea
+                    id="custom-prompt"
+                    className="w-full mt-1 p-3 border border-gray-300 rounded-md h-28 resize-y"
+                    placeholder="Describe the design you want, e.g., 'A minimalist product banner with blue gradient background and elegant typography'"
+                    value={customPrompt}
+                    onChange={(e) => setCustomPrompt(e.target.value)}
+                  />
+                </div>
+                <div className="text-sm text-gray-500">
+                  <p>Tips:</p>
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li>Be specific about colors, style, and layout</li>
+                    <li>Mention text placement and emphasis</li>
+                    <li>Describe the mood or feeling you want to convey</li>
+                  </ul>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -331,7 +401,7 @@ export default function PostersPage() {
       {/* Generate Button */}
       <Button 
         onClick={handleGeneratePoster}
-        disabled={!productImage || isGenerating}
+        disabled={!productImage || isGenerating || (designMode === 'custom' && !customPrompt.trim())}
         className="w-full"
         size="lg"
       >
@@ -343,7 +413,7 @@ export default function PostersPage() {
         ) : (
           <>
             <Sparkles className="h-5 w-5 mr-2" />
-            Generate Poster
+            Generate {designMode === 'template' ? 'Poster from Template' : 'Custom Design'}
           </>
         )}
       </Button>

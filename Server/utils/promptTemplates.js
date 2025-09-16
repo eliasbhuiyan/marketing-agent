@@ -1,110 +1,44 @@
-const resumePromptTemplate = ({ skillSet, experience, jobDescription }) => {
+const posterDesignPromptTemplate = () => {
   return `
-You are an expert career coach and resume writer. 
-Your task is to create a concise and professional resume summary tailored for a candidate based on the provided Job Description (JD). 
-The summary should highlight the candidate's most relevant skills, experiences, and strengths that match the JD. 
-Keep the tone professional, impactful, and ATS-friendly. 
-Limit the response to 3–4 sentences.
-DO NOT include any skills or tools that the candidate has not confirmed.
-Instead, if the JD contains missing skills, suggest them separately under "Recommended Skills to Learn".
+  You are a professional marketing designer. Create a high-quality, visually appealing product poster for social media marketing.
+Requirements:
+1. **Images**
+    - Include the **product image** prominently.
+   - Include the **model image** if provided.
+   - Remove unnecessary background and make images blend naturally.
+   
+2. **Layout & Composition**
+   - Follow a modern, clean, and professional layout.
+   - Ensure the product is the main focus.
+   - Model can complement the scene without overpowering the product.
+   - Maintain proper alignment, spacing, and balance.
+   
+3. **Brand Customization**
+   - Use the **brand primary, secondary, and accent colors** for text, highlights, or background elements.
+   - Use **heading font** for main tagline, **body font** for additional text.
+   - Maintain brand identity and tone throughout.
 
-Job Description:
-${jobDescription}
+4. **Text / Caption**
+   - Include the marketing **caption** provided by the user.
+   - Ensure text is readable and contrasts well with background.
+   - Optional: add catchy tagline or call-to-action in professional style.
 
-Candidate Skills:
-${skillSet}
+5. **Background & Effects**
+   - Use a clean, minimalistic background or gradient if needed.
+   - Add subtle shadows or highlights to make product stand out.
+   - Avoid clutter and keep it visually appealing.
 
-Candidate Experience:
-${experience}
+6. **Format & Output**
+   - Poster resolution suitable for social media (e.g., 1080x1080 for Instagram, 1200x628 for Facebook).
+   - Output a **single high-quality image** ready for download.
 
-Output Format Example:
-{
-  "professional_summary": "Generated 3-4 sentence summary here.",
-  "recommended_skills_to_learn": ["TypeScript", "GraphQL"]
-}
+7. **Mood / Tone**
+   - Professional, modern, engaging, and visually appealing.
+   - Emphasize the product as premium and desirable.
 
-Return only a valid JSON object without code block formatting (no json, no triple backticks).
+Provide the final **poster design as an image output** (if using an AI image generator), or return a detailed **design composition** specifying positions, colors, and text overlays if generating programmatically via Canvas/Sharp.
+
 `;
 };
 
-const coverLetterPromptTemplate = ({ resumeData, jobDescription }) => {
-  return `
-You are an expert career coach and resume writer. 
-Write a tailored, professional cover letter for a candidate applying to the given Job Description (JD). 
-The cover letter should highlight the candidate’s most relevant skills, experiences, and enthusiasm for the role. 
-DO NOT include any skills or tools that the candidate has not confirmed.
-Make it ATS-friendly, concise, and no longer than 4 short paragraphs. 
-Do not include placeholders like [Company Name] or [Hiring Manager]—instead use "the company (if provided)" or keep it generic.
-
-Job Description:
-${jobDescription}
-
-Candidate information:
-Name: ${resumeData?.name},
-Email: ${resumeData?.email},
-Phone: ${resumeData?.phone},
-Location: ${resumeData?.location},
-Experience Level: ${resumeData?.experienceLevel},
-Skills: ${resumeData?.skills},
-${
-  resumeData?.workExperience.length > 0 &&
-  `Work Experience: 
-   ${resumeData?.workExperience
-     .map((exp) => {
-       return `{Company: ${exp.company}, Title: ${exp.title}}`;
-     })
-     .join("\n")}
-  `
-}
-${
-  resumeData?.education.length > 0 &&
-  `Education: ${resumeData?.education
-    .map((edu) => {
-      return `{Degree: ${edu.degree}, Institution: ${edu.school}}`;
-    })
-    .join("\n")}
-  `
-}
-
-Output Format Example:
-{
-  "cover_letter": "Generated cover letter here."
-}
-
-Return only a valid JSON object without code block formatting (no json, no triple backticks).
-`;
-};
-
-const atsTesterPromptTemplate = ({ jobDescription, resumeText }) => {
-  return `
-  You are an ATS (Applicant Tracking System) resume evaluator. 
-Compare the candidate’s resume text against the provided Job Description (JD). 
-Provide a structured analysis including a score, highlights, critical issues, recommended improvements, and optimization tips. 
-Focus on keyword matching, role relevance, and ATS-friendliness. 
-
-Job Description:
-${jobDescription}
-
-Candidate Resume Text:
-${resumeText}
-
-Output in valid object format.
-Output Format:
-{
-  "ats_score": "Number between 0 and 100",
-  "highlights": [
-    { type: 'missing', text: 'Missing skill' },
-    { type: 'missing', text: 'Missing tool' },
-    { type: 'good', text: 'Matches skill' },
-    { type: 'good', text: 'Matches tool' },
-  ],
-  "critical_issues": ["List of missing or problematic areas that are crucial for the job"],
-  "recommended_improvements": ["List of additional suggestions to increase chances"],
-  "general_tips": ["Generic best practices for ATS optimization"]
-
-  Return only a valid JSON object without code block formatting (no json, no triple backticks).
-}
-  `;
-};
-
-module.exports = { resumePromptTemplate, coverLetterPromptTemplate, atsTesterPromptTemplate };
+module.exports = { posterDesignPromptTemplate };

@@ -21,6 +21,7 @@ const {
   getQueueStats,
   testConnection 
 } = require('../controllers/integrationController');
+const { posterDesignController } = require('../controllers/posterDesignController');
 const upload = multer()
 const router = express.Router();
 
@@ -47,6 +48,14 @@ router.post("/brand", authMiddleware, createOrUpdateBrandSettings)
 router.post("/inviteamember", authMiddleware, inviteTeamMember)
 router.get("/acceptinvite/:token", acceptInvitation)
 router.post("/removemember", authMiddleware, deleteTeamMember)
+
+// AI routes
+router.post("/posterdesign", upload.fields([
+  { name: 'productImg', maxCount: 1 },
+  { name: 'modelImg', maxCount: 1 }
+]), posterDesignController)
+
+
 
 // Integration routes
 router.get("/integrations", authMiddleware, getIntegrations)

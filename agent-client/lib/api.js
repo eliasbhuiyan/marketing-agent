@@ -225,6 +225,13 @@ class ApiClient {
       memberId,
     }),
   };
+
+  ai = {
+    posterDesign: (productImg, modelImg) => this.post(`/ai/posterdesign`, {
+      productImg,
+      modelImg,
+    }),
+  }
 }
 
 // Create and export a singleton instance
