@@ -236,7 +236,22 @@ export default function SettingsPage() {
       setInviteBusy(false);
     }
   };
-
+  const handelRemoveMember = async (memberId)=>{    
+    try {
+      // Get the current brand ID
+      if (!brandId) {
+        console.log("No brand selected");
+        return;
+      }      
+      // Call the API to remove the team member
+      await apiClient.removemember.remove(brandId, memberId);      
+      // Show success message
+      console.log("Team member removed successfully");
+    } catch (error) {
+      console.error("Failed to remove team member:", error);
+      console.log(error?.message || "Failed to remove team member");
+    }
+  }
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -897,7 +912,7 @@ export default function SettingsPage() {
                             >
                               {member.status}
                             </span>
-                            <Button size="sm" variant="">
+                            <Button onClick={()=>handelRemoveMember(member.user._id)} size="sm" variant="">
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>

@@ -46,7 +46,7 @@ router.get("/brand", authMiddleware, getBrandSettings)
 router.post("/brand", authMiddleware, createOrUpdateBrandSettings)
 router.post("/inviteamember", authMiddleware, inviteTeamMember)
 router.get("/acceptinvite/:token", acceptInvitation)
-router.delete("/brand/:brandId/member/:memberId", authMiddleware, deleteTeamMember)
+router.post("/removemember", authMiddleware, deleteTeamMember)
 
 // Integration routes
 router.get("/integrations", authMiddleware, getIntegrations)

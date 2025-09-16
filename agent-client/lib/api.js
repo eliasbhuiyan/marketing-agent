@@ -219,6 +219,12 @@ class ApiClient {
      */
     accept: (token) => this.get(`/invite/${token}`),
   };
+  removemember = {
+    remove: (brandId, memberId) => this.post(`/removemember`, {
+      brandId,
+      memberId,
+    }),
+  };
 }
 
 // Create and export a singleton instance

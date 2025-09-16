@@ -232,13 +232,12 @@ const acceptInvitation = async (req, res) => {
 
 const deleteTeamMember = async (req, res) => {
   try {
-    const { brandId, memberId } = req.params; // brandId = brand _id, memberId = user _id of member
-    const userId = req.user._id; // logged-in user (admin)
-
+    const { brandId, memberId } = req.body; // brandId = brand _id, memberId = user _id of member
+    const userId = req.user.id; // logged-in user (admin)
     // Check if the requester is the brand owner/admin
     const brand = await BrandSettingsSchema.findById(brandId).select("owner");
     if (!brand) return res.status(404).json({ message: "Brand not found" });
-
+    
     if (brand.owner.toString() !== userId.toString()) {
       return res
         .status(403)
@@ -250,7 +249,6 @@ const deleteTeamMember = async (req, res) => {
       { _id: brandId },
       { $pull: { teamMembers: { user: memberId } } }
     );
-
     if (brandUpdate.modifiedCount === 0) {
       return res.status(404).json({ message: "Member not found in this brand" });
     }
