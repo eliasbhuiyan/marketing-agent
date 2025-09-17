@@ -20,8 +20,8 @@ export default function CaptionGenerator() {
   const [captionOptions, setCaptionOptions] = useState({
     productDescription: "",
     targetAudience: "",
-    tone: "professional",
-    platform: "instagram",
+    tone: "promotional",
+    platform: "facebook",
   });
 
   const handleGenerateContent = async () => {
@@ -126,8 +126,8 @@ export default function CaptionGenerator() {
                   })
                 }
               >
-                <option value="instagram">Instagram</option>
                 <option value="facebook">Facebook</option>
+                <option value="instagram">Instagram</option>
                 <option value="linkedin">LinkedIn</option>
                 <option value="twitter">Twitter</option>
                 <option value="tiktok">TikTok</option>

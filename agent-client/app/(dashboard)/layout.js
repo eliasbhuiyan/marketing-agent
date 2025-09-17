@@ -20,7 +20,18 @@ import { cn } from '@/lib/utils';
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Posters & Designs', href: '/posters', icon: Image },
-  { name: 'Content & Copywriting', href: '/content', icon: FileText },
+  { 
+    name: 'Content & Copywriting', 
+    href: '/content', 
+    icon: FileText,
+    children: [
+      { name: 'Captions', href: '/content/caption' },
+      { name: 'Blogs', href: '/content/blog' },
+      { name: 'Email Marketing', href: '/content/email' },
+      { name: 'Hashtags & Keywords', href: '/content/hashtag' },
+      { name: 'Product Description', href: '/content/product' },
+    ]
+  },
   { name: 'Trend Analyzer', href: '/trends', icon: TrendingUp },
   { name: 'YouTube Marketing', href: '/youtube', icon: Youtube },
   { name: 'Social Media Scheduler', href: '/scheduler', icon: Calendar },
@@ -53,8 +64,65 @@ export default function DashboardLayout({ children }) {
           </div>
           <nav className="flex-1 space-y-1 px-2 py-4">
             {navigation.map((item) => {
-              const isActive = pathname === item.href;
-              return (
+              const isActive = pathname === item.href || 
+                (item.children && item.children.some(child => pathname.startsWith(child.href.split('?')[0])));
+              
+              return item.children ? (
+                <div key={item.name} className="space-y-1">
+                  <button
+                    onClick={() => {
+                      const dropdown = document.getElementById(`dropdown-${item.name}`);
+                      dropdown.classList.toggle('hidden');
+                    }}
+                    className={cn(
+                      "w-full group flex items-center justify-between px-2 py-2 text-sm font-medium rounded-md",
+                      isActive
+                        ? "bg-blue-100 text-blue-700"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                    )}
+                  >
+                    <div className="flex items-center">
+                      <item.icon className="mr-3 h-5 w-5" />
+                      {item.name}
+                    </div>
+                    <svg
+                      className="h-5 w-5"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                  <div
+                    id={`dropdown-${item.name}`}
+                    className={`pl-8 space-y-1 ${isActive ? '' : 'hidden'}`}
+                  >
+                    {item.children.map((child) => {
+                      const childIsActive = pathname + window.location.search === child.href;
+                      return (
+                        <Link
+                          key={child.name}
+                          href={child.href}
+                          className={cn(
+                            "block px-2 py-2 text-sm font-medium rounded-md",
+                            childIsActive
+                              ? "text-blue-700"
+                              : "text-gray-600 hover:text-gray-900"
+                          )}
+                        >
+                          {child.name}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : (
                 <Link
                   key={item.name}
                   href={item.href}
@@ -88,8 +156,65 @@ export default function DashboardLayout({ children }) {
           </div>
           <nav className="flex-1 space-y-1 px-2 py-4">
             {navigation.map((item) => {
-              const isActive = pathname === item.href;
-              return (
+              const isActive = pathname === item.href || 
+                (item.children && item.children.some(child => pathname.startsWith(child.href.split('?')[0])));
+              
+              return item.children ? (
+                <div key={item.name} className="space-y-1">
+                  <button
+                    onClick={() => {
+                      const dropdown = document.getElementById(`mobile-dropdown-${item.name}`);
+                      dropdown.classList.toggle('hidden');
+                    }}
+                    className={cn(
+                      "w-full group flex items-center justify-between px-2 py-2 text-sm font-medium rounded-md",
+                      isActive
+                        ? "bg-blue-100 text-blue-700"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                    )}
+                  >
+                    <div className="flex items-center">
+                      <item.icon className="mr-3 h-5 w-5" />
+                      {item.name}
+                    </div>
+                    <svg
+                      className="h-5 w-5"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                  <div
+                    id={`mobile-dropdown-${item.name}`}
+                    className={`pl-8 space-y-1 ${isActive ? '' : 'hidden'}`}
+                  >
+                    {item.children.map((child) => {
+                      const childIsActive = pathname + window.location.search === child.href;
+                      return (
+                        <Link
+                          key={child.name}
+                          href={child.href}
+                          className={cn(
+                            "block px-2 py-2 text-sm font-medium rounded-md",
+                            childIsActive
+                              ? "text-blue-700"
+                              : "text-gray-600 hover:text-gray-900"
+                          )}
+                        >
+                          {child.name}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : (
                 <Link
                   key={item.name}
                   href={item.href}
@@ -141,7 +266,7 @@ export default function DashboardLayout({ children }) {
 
         {/* Page content */}
         <main className="py-6">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto px-4 sm:px-6 lg:px-8">
             {children}
           </div>
         </main>

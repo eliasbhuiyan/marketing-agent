@@ -4,7 +4,7 @@
 
 class ApiClient {
   constructor() {
-    this.baseUrl = '/api';
+    this.baseUrl = "/api";
     this.isRefreshing = false;
     this.refreshPromise = null;
   }
@@ -14,15 +14,19 @@ class ApiClient {
    */
   async request(endpoint, options = {}) {
     const url = `${this.baseUrl}${endpoint}`;
-    const isFormDataBody = options && options.body && typeof FormData !== 'undefined' && options.body instanceof FormData;
+    const isFormDataBody =
+      options &&
+      options.body &&
+      typeof FormData !== "undefined" &&
+      options.body instanceof FormData;
 
     const headers = {
       ...options.headers,
     };
 
     // Only set JSON content-type when not sending FormData and content-type not already provided
-    if (!isFormDataBody && !('Content-Type' in headers)) {
-      headers['Content-Type'] = 'application/json';
+    if (!isFormDataBody && !("Content-Type" in headers)) {
+      headers["Content-Type"] = "application/json";
     }
 
     const config = {
@@ -32,7 +36,7 @@ class ApiClient {
 
     try {
       const response = await fetch(url, config);
-      
+
       // If unauthorized and we haven't tried refreshing yet, attempt refresh
       if (response.status === 401 && !options._retried) {
         try {
@@ -42,15 +46,20 @@ class ApiClient {
         } catch (refreshError) {
           // If refresh fails, redirect to login or handle as needed
           this.handleAuthFailure();
-          throw new Error('Authentication failed. Please log in again.');
+          throw new Error("Authentication failed. Please log in again.");
         }
       }
-      
+
       const payload = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        const backendMessage = payload?.message || payload?.error || payload?.errors?.[0] || payload?.detail;
-        const composed = backendMessage || `HTTP ${response.status}: ${response.statusText}`;
+        const backendMessage =
+          payload?.message ||
+          payload?.error ||
+          payload?.errors?.[0] ||
+          payload?.detail;
+        const composed =
+          backendMessage || `HTTP ${response.status}: ${response.statusText}`;
         const err = new Error(composed);
         err.status = response.status;
         err.payload = payload;
@@ -90,11 +99,11 @@ class ApiClient {
    */
   async _performRefresh() {
     const response = await fetch(`${this.baseUrl}/auth/refresh`, {
-      method: 'POST',
+      method: "POST",
     });
 
     if (!response.ok) {
-      throw new Error('Failed to refresh token');
+      throw new Error("Failed to refresh token");
     }
 
     return await response.json();
@@ -105,13 +114,13 @@ class ApiClient {
    */
   handleAuthFailure() {
     // Clear any stored authentication data
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       try {
-        localStorage.removeItem('selectedBrandId');
+        localStorage.removeItem("selectedBrandId");
         // Redirect to login page
-        window.location.href = '/login';
+        window.location.href = "/login";
       } catch (error) {
-        console.error('Error clearing auth data:', error);
+        console.error("Error clearing auth data:", error);
       }
     }
   }
@@ -120,17 +129,18 @@ class ApiClient {
    * GET request
    */
   async get(endpoint) {
-    return this.request(endpoint, { method: 'GET' });
+    return this.request(endpoint, { method: "GET" });
   }
 
   /**
    * POST request
    */
   async post(endpoint, data) {
-    const isFormData = typeof FormData !== 'undefined' && data instanceof FormData;
+    const isFormData =
+      typeof FormData !== "undefined" && data instanceof FormData;
 
     return this.request(endpoint, {
-      method: 'POST',
+      method: "POST",
       body: isFormData ? data : JSON.stringify(data),
     });
   }
@@ -140,7 +150,7 @@ class ApiClient {
    */
   async put(endpoint, data) {
     return this.request(endpoint, {
-      method: 'PUT',
+      method: "PUT",
       body: JSON.stringify(data),
     });
   }
@@ -149,7 +159,7 @@ class ApiClient {
    * DELETE request
    */
   async delete(endpoint) {
-    return this.request(endpoint, { method: 'DELETE' });
+    return this.request(endpoint, { method: "DELETE" });
   }
 
   // Auth API methods
@@ -157,12 +167,12 @@ class ApiClient {
     /**
      * Get user profile
      */
-    getProfile: () => this.get('/auth/profile'),
+    getProfile: () => this.get("/auth/profile"),
 
     /**
      * Set active brand
      */
-    setActiveBrand: (brandId) => this.post('/auth/brand', { brandId }),
+    setActiveBrand: (brandId) => this.post("/auth/brand", { brandId }),
 
     /**
      * Manually refresh access token (usually not needed as it's automatic)
@@ -175,17 +185,18 @@ class ApiClient {
     /**
      * Get brand settings
      */
-    get: () => this.get('/brand'),
+    get: () => this.get("/brand"),
 
     /**
      * Create or update brand settings
      */
-    save: (brandData) => this.post('/brand', brandData),
+    save: (brandData) => this.post("/brand", brandData),
 
     /**
      * Invite a team member by email
      */
-    inviteMember: (email) => this.post('/invite', { addTeamMemberEmail: email }),
+    inviteMember: (email) =>
+      this.post("/invite", { addTeamMemberEmail: email }),
   };
 
   // Integration API methods
@@ -193,7 +204,7 @@ class ApiClient {
     /**
      * Get all integrations for the current brand
      */
-    getAll: () => this.get('/integrations'),
+    getAll: () => this.get("/integrations"),
 
     /**
      * Get details for a specific platform integration
@@ -213,7 +224,7 @@ class ApiClient {
     /**
      * Publish content to a platform
      */
-    publish: (platform, content, mediaUrls = []) => 
+    publish: (platform, content, mediaUrls = []) =>
       this.post(`/integrations/${platform}/publish`, { content, mediaUrls }),
 
     /**
@@ -230,33 +241,58 @@ class ApiClient {
     accept: (token) => this.get(`/invite/${token}`),
   };
   removemember = {
-    remove: (brandId, memberId) => this.post(`/removemember`, {
-      brandId,
-      memberId,
-    }),
+    remove: (brandId, memberId) =>
+      this.post(`/removemember`, {
+        brandId,
+        memberId,
+      }),
   };
 
   ai = {
     posterDesign: (productImg, modelImg) => {
       const formData = new FormData();
       // Expecting File/Blob instances
-      if (productImg) formData.append('productImg', productImg, productImg.name || 'product.jpg');
-      if (modelImg) formData.append('modelImg', modelImg, modelImg.name || 'model.jpg');
+      if (productImg)
+        formData.append(
+          "productImg",
+          productImg,
+          productImg.name || "product.jpg"
+        );
+      if (modelImg)
+        formData.append("modelImg", modelImg, modelImg.name || "model.jpg");
       return this.post(`/ai/posterdesign`, formData);
     },
-    
+
     captionGenerator: ({
-          productDescription,
-          targetAudience,
-          tone,
-          platform
-        }) => this.post(`/ai/captiongenerator`, {
-          productDescription,
-          targetAudience,
-          tone,
-          platform
-        }),
-  }
+      productDescription,
+      targetAudience,
+      tone,
+      platform,
+    }) =>
+      this.post(`/ai/captiongenerator`, {
+        productDescription,
+        targetAudience,
+        tone,
+        platform,
+      }),
+
+    blogGenerator: ({
+      blogTopic,
+      blogLength,
+      writingStyle,
+      seoKeywords,
+      numberOfHeadings,
+      outputLanguage,
+    }) =>
+      this.post(`/ai/bloggenerator`, {
+        blogTopic,
+        blogLength,
+        writingStyle,
+        seoKeywords,
+        numberOfHeadings,
+        outputLanguage,
+      }),
+  };
 }
 
 // Create and export a singleton instance
