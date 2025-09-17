@@ -41,4 +41,24 @@ Provide the final **poster design as an image output** (if using an AI image gen
 `;
 };
 
-module.exports = { posterDesignPromptTemplate };
+const captionGeneratorPromptTemplate = ({ productDescription, targetAudience, tone, platform}) => {
+   return `
+   You are a professional social media copywriter. 
+Write a creative, engaging, and persuasive caption for a post based on the following information:
+
+Product/Service Description: ${productDescription}
+Target Audience: ${targetAudience}
+Tone: ${tone}
+Platform: ${platform}
+
+Requirements:
+- The caption must suit the ${platform} style.
+- Make it concise and attention-grabbing.
+- Include a call-to-action if appropriate.
+- Avoid using overly generic phrases; make it unique and relatable to the audience.
+
+Output ONLY the caption text.
+   `
+}
+
+module.exports = { posterDesignPromptTemplate, captionGeneratorPromptTemplate };

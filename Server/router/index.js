@@ -22,6 +22,7 @@ const {
   testConnection 
 } = require('../controllers/integrationController');
 const { posterDesignController } = require('../controllers/posterDesignController');
+const { captionGenerator } = require('../controllers/contentCopywritingController');
 const upload = multer()
 const router = express.Router();
 
@@ -55,7 +56,7 @@ router.post("/posterdesign", upload.fields([
   { name: 'modelImg', maxCount: 1 }
 ]), posterDesignController)
 
-
+router.post("/captiongenerator", authMiddleware, captionGenerator)
 
 // Integration routes
 router.get("/integrations", authMiddleware, getIntegrations)

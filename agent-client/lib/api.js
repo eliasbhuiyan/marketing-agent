@@ -244,6 +244,18 @@ class ApiClient {
       if (modelImg) formData.append('modelImg', modelImg, modelImg.name || 'model.jpg');
       return this.post(`/ai/posterdesign`, formData);
     },
+    
+    captionGenerator: ({
+          productDescription,
+          targetAudience,
+          tone,
+          platform
+        }) => this.post(`/ai/captiongenerator`, {
+          productDescription,
+          targetAudience,
+          tone,
+          platform
+        }),
   }
 }
 
