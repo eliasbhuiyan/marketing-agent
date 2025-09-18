@@ -262,7 +262,6 @@ class ApiClient {
         formData.append("modelImg", modelImg, modelImg.name || "model.jpg");
       return this.post(`/ai/posterdesign`, formData);
     },
-
     captionGenerator: ({
       productDescription,
       targetAudience,
@@ -291,6 +290,16 @@ class ApiClient {
         seoKeywords,
         numberOfHeadings,
         outputLanguage,
+      }),
+    keywordHashtagGenerator: ({
+      industry,
+      numKeywords,
+      platform,
+    }) =>
+      this.post(`/ai/hashtagkeywords`, {
+        industry,
+        numKeywords,
+        platform,
       }),
   };
 }

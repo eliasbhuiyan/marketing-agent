@@ -36,11 +36,7 @@ export default function BlogGenerator() {
   });
   
   // Set up effect to update editor content when generated content changes
-  useEffect(() => {
-    if (generatedContent) {
-      setEditorContent(generatedContent);
-    }
-  }, [generatedContent]);
+ 
 
   const handleGenerateContent = async () => {
     setIsGenerating(true);
@@ -56,7 +52,6 @@ export default function BlogGenerator() {
         numberOfHeadings: blogOptions.numberOfHeadings,
         outputLanguage: blogOptions.outputLanguage,
       });
-      console.log("Generated blog:", response.blog);
       
       setGeneratedContent(response.blog);
     } catch (error) {
@@ -75,7 +70,11 @@ export default function BlogGenerator() {
     // Handle blog scheduling
     console.log("Scheduling blog...", editorContent);
   };
-
+  useEffect(() => {
+     if (generatedContent) {
+       setEditorContent(generatedContent);
+     }
+   }, [generatedContent]);
   return (
     <div className="grid lg:grid-cols-2 gap-8">
       {/* Left Panel - Input Form */}

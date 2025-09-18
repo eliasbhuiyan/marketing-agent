@@ -61,27 +61,25 @@ Output ONLY the caption text.
    `
 }
 
-const blogGeneratorPromptTemplate = ({ blogTopic, blogLength, writingStyle, seoKeywords, numberOfHeadings, outputLanguage}) => {
-   return `
-   You are an expert content writer and SEO specialist. 
+const blogGeneratorPromptTemplate = ({ blogTopic, blogLength, writingStyle, seoKeywords, numberOfHeadings, outputLanguage, images}) => {
+   return `You are an expert content writer and SEO specialist. 
 Write a high-quality, human-like blog based on the following details:
-
 Blog Topic: ${blogTopic}
 Blog Length: ${blogLength} words
 Number of Headings: ${numberOfHeadings}
 Writing Style: ${writingStyle}
 Output Language: ${outputLanguage}
 SEO Focus Keywords: ${seoKeywords} (use naturally throughout the content)
-
+Images: ${JSON.stringify(images)} (use these images in the blog)
 Requirements:
-- Output ONLY valid HTML fragment (no surrounding <html> or <body> tags). Do not include any other text.
+- Output ONLY valid HTML fragment (no surrounding <html> or <body> tags). Do not include any other text. 
 - Use only these HTML tags: <h1>, <h2>, <h3>, <p>, <ul>, <ol>, <li>, <strong>, <em>, <a>, <img>, <blockquote>, <figure>, <figcaption>. Do not use <style>, <script>, or inline JavaScript.
 - Start with a top-level title using <h1> containing the Blog Topic.
 - Include an introduction section (one or two <p> elements).
 - Include exactly ${numberOfHeadings} content sections. Each section should have a heading (<h2>) and 1–3 <p> paragraphs. Each paragraph should be short: roughly 3–4 lines of readable text (approx. 2–5 sentences).
+-  After **each heading**, insert a relevant image provided using '<img>' tag.
 - Integrate SEO keywords naturally and sparingly throughout the content; avoid keyword stuffing.
-
-- After the conclusion, add a heading for the FAQ section exactly as: <h2>FAQ in 'blog topic'</h2>.
+- After the conclusion, add a heading for the FAQ section exactly as: <h2>FAQ in (blog topic here)</h2>.
 - Under the FAQ heading include at least 4 Q&A entries relevant and trendy to the topic. Format each Q&A as:
    <h3>Question text?</h3>
    <p>Answer text.</p>
@@ -90,8 +88,36 @@ Requirements:
 - Ensure links (<a>) include meaningful anchor text and absolute URLs (placeholders are fine).
 - Output must be well-formed HTML that can be inserted directly into a rich-text editor.
 
-Output only the complete blog content.
-   `
+Output only the complete blog content.`
 }
 
-module.exports = { posterDesignPromptTemplate, captionGeneratorPromptTemplate, blogGeneratorPromptTemplate };
+const keywordHashtagGeneratorPromptTemplate = ({ industry, platform, numKeywords }) => {
+  return `
+  You are a social media and SEO expert.
+  Inputs:
+  - Industry/Niche: ${industry}
+  - Platform: ${platform}
+  - Number of Keywords: ${numKeywords}
+
+  Task:
+  1. Generate three categories:
+  - Frequent Keywords → High search/competition, hard to rank, popular
+  - Average Keywords → Medium search/competition, medium difficulty
+  - Rare Keywords → Low search, easy to rank, niche-specific
+  2. Each category must include:
+     - keywords: relevant keywords
+     - hashtags: relevant hashtags
+  3. Output must be JSON in this format:
+  {
+    "frequent": { "keywords": [], "hashtags": [] },
+    "average": { "keywords": [], "hashtags": [] },
+    "rare": { "keywords": [], "hashtags": [] }
+  }
+  4. Make keywords relevant to ${industry} and trending on ${platform}.
+  5. All hashtags must be inside double quotes like "#example".
+  Output must be ONLY valid JSON.
+  Do not include \`\`\`json or any other text, just pure JSON.
+  `;
+}
+
+module.exports = { posterDesignPromptTemplate, captionGeneratorPromptTemplate, blogGeneratorPromptTemplate, keywordHashtagGeneratorPromptTemplate };

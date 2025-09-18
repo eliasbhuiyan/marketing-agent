@@ -22,7 +22,7 @@ const {
   testConnection 
 } = require('../controllers/integrationController');
 const { posterDesignController } = require('../controllers/posterDesignController');
-const { captionGenerator, BlogGenerator } = require('../controllers/contentCopywritingController');
+const { captionGenerator, BlogGenerator, KeywordHashtagGenerator } = require('../controllers/contentCopywritingController');
 const upload = multer()
 const router = express.Router();
 
@@ -55,9 +55,9 @@ router.post("/posterdesign", upload.fields([
   { name: 'productImg', maxCount: 1 },
   { name: 'modelImg', maxCount: 1 }
 ]), posterDesignController)
-
 router.post("/captiongenerator", authMiddleware, captionGenerator)
 router.post("/bloggenerator", authMiddleware, BlogGenerator)
+router.post("/keywordhashtaggenerator", authMiddleware, KeywordHashtagGenerator)
 
 // Integration routes
 router.get("/integrations", authMiddleware, getIntegrations)

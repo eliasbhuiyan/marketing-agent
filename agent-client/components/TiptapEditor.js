@@ -2,6 +2,7 @@
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { TextStyleKit } from '@tiptap/extension-text-style'
+import Image from '@tiptap/extension-image'
 import { 
   Bold, Italic, Strikethrough, Heading1, Heading2, Heading3,
   Code, List, ListOrdered, Quote, Link, FileCode,
@@ -136,10 +137,13 @@ const MenuBar = ({ editor }) => {
 }
 
 const TiptapEditor = ({ content, onUpdate }) => {
+  console.log("content", content);
+  
   const editor = useEditor({
     extensions: [
       StarterKit,
       TextStyleKit,
+      Image,
     ],
     content: content,
     onUpdate: onUpdate,
