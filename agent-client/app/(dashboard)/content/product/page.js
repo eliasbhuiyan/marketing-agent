@@ -23,15 +23,7 @@ import dynamic from "next/dynamic";
 
 export default function ProductDescriptionGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedContent, setGeneratedContent] = useState(`
-    Experience music like never before with our cutting-edge Bluetooth headphones—where 30-hour marathon playtime meets studio-quality sound engineered for life on the move. Designed for audiophiles and busy professionals alike, these wireless headphones deliver *premium audio* with deep bass, crisp highs, and balanced mids, transforming every commute, workout, or quiet moment into a concert-worthy experience.  
-
-Powered by **Bluetooth 5.0**, enjoy seamless pairing, ultra-stable connectivity up to 50 feet, and lightning-fast signal transmission—perfect for binge-watching, calls, or playlists without dropouts. The **30-hour battery life** keeps your soundtrack alive for days, while quick-charge technology gives you 5 hours of playback in just 15 minutes. Rain or sweat? No problem. With **IPX5 water-resistance**, these headphones defy spills, workouts, and unpredictable weather, making them your ideal travel companion.  
-
-Immerse yourself in pure focus with *noise-cancelling* technology that minimizes background distractions, whether you’re grinding through deadlines or savoring a podcast. The ergonomic, over-ear design wraps you in comfort for marathon listening sessions, while intuitive touch controls put playback, volume, and voice assistants at your fingertips.  
-
-Why settle for ordinary sound? Elevate every beat, call, and scene with *wireless headphones* that blend luxury, endurance, and innovation. Ready to redefine your audio journey? **Add to cart today and hear the difference premium audio makes!**
-    `);
+  const [generatedContent, setGeneratedContent] = useState("");
   // const [editorContent, setEditorContent] = useState("");
   const [apiError, setApiError] = useState(null);
   const [productOptions, setProductOptions] = useState({
