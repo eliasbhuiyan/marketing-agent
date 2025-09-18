@@ -61,4 +61,37 @@ Output ONLY the caption text.
    `
 }
 
-module.exports = { posterDesignPromptTemplate, captionGeneratorPromptTemplate };
+const blogGeneratorPromptTemplate = ({ blogTopic, blogLength, writingStyle, seoKeywords, numberOfHeadings, outputLanguage}) => {
+   return `
+   You are an expert content writer and SEO specialist. 
+Write a high-quality, human-like blog based on the following details:
+
+Blog Topic: ${blogTopic}
+Blog Length: ${blogLength} words
+Number of Headings: ${numberOfHeadings}
+Writing Style: ${writingStyle}
+Output Language: ${outputLanguage}
+SEO Focus Keywords: ${seoKeywords} (use naturally throughout the content)
+
+Requirements:
+- Output ONLY valid HTML fragment (no surrounding <html> or <body> tags). Do not include any other text.
+- Use only these HTML tags: <h1>, <h2>, <h3>, <p>, <ul>, <ol>, <li>, <strong>, <em>, <a>, <img>, <blockquote>, <figure>, <figcaption>. Do not use <style>, <script>, or inline JavaScript.
+- Start with a top-level title using <h1> containing the Blog Topic.
+- Include an introduction section (one or two <p> elements).
+- Include exactly ${numberOfHeadings} content sections. Each section should have a heading (<h2>) and 1–3 <p> paragraphs. Each paragraph should be short: roughly 3–4 lines of readable text (approx. 2–5 sentences).
+- Integrate SEO keywords naturally and sparingly throughout the content; avoid keyword stuffing.
+
+- After the conclusion, add a heading for the FAQ section exactly as: <h2>FAQ in 'blog topic'</h2>.
+- Under the FAQ heading include at least 4 Q&A entries relevant and trendy to the topic. Format each Q&A as:
+   <h3>Question text?</h3>
+   <p>Answer text.</p>
+- Each FAQ answer should be concise (1–3 short paragraphs). Provide practical or up-to-date context where appropriate.
+- Do NOT include any decorative dashes, lines like "---", or markdown. Do not output any meta commentary or other text outside the HTML fragment.
+- Ensure links (<a>) include meaningful anchor text and absolute URLs (placeholders are fine).
+- Output must be well-formed HTML that can be inserted directly into a rich-text editor.
+
+Output only the complete blog content.
+   `
+}
+
+module.exports = { posterDesignPromptTemplate, captionGeneratorPromptTemplate, blogGeneratorPromptTemplate };

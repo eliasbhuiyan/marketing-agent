@@ -22,7 +22,7 @@ const {
   testConnection 
 } = require('../controllers/integrationController');
 const { posterDesignController } = require('../controllers/posterDesignController');
-const { captionGenerator } = require('../controllers/contentCopywritingController');
+const { captionGenerator, BlogGenerator } = require('../controllers/contentCopywritingController');
 const upload = multer()
 const router = express.Router();
 
@@ -57,6 +57,7 @@ router.post("/posterdesign", upload.fields([
 ]), posterDesignController)
 
 router.post("/captiongenerator", authMiddleware, captionGenerator)
+router.post("/bloggenerator", authMiddleware, BlogGenerator)
 
 // Integration routes
 router.get("/integrations", authMiddleware, getIntegrations)
