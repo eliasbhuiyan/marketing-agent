@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Sparkles } from "lucide-react";
+import { Sparkles, MessageSquare, Heart, Zap } from "lucide-react";
 import apiClient from "@/lib/api";
 
 export default function CaptionGenerator() {
@@ -182,10 +182,25 @@ export default function CaptionGenerator() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-center h-[200px] bg-gray-50 rounded-md">
-                <p className="text-gray-500">
-                  Fill in the form and click Generate to create a caption
+              <div className="flex flex-col items-center justify-center h-[400px] bg-gray-50 rounded-md p-6 text-center">
+                <MessageSquare className="h-12 w-12 text-gray-400 mb-4" />
+                <p className="text-gray-500 mb-2">
+                  Fill in the form and click Generate to create your caption
                 </p>
+                <div className="flex flex-col gap-2 mt-4 w-full max-w-xs">
+                  <div className="flex items-center gap-2">
+                    <Heart className="h-4 w-4 text-gray-400" />
+                    <p className="text-sm text-gray-400">Engaging and authentic captions</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Zap className="h-4 w-4 text-gray-400" />
+                    <p className="text-sm text-gray-400">Optimized for audience engagement</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-gray-400" />
+                    <p className="text-sm text-gray-400">Tailored to your brand voice</p>
+                  </div>
+                </div>
               </div>
             )}
           </CardContent>

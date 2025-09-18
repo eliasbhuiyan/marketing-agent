@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import {
   Card,
@@ -11,7 +10,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Sparkles, Copy, Calendar } from "lucide-react";
+import {
+  Sparkles,
+  Copy,
+  Calendar,
+  FileText,
+  PenTool,
+  BarChart,
+} from "lucide-react";
 import apiClient from "@/lib/api";
 import dynamic from "next/dynamic";
 
@@ -34,14 +40,13 @@ export default function BlogGenerator() {
     numberOfHeadings: "2",
     outputLanguage: "English",
   });
-  
+
   // Set up effect to update editor content when generated content changes
- 
 
   const handleGenerateContent = async () => {
     setIsGenerating(true);
     console.log(blogOptions);
-  
+
     try {
       // Call the blog generator API
       const response = await apiClient.ai.blogGenerator({
@@ -52,11 +57,13 @@ export default function BlogGenerator() {
         numberOfHeadings: blogOptions.numberOfHeadings,
         outputLanguage: blogOptions.outputLanguage,
       });
-      
+
       setGeneratedContent(response.blog);
     } catch (error) {
       console.error("Error generating content:", error);
-      setApiError(error.message || "Failed to generate content. Please try again.");
+      setApiError(
+        error.message || "Failed to generate content. Please try again."
+      );
     } finally {
       setIsGenerating(false);
     }
@@ -71,12 +78,12 @@ export default function BlogGenerator() {
     console.log("Scheduling blog...", editorContent);
   };
   useEffect(() => {
-     if (generatedContent) {
-       setEditorContent(generatedContent);
-     }
-   }, [generatedContent]);
+    if (generatedContent) {
+      setEditorContent(generatedContent);
+    }
+  }, [generatedContent]);
   return (
-    <div className="grid lg:grid-cols-2 gap-8">
+    <div className="space-y-6">
       {/* Left Panel - Input Form */}
       <div className="space-y-6">
         <Card>
@@ -84,7 +91,7 @@ export default function BlogGenerator() {
             <CardTitle>Blog Generation Settings</CardTitle>
             <CardDescription>Configure your blog requirements</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="grid grid-cols-3 gap-4">
             <div>
               <Label htmlFor="blog-topic">Blog Topic</Label>
               <Input
@@ -182,10 +189,12 @@ export default function BlogGenerator() {
             <div>
               <div className="flex gap-1 items-center">
                 <p className="text-xs">✅</p>
-                <Label htmlFor="human-like">FAQ (Frequently Asked Questions)</Label>
+                <Label htmlFor="human-like">
+                  FAQ (Frequently Asked Questions)
+                </Label>
               </div>
               <p className="text-sm text-gray-500">
-               Add frequently asked questions (FAQs) to the blog.
+                Add frequently asked questions (FAQs) to the blog.
               </p>
             </div>
             <div>
@@ -197,28 +206,37 @@ export default function BlogGenerator() {
                 Generate content that is more human like.
               </p>
             </div>
-            {apiError && (
-              <div className="text-red-500 text-sm mt-2">
-                {apiError}
+            <div>
+              <div className="flex gap-1 items-center">
+                <p className="text-xs">✅</p>
+                <Label htmlFor="human-like">Image in the blog post</Label>
               </div>
-            )}
-            <Button
-              onClick={handleGenerateContent}
-              className="w-full"
-              disabled={isGenerating}
-            >
-              {isGenerating ? (
-                <>
-                  <Sparkles className="mr-2 h-4 w-4 animate-spin" />
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Generate Blog
-                </>
+              <p className="text-sm text-gray-500">
+                Add pixabay images to the blog post.
+              </p>
+            </div>
+            <div className="col-span-3 flex flex-col items-center">
+              {apiError && (
+                <div className="text-red-500 text-sm mt-2">{apiError}</div>
               )}
-            </Button>
+              <Button
+                onClick={handleGenerateContent}
+                className="w-fit"
+                disabled={isGenerating}
+              >
+                {isGenerating ? (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Generate Blog
+                  </>
+                )}
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -236,13 +254,13 @@ export default function BlogGenerator() {
             {generatedContent ? (
               <div className="space-y-4">
                 <div className="bg-gray-50 rounded-md min-h-[400px]">
-                <TiptapEditor 
-                  content={editorContent}
-                  onUpdate={({ editor }) => {
-                    setEditorContent(editor.getHTML());
-                  }}
-                />
-              </div>
+                  <TiptapEditor
+                    content={editorContent}
+                    onUpdate={({ editor }) => {
+                      setEditorContent(editor.getHTML());
+                    }}
+                  />
+                </div>
                 <div className="flex space-x-2">
                   <Button variant="outline" onClick={handleCopyContent}>
                     <Copy className="mr-2 h-4 w-4" />
@@ -255,10 +273,31 @@ export default function BlogGenerator() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-center h-[400px] bg-gray-50 rounded-md">
-                <p className="text-gray-500">
-                  Fill in the form and click Generate to create a blog
+              <div className="flex flex-col items-center justify-center h-[400px] bg-gray-50 rounded-md p-6 text-center">
+                <FileText className="h-12 w-12 text-gray-400 mb-4" />
+                <p className="text-gray-500 mb-2">
+                  Fill in the form and click Generate to create your blog post
                 </p>
+                <div className="flex flex-col gap-2 mt-4 w-full max-w-xs">
+                  <div className="flex items-center gap-2">
+                    <PenTool className="h-4 w-4 text-gray-400" />
+                    <p className="text-sm text-gray-400">
+                      SEO-optimized content
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <BarChart className="h-4 w-4 text-gray-400" />
+                    <p className="text-sm text-gray-400">
+                      Engaging and informative articles
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-gray-400" />
+                    <p className="text-sm text-gray-400">
+                      Tailored to your target audience
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
           </CardContent>
