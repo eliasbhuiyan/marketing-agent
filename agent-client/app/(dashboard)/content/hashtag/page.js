@@ -11,61 +11,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Sparkles, Copy } from "lucide-react";
+import { Sparkles, Copy, Hash, Target, BarChart } from "lucide-react";
 import apiClient from "@/lib/api";
 
 export default function HashtagGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedContent, setGeneratedContent] = useState({
-    frequent: {
-      keywords: [
-        "cat food",
-        "healthy cat food",
-        "best cat treats",
-        "kitten food",
-        "cat nutrition",
-      ],
-      hashtags: [
-        "#catfood",
-        "#healthycat",
-        "#cattreats",
-        "#kittenfood",
-        "#catnutrition",
-      ],
-    },
-    average: {
-      keywords: [
-        "grain free cat food",
-        "natural cat food",
-        "wet cat food",
-        "organic cat treats",
-        "cat food reviews",
-      ],
-      hashtags: [
-        "#healthycats",
-        "#grainfreecatfood",
-        "#naturalcatfood",
-        "#organicpets",
-        "#catfoodreview",
-      ],
-    },
-    rare: {
-      keywords: [
-        "limited ingredient cat food",
-        "raw diet for cats",
-        "senior cat food",
-        "hairball control cat food",
-        "hypoallergenic cat treats",
-      ],
-      hashtags: [
-        "#limitedingredientcatfood",
-        "#rawfedcat",
-        "#seniorcatdiet",
-        "#hairballcare",
-        "#hypoallergeniccat",
-      ],
-    },
-  });
+  const [generatedContent, setGeneratedContent] = useState(null);
   const [hashtagOptions, setHashtagOptions] = useState({
     industry: "",
     platform: "instagram",
@@ -159,14 +110,15 @@ export default function HashtagGenerator() {
                     })
                   }
                 >
+                  <option value="facebook">Facebook</option>
                   <option value="instagram">Instagram</option>
                   <option value="tiktok">TikTok</option>
                   <option value="twitter">Twitter</option>
-                  <option value="seo">SEO Keywords</option>
+                  <option value="seo">SEO</option>
                 </select>
               </div>
               <div>
-                <Label htmlFor="hashtag-count">Number of Hashtags</Label>
+                <Label htmlFor="hashtag-count">Number of Hashtags/Keywords</Label>
                 <select
                   id="hashtag-count"
                   className="w-full mt-1 p-2 border border-gray-300 rounded-md"
@@ -178,10 +130,10 @@ export default function HashtagGenerator() {
                     })
                   }
                 >
-                  <option value="10">10 Hashtags</option>
-                  <option value="15">15 Hashtags</option>
-                  <option value="20">20 Hashtags</option>
-                  <option value="30">30 Hashtags</option>
+                  <option value="10">10 Hashtags/Keywords</option>
+                  <option value="15">15 Hashtags/Keywords</option>
+                  <option value="20">20 Hashtags/Keywords</option>
+                  <option value="30">30 Hashtags/Keywords</option>
                 </select>
               </div>
             </div>
@@ -244,7 +196,10 @@ export default function HashtagGenerator() {
                 {/* Average Hashtags & Keywords */}
                 <div className="space-y-2">
                   <h3 className="font-semibold text-blue-600 flex justify-between">
-                    <span>Average Popularity ({generatedContent.average?.keywords.length})</span>
+                    <span>
+                      Average Popularity (
+                      {generatedContent.average?.keywords.length})
+                    </span>
                     <span className="text-sm bg-yellow-500 px-2 text-white font-normal rounded-2xl">
                       medium competition
                     </span>
@@ -264,7 +219,9 @@ export default function HashtagGenerator() {
                 {/* Rare Hashtags & Keywords */}
                 <div className="space-y-2">
                   <h3 className="font-semibold text-purple-600 flex justify-between">
-                    <span>Niche/Rare ({generatedContent.rare?.keywords.length})</span>
+                    <span>
+                      Niche/Rare ({generatedContent.rare?.keywords.length})
+                    </span>
                     <span className="text-sm bg-green-400 text-white px-2 rounded-2xl font-normal">
                       low competition
                     </span>
@@ -293,10 +250,32 @@ export default function HashtagGenerator() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-center h-[200px] bg-gray-50 rounded-md">
-                <p className="text-gray-500">
-                  Fill in the form and click Generate to create hashtags
-                </p>
+              <div className="flex items-center justify-center bg-gray-50 rounded-md">
+                <div className="flex flex-col items-center justify-center bg-gray-50 rounded-md p-6 text-center">
+                  <Hash className="h-12 w-12 text-gray-400 mb-4" />
+                  <p className="text-gray-500 mb-2">
+                    Fill in the form and click Generate to create hashtags and
+                    keywords
+                  </p>
+                  <div className="flex flex-col gap-2 mt-4 w-full max-w-xs">
+                    <div className="flex items-center gap-2">
+                      <Hash className="h-4 w-4 text-gray-400" />
+                      <p className="text-sm text-gray-400">Trending hashtags</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Target className="h-4 w-4 text-gray-400" />
+                      <p className="text-sm text-gray-400">
+                        Niche-specific keywords
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <BarChart className="h-4 w-4 text-gray-400" />
+                      <p className="text-sm text-gray-400">
+                        Competition-based categorization
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </CardContent>
