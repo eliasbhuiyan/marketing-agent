@@ -16,52 +16,54 @@ import apiClient from "@/lib/api";
 import dynamic from "next/dynamic";
 
 // Dynamically import TiptapEditor to avoid SSR issues
-const TiptapEditor = dynamic(() => import("@/components/TiptapEditor"), {
-  ssr: false,
-  loading: () => <p>Loading Editor...</p>,
-});
+// const TiptapEditor = dynamic(() => import("@/components/TiptapEditor"), {
+//   ssr: false,
+//   loading: () => <p>Loading Editor...</p>,
+// });
 
 export default function ProductDescriptionGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedContent, setGeneratedContent] = useState("");
-  const [editorContent, setEditorContent] = useState("");
+  const [generatedContent, setGeneratedContent] = useState(`
+    Experience music like never before with our cutting-edge Bluetooth headphones—where 30-hour marathon playtime meets studio-quality sound engineered for life on the move. Designed for audiophiles and busy professionals alike, these wireless headphones deliver *premium audio* with deep bass, crisp highs, and balanced mids, transforming every commute, workout, or quiet moment into a concert-worthy experience.  
+
+Powered by **Bluetooth 5.0**, enjoy seamless pairing, ultra-stable connectivity up to 50 feet, and lightning-fast signal transmission—perfect for binge-watching, calls, or playlists without dropouts. The **30-hour battery life** keeps your soundtrack alive for days, while quick-charge technology gives you 5 hours of playback in just 15 minutes. Rain or sweat? No problem. With **IPX5 water-resistance**, these headphones defy spills, workouts, and unpredictable weather, making them your ideal travel companion.  
+
+Immerse yourself in pure focus with *noise-cancelling* technology that minimizes background distractions, whether you’re grinding through deadlines or savoring a podcast. The ergonomic, over-ear design wraps you in comfort for marathon listening sessions, while intuitive touch controls put playback, volume, and voice assistants at your fingertips.  
+
+Why settle for ordinary sound? Elevate every beat, call, and scene with *wireless headphones* that blend luxury, endurance, and innovation. Ready to redefine your audio journey? **Add to cart today and hear the difference premium audio makes!**
+    `);
+  // const [editorContent, setEditorContent] = useState("");
   const [apiError, setApiError] = useState(null);
   const [productOptions, setProductOptions] = useState({
     productName: "",
-    productCategory: "",
     keyFeatures: "",
-    targetAudience: "",
-    tone: "professional",
-    descriptionLength: "medium",
+    descriptionLength: "100-200 words",
     includeKeywords: "",
     outputLanguage: "English",
   });
   
   // Set up effect to update editor content when generated content changes
-  useEffect(() => {
-    if (generatedContent) {
-      setEditorContent(generatedContent);
-    }
-  }, [generatedContent]);
+  // useEffect(() => {
+  //   if (generatedContent) {
+  //     setEditorContent(generatedContent);
+  //   }
+  // }, [generatedContent]);
 
   const handleGenerateContent = async () => {
     setIsGenerating(true);
     console.log(productOptions);
-  
     try {
       // Call the product description generator API
-      const response = await apiClient.ai.productDescriptionGenerator({
+      const response = await apiClient.ai.productDescription({
         productName: productOptions.productName,
-        productCategory: productOptions.productCategory,
         keyFeatures: productOptions.keyFeatures,
-        targetAudience: productOptions.targetAudience,
-        tone: productOptions.tone,
         descriptionLength: productOptions.descriptionLength,
         includeKeywords: productOptions.includeKeywords,
         outputLanguage: productOptions.outputLanguage,
       });
+      console.log(response.description);
       
-      setGeneratedContent(response.productDescription || "No content generated. Please try again.");
+      setGeneratedContent(response.description || "No content generated. Please try again.");
     } catch (error) {
       console.error("Error generating product description:", error);
       setApiError(error.message || "Failed to generate content. Please try again.");
@@ -71,7 +73,7 @@ export default function ProductDescriptionGenerator() {
   };
 
   const handleCopyContent = () => {
-    navigator.clipboard.writeText(editorContent);
+    navigator.clipboard.writeText(generatedContent);
   };
 
   return (
@@ -95,17 +97,7 @@ export default function ProductDescriptionGenerator() {
                 }
               />
             </div>
-            <div>
-              <Label htmlFor="product-category">Product Category</Label>
-              <Input
-                id="product-category"
-                placeholder="e.g., Electronics, Clothing, Home Decor"
-                value={productOptions.productCategory}
-                onChange={(e) =>
-                  setProductOptions({ ...productOptions, productCategory: e.target.value })
-                }
-              />
-            </div>
+            
             <div>
               <Label htmlFor="key-features">Key Features (comma separated)</Label>
               <Input
@@ -117,34 +109,7 @@ export default function ProductDescriptionGenerator() {
                 }
               />
             </div>
-            <div>
-              <Label htmlFor="target-audience">Target Audience</Label>
-              <Input
-                id="target-audience"
-                placeholder="e.g., Music enthusiasts, professionals, students"
-                value={productOptions.targetAudience}
-                onChange={(e) =>
-                  setProductOptions({ ...productOptions, targetAudience: e.target.value })
-                }
-              />
-            </div>
-            <div>
-              <Label htmlFor="tone">Tone</Label>
-              <select
-                id="tone"
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-                value={productOptions.tone}
-                onChange={(e) =>
-                  setProductOptions({ ...productOptions, tone: e.target.value })
-                }
-              >
-                <option value="professional">Professional</option>
-                <option value="casual">Casual</option>
-                <option value="enthusiastic">Enthusiastic</option>
-                <option value="luxury">Luxury</option>
-                <option value="technical">Technical</option>
-              </select>
-            </div>
+           
             <div>
               <Label htmlFor="description-length">Description Length</Label>
               <select
@@ -155,9 +120,9 @@ export default function ProductDescriptionGenerator() {
                   setProductOptions({ ...productOptions, descriptionLength: e.target.value })
                 }
               >
-                <option value="short">Short (50-100 words)</option>
-                <option value="medium">Medium (100-200 words)</option>
-                <option value="long">Long (200+ words)</option>
+                <option value="50-100 words">Short (50-100 words)</option>
+                <option value="100-200 words">Medium (100-200 words)</option>
+                <option value="200+ words">Long (200+ words)</option>
               </select>
             </div>
             <div>
@@ -238,13 +203,8 @@ export default function ProductDescriptionGenerator() {
           <CardContent className="space-y-4">
             {generatedContent ? (
               <div className="space-y-4">
-                <div className="bg-gray-50 rounded-md min-h-[400px]">
-                  <TiptapEditor 
-                    content={editorContent}
-                    onUpdate={({ editor }) => {
-                      setEditorContent(editor.getHTML());
-                    }}
-                  />
+                <div className="bg-gray-50 rounded-md min-h-[400px] p-4 whitespace-pre-wrap">
+                  {generatedContent}
                 </div>
                 <div className="flex space-x-2">
                   <Button variant="outline" onClick={handleCopyContent}>

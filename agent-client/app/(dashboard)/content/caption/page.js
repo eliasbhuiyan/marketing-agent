@@ -38,9 +38,9 @@ export default function CaptionGenerator() {
         tone,
         platform,
       });
-
+      console.log(response.caption);
       // Set the generated content from the API response
-      setGeneratedContent(response.caption || response.content);
+      setGeneratedContent(response.caption);
     } catch (error) {
       console.error("Error generating content:", error);
       alert("Failed to generate content. Please try again.");

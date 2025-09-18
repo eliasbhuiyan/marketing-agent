@@ -301,6 +301,20 @@ class ApiClient {
         numKeywords,
         platform,
       }),
+      productDescription: ({
+      productName,
+      keyFeatures,
+      descriptionLength,
+      includeKeywords,
+      outputLanguage,
+    }) =>
+      this.post(`/ai/productdescription`, {
+        productName,
+        keyFeatures,
+        descriptionLength,
+        includeKeywords,
+        outputLanguage,
+      }),
   };
 }
 

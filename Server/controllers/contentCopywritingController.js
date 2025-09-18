@@ -1,4 +1,4 @@
-const { captionGeneratorPromptTemplate, blogGeneratorPromptTemplate, keywordHashtagGeneratorPromptTemplate } = require("../utils/promptTemplates");
+const { captionGeneratorPromptTemplate, blogGeneratorPromptTemplate, keywordHashtagGeneratorPromptTemplate, productDescriptionPromptTemplate } = require("../utils/promptTemplates");
 
 const captionGenerator = async (req, res) => {
   try {
@@ -111,4 +111,30 @@ const KeywordHashtagGenerator = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-module.exports = { captionGenerator, BlogGenerator, KeywordHashtagGenerator };
+const productDescriptionGenerator = async (req, res) => {
+  try {
+    const { productName, keyFeatures, descriptionLength, includeKeywords, outputLanguage } = req.body;
+
+    const prompt = productDescriptionPromptTemplate({ productName, keyFeatures, descriptionLength, includeKeywords, outputLanguage });
+
+    const aiResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.AI_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "tngtech/deepseek-r1t2-chimera:free",
+        messages: [{ role: "user", content: prompt }],
+      }),
+    });
+
+    const data = await aiResponse.json();
+    if(data.error) return res.status(500).json({message: "So many requests. Please try again."});
+    res.status(200).json({description: data.choices[0].message.content});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+module.exports = { captionGenerator, BlogGenerator, KeywordHashtagGenerator, productDescriptionGenerator };

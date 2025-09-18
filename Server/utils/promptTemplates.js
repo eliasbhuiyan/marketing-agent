@@ -120,4 +120,30 @@ const keywordHashtagGeneratorPromptTemplate = ({ industry, platform, numKeywords
   `;
 }
 
-module.exports = { posterDesignPromptTemplate, captionGeneratorPromptTemplate, blogGeneratorPromptTemplate, keywordHashtagGeneratorPromptTemplate };
+const productDescriptionPromptTemplate = ({ productName, keyFeatures, descriptionLength, includeKeywords, outputLanguage }) => {
+  return `
+  You are a professional e-commerce product description writer.  
+Write a compelling and SEO-optimized product description for the following product.  
+
+Details:  
+- Product Name: ${productName}  
+- Key Features: ${keyFeatures}  
+- Desired Length: ${descriptionLength} (short, medium, or long)  
+- Must Include Keywords: ${includeKeywords}  
+- Output Language: ${outputLanguage}  
+
+Requirements:  
+1. Start with a catchy opening sentence that highlights the main benefit.  
+2. Expand on the key features in a way that appeals to the target audience.  
+3. Naturally integrate the given keywords for SEO.  
+4. Maintain a persuasive, customer-focused tone.  
+5. Write the final output fully in ${outputLanguage}.  
+6. Write the description in a way that is easy to read and **promotional tone**.
+7. End with a soft call-to-action (e.g., “Order now and experience the difference!”).  
+
+Output only the description text.
+Do not include \`\`\`json or any other text, just pure text.
+  `;
+}
+
+module.exports = { posterDesignPromptTemplate, captionGeneratorPromptTemplate, blogGeneratorPromptTemplate, keywordHashtagGeneratorPromptTemplate, productDescriptionPromptTemplate };
