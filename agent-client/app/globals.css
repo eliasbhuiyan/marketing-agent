@@ -139,40 +139,50 @@ h4 {
 }
 
 /* =========================== */
-
-.glass-effect {
-  backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.1);
+.transition-container {
+	height: 60px;
+	overflow: hidden;
+  transform: translateZ(0);
+  /* ^ Needed for 'overflow: hidden' and 'transform' to work in Safari */
 }
 
-.blog-output {
-  max-height: 600px;
-  overflow-y: auto;
+.transition-container ul {
+  margin: 0;
+	padding: 0;
+	list-style-type: none;
+	animation: listSlider 12s cubic-bezier(0.7, 0.1, 0.1, 1) infinite;
+}
+.transition-container ul li{
+  margin: 0;
+	font-size: 2vw;
+	letter-spacing: -0.03em;
 }
 
-@keyframes pulse-dots {
-  0%,
-  20% {
-    opacity: 0;
-  }
-
-  50% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 0;
-  }
-}
-
-.loading-dot:nth-child(1) {
-  animation: pulse-dots 1.4s infinite;
-}
-
-.loading-dot:nth-child(2) {
-  animation: pulse-dots 1.4s infinite 0.2s;
-}
-
-.loading-dot:nth-child(3) {
-  animation: pulse-dots 1.4s infinite 0.4s;
+@keyframes listSlider {
+  /* Progress steps: 100 / # of steps excluding '100%'
+     'translateY' values: 100 / # of items */
+	0%, 7.143% { /* Item 1 */
+		transform: none;
+	}
+	14.286%, 21.429% { /* Item 2 */
+		transform: translateY(-12.5%);
+	}
+	28.572%, 35.715% { /* Item 3 */
+		transform: translateY(-25%);
+	}
+	42.858%, 50% { /* Item 4 */
+		transform: translateY(-37.5%);
+	}
+	57.144%, 64.287% { /* Item 5 */
+		transform: translateY(-50%);
+	}
+	71.43%, 78.573% { /* Item 6 */
+		transform: translateY(-62.5%);
+	}
+	85.716%, 92.859% { /* Item 7 */
+		transform: translateY(-75%);
+	}
+	100% { /* Item 8: Duplicate of 1 */
+		transform: translateY(-87.5%);
+	}
 }

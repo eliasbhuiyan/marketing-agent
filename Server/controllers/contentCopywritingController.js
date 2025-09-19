@@ -28,10 +28,11 @@ const captionGenerator = async (req, res) => {
       }
     );
     const data = await response.json();
+    if(data.error) return res.status(500).json({message: "So many requests. Please try again."});    
     res.status(200).json({ caption: data.choices[0].message.content });
 
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+  } catch (error) {    
+    res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -73,6 +74,7 @@ const BlogGenerator = async (req, res) => {
       }
     );
     const data = await response.json();
+    if(data.error) return res.status(500).json({message: "So many requests. Please try again."});
     res.status(200).json({ blog: data.choices[0].message.content });
     } catch (error) {
       res.status(500).json({ error: 'Internal server error' });

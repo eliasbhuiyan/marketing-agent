@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sparkles, MessageSquare, Heart, Zap } from "lucide-react";
 import apiClient from "@/lib/api";
+import LoaderAnim from "../../../../components/LoaderAnim";
 
 export default function CaptionGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -38,11 +39,12 @@ export default function CaptionGenerator() {
         tone,
         platform,
       });
-      console.log(response.caption);
+      console.log(response);
       // Set the generated content from the API response
       setGeneratedContent(response.caption);
     } catch (error) {
-      console.error("Error generating content:", error);
+      console.log(error);
+      
       alert("Failed to generate content. Please try again.");
     } finally {
       setIsGenerating(false);
@@ -59,7 +61,9 @@ export default function CaptionGenerator() {
       <div className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-white">Caption Generation Settings</CardTitle>
+            <CardTitle className="text-white">
+              Caption Generation Settings
+            </CardTitle>
             <CardDescription className="text-white">
               Configure your caption requirements
             </CardDescription>
@@ -83,7 +87,9 @@ export default function CaptionGenerator() {
               />
             </div>
             <div>
-              <Label htmlFor="target-audience" className="text-white">Target Audience</Label>
+              <Label htmlFor="target-audience" className="text-white">
+                Target Audience
+              </Label>
               <Input
                 id="target-audience"
                 className="text-white"
@@ -98,7 +104,9 @@ export default function CaptionGenerator() {
               />
             </div>
             <div>
-              <Label htmlFor="tone" className="text-white">Tone</Label>
+              <Label htmlFor="tone" className="text-white">
+                Tone
+              </Label>
               <select
                 id="tone"
                 className="w-full mt-1 p-2 border border-gray-300 rounded-md text-white"
@@ -107,15 +115,27 @@ export default function CaptionGenerator() {
                   setCaptionOptions({ ...captionOptions, tone: e.target.value })
                 }
               >
-                <option value="promotional" className="text-white">Promotional</option>
-                <option value="professional" className="text-white">Professional</option>
-                <option value="casual" className="text-white">Casual</option>
-                <option value="playful" className="text-white">Playful</option>
-                <option value="luxury" className="text-white">Luxury</option>
+                <option value="promotional" className="text-white">
+                  Promotional
+                </option>
+                <option value="professional" className="text-white">
+                  Professional
+                </option>
+                <option value="casual" className="text-white">
+                  Casual
+                </option>
+                <option value="playful" className="text-white">
+                  Playful
+                </option>
+                <option value="luxury" className="text-white">
+                  Luxury
+                </option>
               </select>
             </div>
             <div>
-              <Label htmlFor="platform" className="text-white">Platform</Label>
+              <Label htmlFor="platform" className="text-white">
+                Platform
+              </Label>
               <select
                 id="platform"
                 className="w-full mt-1 p-2 border border-gray-300 rounded-md text-white"
@@ -127,11 +147,21 @@ export default function CaptionGenerator() {
                   })
                 }
               >
-                <option value="facebook" className="text-white">Facebook</option>
-                <option value="instagram" className="text-white">Instagram</option>
-                <option value="linkedin" className="text-white">LinkedIn</option>
-                <option value="twitter" className="text-white">Twitter</option>
-                <option value="tiktok" className="text-white">TikTok</option>
+                <option value="facebook" className="text-white">
+                  Facebook
+                </option>
+                <option value="instagram" className="text-white">
+                  Instagram
+                </option>
+                <option value="linkedin" className="text-white">
+                  LinkedIn
+                </option>
+                <option value="twitter" className="text-white">
+                  Twitter
+                </option>
+                <option value="tiktok" className="text-white">
+                  TikTok
+                </option>
               </select>
             </div>
             <Button
@@ -166,22 +196,35 @@ export default function CaptionGenerator() {
                   Your AI-generated caption will appear here
                 </CardDescription>
               </div>
-              {
-                generatedContent && (
-                  <Button variant="outline" onClick={handleCopyContent} className="text-white">
-                    Copy Caption
-                  </Button>
-                )
-              }
+              {generatedContent && (
+                <Button
+                  variant="outline"
+                  onClick={handleCopyContent}
+                  className="text-white"
+                >
+                  Copy Caption
+                </Button>
+              )}
             </div>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 relative">
             {generatedContent ? (
               <div className="space-y-4">
                 <div className="p-4 pt-0 bg-white/10 rounded-md min-h-[200px] whitespace-pre-wrap text-white">
                   {generatedContent}
                 </div>
               </div>
+            ) : isGenerating ? (
+              <LoaderAnim>
+                <li>AI writing caption</li>
+                <li>It's almoast there</li>
+                <li>Thanks for your pations</li>
+                <li>Trendy caption is there</li>
+                <li>AI writing caption</li>
+                <li>It's almoast there</li>
+                <li>Thanks for your pations</li>
+                <li>Trendy caption is there</li>
+              </LoaderAnim>
             ) : (
               <div className="flex flex-col items-center justify-center h-[400px] rounded-md p-6 text-center">
                 <MessageSquare className="h-12 w-12 text-white mb-4" />
@@ -191,15 +234,21 @@ export default function CaptionGenerator() {
                 <div className="flex flex-col gap-2 mt-4 w-full max-w-xs">
                   <div className="flex items-center gap-2">
                     <Heart className="h-4 w-4 text-white" />
-                    <p className="text-sm text-white">Engaging and authentic captions</p>
+                    <p className="text-sm text-white">
+                      Engaging and authentic captions
+                    </p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Zap className="h-4 w-4 text-white" />
-                    <p className="text-sm text-white">Optimized for audience engagement</p>
+                    <p className="text-sm text-white">
+                      Optimized for audience engagement
+                    </p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Sparkles className="h-4 w-4 text-white" />
-                    <p className="text-sm text-white">Tailored to your brand voice</p>
+                    <p className="text-sm text-white">
+                      Tailored to your brand voice
+                    </p>
                   </div>
                 </div>
               </div>
