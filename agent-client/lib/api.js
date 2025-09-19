@@ -275,6 +275,20 @@ class ApiClient {
         platform,
       }),
 
+    blogheadings: ({
+      blogTopic,
+      writingStyle,
+      seoKeywords,
+      numberOfHeadings,
+      outputLanguage,
+    }) =>
+      this.post(`/ai/blogheadings`, {
+        blogTopic,
+        writingStyle,
+        seoKeywords,
+        numberOfHeadings,
+        outputLanguage,
+      }),
     blogGenerator: ({
       blogTopic,
       blogLength,

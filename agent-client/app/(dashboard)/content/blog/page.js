@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import apiClient from "@/lib/api";
 import dynamic from "next/dynamic";
+import BlogHeadingPopup from "@/components/BlogHeadingPopup";
 
 // Dynamically import TiptapEditor to avoid SSR issues
 const TiptapEditor = dynamic(() => import("@/components/TiptapEditor"), {
@@ -32,6 +33,9 @@ export default function BlogGenerator() {
   const [generatedContent, setGeneratedContent] = useState("");
   const [editorContent, setEditorContent] = useState("");
   const [apiError, setApiError] = useState(null);
+  const [showHeadingPopup, setShowHeadingPopup] = useState(false);
+  const [blogHeadings, setBlogHeadings] = useState([]);
+  const [finalHeadings, setFinalHeadings] = useState([]);
   const [blogOptions, setBlogOptions] = useState({
     blogTopic: "",
     blogLength: "medium",
@@ -49,16 +53,17 @@ export default function BlogGenerator() {
 
     try {
       // Call the blog generator API
-      const response = await apiClient.ai.blogGenerator({
+      const response = await apiClient.ai.blogheadings({
         blogTopic: blogOptions.blogTopic,
-        blogLength: blogOptions.blogLength,
         writingStyle: blogOptions.writingStyle,
         seoKeywords: blogOptions.seoKeywords,
         numberOfHeadings: blogOptions.numberOfHeadings,
         outputLanguage: blogOptions.outputLanguage,
       });
 
-      setGeneratedContent(response.blog);
+      // Store the headings and show the popup
+      setBlogHeadings(response.headings);
+      setShowHeadingPopup(true);
     } catch (error) {
       console.error("Error generating content:", error);
       setApiError(
@@ -77,6 +82,46 @@ export default function BlogGenerator() {
     // Handle blog scheduling
     console.log("Scheduling blog...", editorContent);
   };
+
+  const handleSaveHeadings = (customizedHeadings) => {
+    setFinalHeadings(customizedHeadings);
+    setShowHeadingPopup(false);
+    
+    // Generate the blog content with the customized headings
+    generateBlogWithHeadings(customizedHeadings);
+  };
+
+  const handleCancelHeadings = () => {
+    setShowHeadingPopup(false);
+    setBlogHeadings([]);
+  };
+
+  const generateBlogWithHeadings = async (headings) => {
+    setIsGenerating(true);
+    console.log(blogOptions); return
+    
+    try {
+      // Call the blog generator API with the customized headings
+      const response = await apiClient.ai.bloggenerator({
+        blogTopic: blogOptions.blogTopic,
+        blogLength: blogOptions.blogLength,
+        writingStyle: blogOptions.writingStyle,
+        seoKeywords: blogOptions.seoKeywords,
+        outputLanguage: blogOptions.outputLanguage,
+        headings: headings, // Pass the customized headings
+      });
+
+      setGeneratedContent(response.content);
+    } catch (error) {
+      console.error("Error generating blog content:", error);
+      setApiError(
+        error.message || "Failed to generate blog content. Please try again."
+      );
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   useEffect(() => {
     if (generatedContent) {
       setEditorContent(generatedContent);
@@ -84,6 +129,15 @@ export default function BlogGenerator() {
   }, [generatedContent]);
   return (
     <div className="space-y-6 text-white">
+      {/* Blog Heading Popup */}
+      <BlogHeadingPopup
+        isOpen={showHeadingPopup}
+        onClose={handleCancelHeadings}
+        headings={blogHeadings}
+        onSave={handleSaveHeadings}
+        onCancel={handleCancelHeadings}
+      />
+
       {/* Left Panel - Input Form */}
       <div className="space-y-6">
         <Card>
@@ -254,6 +308,36 @@ export default function BlogGenerator() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {finalHeadings.length > 0 && (
+              <div className="mb-6 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+                <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-blue-400" />
+                  Selected Blog Structure
+                </h3>
+                <div className="space-y-3">
+                  {finalHeadings.map((heading, index) => (
+                    <div key={index} className="flex items-center gap-3 p-3 bg-gray-700/50 rounded-lg">
+                      <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                        {index + 1}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-white font-medium">{heading.title}</p>
+                      </div>
+                      {heading.selectedImage && (
+                        <div className="w-12 h-12 rounded-lg overflow-hidden border border-gray-600">
+                          <img
+                            src={heading.selectedImage}
+                            alt={`Heading ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
             {generatedContent ? (
               <div className="space-y-4">
                 <div className="bg-white/10 rounded-md min-h-[400px] whitespace-pre-wrap">

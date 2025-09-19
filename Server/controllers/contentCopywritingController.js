@@ -36,6 +36,84 @@ const captionGenerator = async (req, res) => {
   }
 };
 
+const BlogHeadingImages = async (req, res) =>{
+  try {
+    const { blogTopic, writingStyle, seoKeywords, numberOfHeadings, outputLanguage } = req.body;
+
+    // 1️⃣ Build AI prompt
+    const prompt = `
+    You are an expert content, blog writer and SEO specialist.
+
+Generate ${numberOfHeadings} blog headings in ${outputLanguage} for the topic: "${blogTopic}" in ${writingStyle} style.
+Use the provided SEO focus keywords where relevant: ${seoKeywords}.
+
+Requirements:
+1. The headings must be suitable for a complete blog structure.
+2. Start with an **introductory heading** (e.g., "Introduction to …").
+3. Include **main discussion headings** that cover different aspects of the topic.
+4. End with a **conclusion or summary heading**.
+5. Headings should be engaging, easy to understand, and broad enough for 2–3 paragraphs of content.
+6. Do NOT make headings sound like technical reports or research papers.
+7. For each heading, also suggest 2–3 short keywords that can be used to search for relevant images.
+
+Respond strictly in JSON:
+{
+  "headings": [
+    {
+      "title": "Heading 1",
+      "imageKeywords": ["keyword1", "keyword2"]
+    }
+  ]
+}
+    `;
+
+    // 2️⃣ Call AI API (OpenRouter in your case)
+    const aiResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.AI_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "openrouter/sonoma-sky-alpha",
+        messages: [{ role: "user", content: prompt }],
+      }),
+    });
+
+    const aiData = await aiResponse.json();
+    
+    if(aiData.error) return res.status(500).json({message: "So many requests. Please try again."});
+
+     const cleaned = aiData.choices[0].message.content
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
+      
+    const parsedData = JSON.parse(cleaned);
+
+    // 3️⃣ Fetch images from Pixabay for each heading
+    const results = await Promise.all(
+      parsedData.headings.map(async (heading) => {
+        const query = heading.imageKeywords.join(" ");
+        const pixabayRes = await fetch(
+          `https://pixabay.com/api/?key=${process.env.PIXABAY_KEY}&q=${encodeURIComponent(query)}&image_type=photo&per_page=10`
+        );
+        const pixabayData = await pixabayRes.json();
+
+        return {
+          title: heading.title,
+          images: pixabayData.hits.map((img) => img.webformatURL),
+        };
+      })
+    );
+    res.status(200).json({ headings: results });
+
+  } catch (error) {
+    console.error("Error in generateHeadingsController:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
 const BlogGenerator = async (req, res) => {
   try {
     const { blogTopic, blogLength, writingStyle, seoKeywords, numberOfHeadings, outputLanguage } = req.body;
@@ -139,4 +217,4 @@ const productDescriptionGenerator = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-module.exports = { captionGenerator, BlogGenerator, KeywordHashtagGenerator, productDescriptionGenerator };
+module.exports = { captionGenerator, BlogGenerator, KeywordHashtagGenerator, productDescriptionGenerator, BlogHeadingImages };

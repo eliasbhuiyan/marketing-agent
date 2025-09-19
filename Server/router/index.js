@@ -42,6 +42,7 @@ const {
 } = require("../controllers/posterDesignController");
 const {
   captionGenerator,
+  BlogHeadingImages,
   BlogGenerator,
   KeywordHashtagGenerator,
   productDescriptionGenerator,
@@ -92,6 +93,7 @@ router.post(
   posterDesignController
 );
 router.post("/captiongenerator", authMiddleware, captionGenerator);
+router.post("/blogheadings", authMiddleware, BlogHeadingImages);
 router.post("/bloggenerator", authMiddleware, BlogGenerator);
 router.post(
   "/keywordhashtaggenerator",
