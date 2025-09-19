@@ -144,7 +144,7 @@ export default function ProductDescriptionGenerator() {
                 <p className="text-xs">✅</p>
                 <Label htmlFor="include-benefits">Include Benefits</Label>
               </div>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-white/80">
                 Highlight how the product benefits the customer
               </p>
             </div>
@@ -153,7 +153,7 @@ export default function ProductDescriptionGenerator() {
                 <p className="text-xs">✅</p>
                 <Label htmlFor="include-cta">Include Call-to-Action</Label>
               </div>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-white/80">
                 Add a compelling call-to-action at the end
               </p>
             </div>
@@ -195,7 +195,7 @@ export default function ProductDescriptionGenerator() {
           <CardContent className="space-y-4">
             {generatedContent ? (
               <div className="space-y-4">
-                <div className="bg-gray-50 rounded-md min-h-[400px] p-4 whitespace-pre-wrap">
+                <div className="bg-white/10 rounded-md min-h-[400px] p-4 pt-0 whitespace-pre-wrap">
                   {generatedContent}
                 </div>
                 <div className="flex space-x-2">
@@ -210,23 +210,23 @@ export default function ProductDescriptionGenerator() {
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center h-[400px] bg-gray-50 rounded-md p-6 text-center">
-                <ShoppingBag className="h-12 w-12 text-gray-400 mb-4" />
-                <p className="text-gray-500 mb-2">
+              <div className="flex flex-col items-center justify-center h-[400px] rounded-md p-6 text-center">
+                <ShoppingBag className="h-12 w-12 mb-4" />
+                <p className="text-white mb-2">
                   Fill in the form and click Generate to create a product description
                 </p>
                 <div className="flex flex-col gap-2 mt-4 w-full max-w-xs">
                   <div className="flex items-center gap-2">
-                    <Tag className="h-4 w-4 text-gray-400" />
-                    <p className="text-sm text-gray-400">Compelling product features</p>
+                    <Tag className="h-4 w-4 text-white" />
+                    <p className="text-sm text-white">Compelling product features</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Star className="h-4 w-4 text-gray-400" />
-                    <p className="text-sm text-gray-400">Persuasive benefits</p>
+                    <Star className="h-4 w-4 text-white" />
+                    <p className="text-sm text-white">Persuasive benefits</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <ShoppingBag className="h-4 w-4 text-gray-400" />
-                    <p className="text-sm text-gray-400">SEO-optimized content</p>
+                    <ShoppingBag className="h-4 w-4 text-white" />
+                    <p className="text-sm text-white">SEO-optimized content</p>
                   </div>
                 </div>
               </div>

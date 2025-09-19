@@ -1,12 +1,12 @@
-'use client';
-import { useState } from 'react';
-import { usePathname } from 'next/navigation';
-import Link from 'next/link';
-import { 
-  LayoutDashboard, 
-  Image, 
-  FileText, 
-  TrendingUp, 
+"use client";
+import { useState } from "react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import {
+  LayoutDashboard,
+  Image,
+  FileText,
+  TrendingUp,
   Calendar,
   Palette,
   Settings,
@@ -14,29 +14,29 @@ import {
   X,
   LogOut,
   Youtube,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Posters & Designs', href: '/posters', icon: Image },
-  { 
-    name: 'Content & Copywriting', 
-    href: '/content', 
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Posters & Designs", href: "/posters", icon: Image },
+  {
+    name: "Content & Copywriting",
+    href: "/content",
     icon: FileText,
     children: [
-      { name: 'Captions', href: '/content/caption' },
-      { name: 'Blogs', href: '/content/blog' },
-      { name: 'Email Marketing', href: '/content/email' },
-      { name: 'Hashtags & Keywords', href: '/content/hashtag' },
-      { name: 'Product Description', href: '/content/product' },
-    ]
+      { name: "Captions", href: "/content/caption" },
+      { name: "Blogs", href: "/content/blog" },
+      { name: "Email Marketing", href: "/content/email" },
+      { name: "Hashtags & Keywords", href: "/content/hashtag" },
+      { name: "Product Description", href: "/content/product" },
+    ],
   },
-  { name: 'Trend Analyzer', href: '/trends', icon: TrendingUp },
-  { name: 'YouTube Marketing', href: '/youtube', icon: Youtube },
-  { name: 'Social Media Scheduler', href: '/scheduler', icon: Calendar },
-  { name: 'Templates Marketplace', href: '/templates', icon: Palette },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: "Trend Analyzer", href: "/trends", icon: TrendingUp },
+  { name: "YouTube Marketing", href: "/youtube", icon: Youtube },
+  { name: "Social Media Scheduler", href: "/scheduler", icon: Calendar },
+  { name: "Templates Marketplace", href: "/templates", icon: Palette },
+  { name: "Settings", href: "/settings", icon: Settings },
 ];
 
 export default function DashboardLayout({ children }) {
@@ -44,41 +44,52 @@ export default function DashboardLayout({ children }) {
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Mobile sidebar */}
-      <div className={cn(
-        "fixed inset-0 z-50 lg:hidden",
-        sidebarOpen ? "block" : "hidden"
-      )}>
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setSidebarOpen(false)} />
-        <div className="fixed inset-y-0 left-0 flex w-64 flex-col bg-white">
+      <div
+        className={cn(
+          "fixed inset-0 z-50 lg:hidden",
+          sidebarOpen ? "block" : "hidden"
+        )}
+      >
+        <div
+          className="fixed inset-0 bg-gray-600 bg-opacity-75"
+          onClick={() => setSidebarOpen(false)}
+        />
+        <div className="fixed inset-y-0 left-0 flex w-64 flex-col bg-[rgba(255,255,255,0.1)]">
           <div className="flex h-16 items-center justify-between px-4">
-            <h1 className="text-xl font-bold text-gray-900">Marketing Agent</h1>
+            <h1 className="text-xl font-bold text-white">Marketing Agent</h1>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setSidebarOpen(false)}
             >
-              <X className="h-6 w-6" />
+              <X className="h-6 w-6 text-white" />
             </Button>
           </div>
           <nav className="flex-1 space-y-1 px-2 py-4">
             {navigation.map((item) => {
-              const isActive = pathname === item.href || 
-                (item.children && item.children.some(child => pathname.startsWith(child.href.split('?')[0])));
-              
+              const isActive =
+                pathname === item.href ||
+                (item.children &&
+                  item.children.some((child) =>
+                    pathname.startsWith(child.href.split("?")[0])
+                  ));
+
               return item.children ? (
                 <div key={item.name} className="space-y-1">
                   <button
                     onClick={() => {
-                      const dropdown = document.getElementById(`dropdown-${item.name}`);
-                      dropdown.classList.toggle('hidden');
+                      const dropdown = document.getElementById(
+                        `dropdown-${item.name}`
+                      );
+                      dropdown.classList.toggle("hidden");
                     }}
                     className={cn(
                       "w-full group flex items-center justify-between px-2 py-2 text-sm font-medium rounded-md",
                       isActive
-                        ? "bg-blue-100 text-blue-700"
-                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                        ? "bg-[#ffffff3b] text-white"
+                        : "text-white hover:bg-[#ffffff3b] hover:text-white"
                     )}
                   >
                     <div className="flex items-center">
@@ -101,10 +112,11 @@ export default function DashboardLayout({ children }) {
                   </button>
                   <div
                     id={`dropdown-${item.name}`}
-                    className={`pl-8 space-y-1 ${isActive ? '' : 'hidden'}`}
+                    className={`pl-8 space-y-1 ${isActive ? "" : "hidden"}`}
                   >
                     {item.children.map((child) => {
-                      const childIsActive = pathname + window.location.search === child.href;
+                      const childIsActive =
+                        pathname + window.location.search === child.href;
                       return (
                         <Link
                           key={child.name}
@@ -112,8 +124,8 @@ export default function DashboardLayout({ children }) {
                           className={cn(
                             "block px-2 py-2 text-sm font-medium rounded-md",
                             childIsActive
-                              ? "text-blue-700"
-                              : "text-gray-600 hover:text-gray-900"
+                              ? "text-white"
+                              : "text-white/80 hover:text-white"
                           )}
                         >
                           {child.name}
@@ -129,8 +141,8 @@ export default function DashboardLayout({ children }) {
                   className={cn(
                     "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
                     isActive
-                      ? "bg-blue-100 text-blue-700"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      ? "bg-[#ffffff3b] text-white"
+                      : "text-white hover:bg-[#ffffff3b] hover:text-white"
                   )}
                 >
                   <item.icon className="mr-3 h-5 w-5" />
@@ -139,8 +151,8 @@ export default function DashboardLayout({ children }) {
               );
             })}
           </nav>
-          <div className="border-t border-gray-200 p-4">
-            <Button variant="ghost" className="w-full justify-start">
+          <div className="border-t border-[rgba(255, 255, 255, 0.233)] p-4">
+            <Button variant="ghost" className="w-full justify-start text-white">
               <LogOut className="mr-3 h-5 w-5" />
               Sign Out
             </Button>
@@ -150,27 +162,33 @@ export default function DashboardLayout({ children }) {
 
       {/* Desktop sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
-        <div className="flex flex-col flex-grow bg-white border-r border-gray-200">
+        <div className="flex flex-col flex-grow bg-[rgba(255,255,255,0.1)] border-r border-[#ffffff3b]">
           <div className="flex h-16 items-center px-4">
-            <h1 className="text-xl font-bold text-gray-900">Marketing Agent</h1>
+            <h1 className="text-xl font-bold text-white">Marketing Agent</h1>
           </div>
           <nav className="flex-1 space-y-1 px-2 py-4">
             {navigation.map((item) => {
-              const isActive = pathname === item.href || 
-                (item.children && item.children.some(child => pathname.startsWith(child.href.split('?')[0])));
-              
+              const isActive =
+                pathname === item.href ||
+                (item.children &&
+                  item.children.some((child) =>
+                    pathname.startsWith(child.href.split("?")[0])
+                  ));
+
               return item.children ? (
                 <div key={item.name} className="space-y-1">
                   <button
                     onClick={() => {
-                      const dropdown = document.getElementById(`mobile-dropdown-${item.name}`);
-                      dropdown.classList.toggle('hidden');
+                      const dropdown = document.getElementById(
+                        `mobile-dropdown-${item.name}`
+                      );
+                      dropdown.classList.toggle("hidden");
                     }}
                     className={cn(
                       "w-full group flex items-center justify-between px-2 py-2 text-sm font-medium rounded-md",
                       isActive
-                        ? "bg-blue-100 text-blue-700"
-                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                        ? "bg-[#ffffff3b] text-white"
+                        : "text-white hover:bg-[#ffffff3b] hover:text-white"
                     )}
                   >
                     <div className="flex items-center">
@@ -193,10 +211,11 @@ export default function DashboardLayout({ children }) {
                   </button>
                   <div
                     id={`mobile-dropdown-${item.name}`}
-                    className={`pl-8 space-y-1 ${isActive ? '' : 'hidden'}`}
+                    className={`pl-8 space-y-1 ${isActive ? "" : "hidden"}`}
                   >
                     {item.children.map((child) => {
-                      const childIsActive = pathname + window.location.search === child.href;
+                      const childIsActive =
+                        pathname + window.location.search === child.href;
                       return (
                         <Link
                           key={child.name}
@@ -204,8 +223,8 @@ export default function DashboardLayout({ children }) {
                           className={cn(
                             "block px-2 py-2 text-sm font-medium rounded-md",
                             childIsActive
-                              ? "text-blue-700"
-                              : "text-gray-600 hover:text-gray-900"
+                              ? "text-white"
+                              : "text-white/80 hover:text-white"
                           )}
                         >
                           {child.name}
@@ -221,8 +240,8 @@ export default function DashboardLayout({ children }) {
                   className={cn(
                     "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
                     isActive
-                      ? "bg-blue-100 text-blue-700"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      ? "bg-[#ffffff3b] text-white"
+                      : "text-white hover:bg-[#ffffff3b] hover:text-white"
                   )}
                 >
                   <item.icon className="mr-3 h-5 w-5" />
@@ -231,8 +250,8 @@ export default function DashboardLayout({ children }) {
               );
             })}
           </nav>
-          <div className="border-t border-gray-200 p-4">
-            <Button variant="ghost" className="w-full justify-start">
+          <div className="border-t border-[#ffffff3b] p-4">
+            <Button variant="ghost" className="w-full justify-start text-white">
               <LogOut className="mr-3 h-5 w-5" />
               Sign Out
             </Button>
@@ -243,11 +262,11 @@ export default function DashboardLayout({ children }) {
       {/* Main content */}
       <div className="lg:pl-64">
         {/* Top bar */}
-        <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+        <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-[#ffffff3b] bg-[rgba(255,255,255,0.1)] px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
           <Button
             variant="ghost"
             size="sm"
-            className="lg:hidden"
+            className="lg:hidden text-white"
             onClick={() => setSidebarOpen(true)}
           >
             <Menu className="h-6 w-6" />
@@ -266,7 +285,7 @@ export default function DashboardLayout({ children }) {
 
         {/* Page content */}
         <main className="py-6">
-          <div className="mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto px-4 sm:px-6 lg:px-8 text-white">
             {children}
           </div>
         </main>

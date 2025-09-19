@@ -83,17 +83,17 @@ export default function BlogGenerator() {
     }
   }, [generatedContent]);
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-white">
       {/* Left Panel - Input Form */}
       <div className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Blog Generation Settings</CardTitle>
-            <CardDescription>Configure your blog requirements</CardDescription>
+            <CardTitle className="text-white">Blog Generation Settings</CardTitle>
+            <CardDescription className="text-white">Configure your blog requirements</CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-3 gap-4">
             <div>
-              <Label htmlFor="blog-topic">Blog Topic</Label>
+              <Label htmlFor="blog-topic" className="text-white">Blog Topic</Label>
               <Input
                 id="blog-topic"
                 placeholder="e.g., The Future of AI in Marketing"
@@ -101,13 +101,14 @@ export default function BlogGenerator() {
                 onChange={(e) =>
                   setBlogOptions({ ...blogOptions, blogTopic: e.target.value })
                 }
+                className="text-white"
               />
             </div>
             <div>
-              <Label htmlFor="blog-length">Blog Length</Label>
+              <Label htmlFor="blog-length" className="text-white">Blog Length</Label>
               <select
                 id="blog-length"
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                className="w-full mt-1 p-2 border border-gray-300 rounded-md text-white bg-transparent"
                 value={blogOptions.blogLength}
                 onChange={(e) =>
                   setBlogOptions({ ...blogOptions, blogLength: e.target.value })
@@ -119,10 +120,10 @@ export default function BlogGenerator() {
               </select>
             </div>
             <div>
-              <Label htmlFor="blog-length">Number of headings</Label>
+              <Label htmlFor="blog-length" className="text-white">Number of headings</Label>
               <select
                 id="number-of-headings"
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                className="w-full mt-1 p-2 border border-gray-300 rounded-md text-white bg-transparent"
                 value={blogOptions.numberOfHeadings}
                 onChange={(e) =>
                   setBlogOptions({
@@ -140,10 +141,10 @@ export default function BlogGenerator() {
               </select>
             </div>
             <div>
-              <Label htmlFor="writing-style">Writing Style</Label>
+              <Label htmlFor="writing-style" className="text-white">Writing Style</Label>
               <select
                 id="writing-style"
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                className="w-full mt-1 p-2 border border-gray-300 rounded-md text-white bg-transparent"
                 value={blogOptions.writingStyle}
                 onChange={(e) =>
                   setBlogOptions({
@@ -159,7 +160,7 @@ export default function BlogGenerator() {
               </select>
             </div>
             <div>
-              <Label htmlFor="seo-keywords">SEO Focus Keywords</Label>
+              <Label htmlFor="seo-keywords" className="text-white">SEO Focus Keywords</Label>
               <Input
                 id="seo-keywords"
                 placeholder="e.g., marketing, AI, content creation"
@@ -170,10 +171,11 @@ export default function BlogGenerator() {
                     seoKeywords: e.target.value,
                   })
                 }
+                className="text-white"
               />
             </div>
             <div>
-              <Label htmlFor="output-language">Output Language</Label>
+              <Label htmlFor="output-language" className="text-white">Output Language</Label>
               <Input
                 id="output-language"
                 placeholder="e.g., Bangla, English, Spanish, French"
@@ -184,34 +186,35 @@ export default function BlogGenerator() {
                     outputLanguage: e.target.value,
                   })
                 }
+                className="text-white"
               />
             </div>
             <div>
               <div className="flex gap-1 items-center">
-                <p className="text-xs">✅</p>
-                <Label htmlFor="human-like">
+                <p className="text-xs text-white">✅</p>
+                <Label htmlFor="human-like" className="text-white">
                   FAQ (Frequently Asked Questions)
                 </Label>
               </div>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-white">
                 Add frequently asked questions (FAQs) to the blog.
               </p>
             </div>
             <div>
               <div className="flex gap-1 items-center">
-                <p className="text-xs">✅</p>
-                <Label htmlFor="human-like">Human like content</Label>
+                <p className="text-xs text-white">✅</p>
+                <Label htmlFor="human-like" className="text-white">Human like content</Label>
               </div>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-white">
                 Generate content that is more human like.
               </p>
             </div>
             <div>
               <div className="flex gap-1 items-center">
-                <p className="text-xs">✅</p>
-                <Label htmlFor="human-like">Image in the blog post</Label>
+                <p className="text-xs text-white">✅</p>
+                <Label htmlFor="human-like" className="text-white">Image in the blog post</Label>
               </div>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-white">
                 Add pixabay images to the blog post.
               </p>
             </div>
@@ -221,7 +224,7 @@ export default function BlogGenerator() {
               )}
               <Button
                 onClick={handleGenerateContent}
-                className="w-fit"
+                className="w-fit text-white"
                 disabled={isGenerating}
               >
                 {isGenerating ? (
@@ -245,15 +248,15 @@ export default function BlogGenerator() {
       <div className="space-y-6">
         <Card className="h-full">
           <CardHeader>
-            <CardTitle>Generated Blog</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-white">Generated Blog</CardTitle>
+            <CardDescription className="text-white">
               Edit your AI-generated blog content
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {generatedContent ? (
               <div className="space-y-4">
-                <div className="bg-gray-50 rounded-md min-h-[400px]">
+                <div className="bg-white/10 rounded-md min-h-[400px] whitespace-pre-wrap">
                   <TiptapEditor
                     content={editorContent}
                     onUpdate={({ editor }) => {
@@ -262,38 +265,38 @@ export default function BlogGenerator() {
                   />
                 </div>
                 <div className="flex space-x-2">
-                  <Button variant="outline" onClick={handleCopyContent}>
+                  <Button variant="outline" onClick={handleCopyContent} className="text-white">
                     <Copy className="mr-2 h-4 w-4" />
                     Copy Blog
                   </Button>
-                  <Button variant="outline" onClick={handleScheduleBlog}>
+                  <Button variant="outline" onClick={handleScheduleBlog} className="text-white">
                     <Calendar className="mr-2 h-4 w-4" />
                     Schedule Post
                   </Button>
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center h-[400px] bg-gray-50 rounded-md p-6 text-center">
-                <FileText className="h-12 w-12 text-gray-400 mb-4" />
-                <p className="text-gray-500 mb-2">
+              <div className="flex flex-col items-center justify-center h-[400px] rounded-md p-6 text-center">
+                <FileText className="h-12 w-12 text-white mb-4" />
+                <p className="text-white mb-2">
                   Fill in the form and click Generate to create your blog post
                 </p>
                 <div className="flex flex-col gap-2 mt-4 w-full max-w-xs">
                   <div className="flex items-center gap-2">
-                    <PenTool className="h-4 w-4 text-gray-400" />
-                    <p className="text-sm text-gray-400">
+                    <PenTool className="h-4 w-4 text-white" />
+                    <p className="text-sm text-white">
                       SEO-optimized content
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <BarChart className="h-4 w-4 text-gray-400" />
-                    <p className="text-sm text-gray-400">
+                    <BarChart className="h-4 w-4 text-white" />
+                    <p className="text-sm text-white">
                       Engaging and informative articles
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-gray-400" />
-                    <p className="text-sm text-gray-400">
+                    <Sparkles className="h-4 w-4 text-white" />
+                    <p className="text-sm text-white">
                       Tailored to your target audience
                     </p>
                   </div>

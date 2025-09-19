@@ -59,19 +59,19 @@ export default function CaptionGenerator() {
       <div className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Caption Generation Settings</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-white">Caption Generation Settings</CardTitle>
+            <CardDescription className="text-white">
               Configure your caption requirements
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="product-description">
+              <Label htmlFor="product-description" className="text-white">
                 Product/Service Description
               </Label>
               <textarea
                 id="product-description"
-                className="w-full mt-1 p-3 border border-gray-300 rounded-md h-24 resize-none"
+                className="w-full mt-1 p-3 border border-gray-300 rounded-md h-24 resize-none text-white"
                 placeholder="Describe your product or service..."
                 value={captionOptions.productDescription}
                 onChange={(e) =>
@@ -83,9 +83,10 @@ export default function CaptionGenerator() {
               />
             </div>
             <div>
-              <Label htmlFor="target-audience">Target Audience</Label>
+              <Label htmlFor="target-audience" className="text-white">Target Audience</Label>
               <Input
                 id="target-audience"
+                className="text-white"
                 placeholder="e.g., Young professionals, Tech enthusiasts"
                 value={captionOptions.targetAudience}
                 onChange={(e) =>
@@ -97,27 +98,27 @@ export default function CaptionGenerator() {
               />
             </div>
             <div>
-              <Label htmlFor="tone">Tone</Label>
+              <Label htmlFor="tone" className="text-white">Tone</Label>
               <select
                 id="tone"
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                className="w-full mt-1 p-2 border border-gray-300 rounded-md text-white"
                 value={captionOptions.tone}
                 onChange={(e) =>
                   setCaptionOptions({ ...captionOptions, tone: e.target.value })
                 }
               >
-                <option value="promotional">Promotional</option>
-                <option value="professional">Professional</option>
-                <option value="casual">Casual</option>
-                <option value="playful">Playful</option>
-                <option value="luxury">Luxury</option>
+                <option value="promotional" className="text-white">Promotional</option>
+                <option value="professional" className="text-white">Professional</option>
+                <option value="casual" className="text-white">Casual</option>
+                <option value="playful" className="text-white">Playful</option>
+                <option value="luxury" className="text-white">Luxury</option>
               </select>
             </div>
             <div>
-              <Label htmlFor="platform">Platform</Label>
+              <Label htmlFor="platform" className="text-white">Platform</Label>
               <select
                 id="platform"
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                className="w-full mt-1 p-2 border border-gray-300 rounded-md text-white"
                 value={captionOptions.platform}
                 onChange={(e) =>
                   setCaptionOptions({
@@ -126,16 +127,16 @@ export default function CaptionGenerator() {
                   })
                 }
               >
-                <option value="facebook">Facebook</option>
-                <option value="instagram">Instagram</option>
-                <option value="linkedin">LinkedIn</option>
-                <option value="twitter">Twitter</option>
-                <option value="tiktok">TikTok</option>
+                <option value="facebook" className="text-white">Facebook</option>
+                <option value="instagram" className="text-white">Instagram</option>
+                <option value="linkedin" className="text-white">LinkedIn</option>
+                <option value="twitter" className="text-white">Twitter</option>
+                <option value="tiktok" className="text-white">TikTok</option>
               </select>
             </div>
             <Button
               onClick={handleGenerateContent}
-              className="w-full"
+              className="w-full text-white"
               disabled={isGenerating}
             >
               {isGenerating ? (
@@ -160,14 +161,14 @@ export default function CaptionGenerator() {
           <CardHeader>
             <div className="flex justify-between items-center">
               <div>
-                <CardTitle>Generated Caption</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-white">Generated Caption</CardTitle>
+                <CardDescription className="text-white">
                   Your AI-generated caption will appear here
                 </CardDescription>
               </div>
               {
                 generatedContent && (
-                  <Button variant="outline" onClick={handleCopyContent}>
+                  <Button variant="outline" onClick={handleCopyContent} className="text-white">
                     Copy Caption
                   </Button>
                 )
@@ -177,28 +178,28 @@ export default function CaptionGenerator() {
           <CardContent className="space-y-4">
             {generatedContent ? (
               <div className="space-y-4">
-                <div className="bg-gray-50 p-4 rounded-md min-h-[200px] whitespace-pre-wrap">
+                <div className="p-4 pt-0 bg-white/10 rounded-md min-h-[200px] whitespace-pre-wrap text-white">
                   {generatedContent}
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center h-[400px] bg-gray-50 rounded-md p-6 text-center">
-                <MessageSquare className="h-12 w-12 text-gray-400 mb-4" />
-                <p className="text-gray-500 mb-2">
+              <div className="flex flex-col items-center justify-center h-[400px] rounded-md p-6 text-center">
+                <MessageSquare className="h-12 w-12 text-white mb-4" />
+                <p className="text-white mb-2">
                   Fill in the form and click Generate to create your caption
                 </p>
                 <div className="flex flex-col gap-2 mt-4 w-full max-w-xs">
                   <div className="flex items-center gap-2">
-                    <Heart className="h-4 w-4 text-gray-400" />
-                    <p className="text-sm text-gray-400">Engaging and authentic captions</p>
+                    <Heart className="h-4 w-4 text-white" />
+                    <p className="text-sm text-white">Engaging and authentic captions</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-gray-400" />
-                    <p className="text-sm text-gray-400">Optimized for audience engagement</p>
+                    <Zap className="h-4 w-4 text-white" />
+                    <p className="text-sm text-white">Optimized for audience engagement</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-gray-400" />
-                    <p className="text-sm text-gray-400">Tailored to your brand voice</p>
+                    <Sparkles className="h-4 w-4 text-white" />
+                    <p className="text-sm text-white">Tailored to your brand voice</p>
                   </div>
                 </div>
               </div>

@@ -17,8 +17,8 @@ export default function ContentPage({children}) {
     <div className="space-y-8">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900">Content & Copywriting</h1>
-        <p className="text-gray-600 mt-2 max-w-2xl m-auto">{descriptions[currentRoute]}</p>
+        <h1 className="text-3xl font-bold text-white">Content & Copywriting</h1>
+        <p className="text-white/80 mt-2 max-w-2xl m-auto">{descriptions[currentRoute]}</p>
       </div>
       {children}
       {/* Content Publisher */}

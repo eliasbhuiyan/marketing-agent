@@ -101,7 +101,7 @@ export default function HashtagGenerator() {
                 <Label htmlFor="hashtag-platform">Platform</Label>
                 <select
                   id="hashtag-platform"
-                  className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                  className="w-full mt-1 p-2 border border-gray-300 rounded-md bg-transparent"
                   value={hashtagOptions.platform}
                   onChange={(e) =>
                     setHashtagOptions({
@@ -172,7 +172,7 @@ export default function HashtagGenerator() {
               <div className="grid grid-cols-3 gap-x-8 space-y-6">
                 {/* Frequent Hashtags & Keywords */}
                 <div className="space-y-2">
-                  <h3 className="font-semibold text-green-600 flex justify-between">
+                  <h3 className="font-semibold text-white border-b pb-1 flex justify-between">
                     <span>
                       Frequently Used (
                       {generatedContent.frequent?.keywords.length})
@@ -195,7 +195,7 @@ export default function HashtagGenerator() {
 
                 {/* Average Hashtags & Keywords */}
                 <div className="space-y-2">
-                  <h3 className="font-semibold text-blue-600 flex justify-between">
+                  <h3 className="font-semibold text-white border-b pb-1 flex justify-between">
                     <span>
                       Average Popularity (
                       {generatedContent.average?.keywords.length})
@@ -218,7 +218,7 @@ export default function HashtagGenerator() {
 
                 {/* Rare Hashtags & Keywords */}
                 <div className="space-y-2">
-                  <h3 className="font-semibold text-purple-600 flex justify-between">
+                  <h3 className="font-semibold text-white border-b pb-1 flex justify-between">
                     <span>
                       Niche/Rare ({generatedContent.rare?.keywords.length})
                     </span>
@@ -250,27 +250,27 @@ export default function HashtagGenerator() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-center bg-gray-50 rounded-md">
-                <div className="flex flex-col items-center justify-center bg-gray-50 rounded-md p-6 text-center">
-                  <Hash className="h-12 w-12 text-gray-400 mb-4" />
-                  <p className="text-gray-500 mb-2">
+              <div className="flex items-center justify-center rounded-md">
+                <div className="flex flex-col items-center justify-center rounded-md p-6 text-center">
+                  <Hash className="h-12 w-12 text-white mb-4" />
+                  <p className="text-white mb-2">
                     Fill in the form and click Generate to create hashtags and
                     keywords
                   </p>
                   <div className="flex flex-col gap-2 mt-4 w-full max-w-xs">
                     <div className="flex items-center gap-2">
-                      <Hash className="h-4 w-4 text-gray-400" />
-                      <p className="text-sm text-gray-400">Trending hashtags</p>
+                      <Hash className="h-4 w-4 text-white" />
+                      <p className="text-sm text-white">Trending hashtags</p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Target className="h-4 w-4 text-gray-400" />
-                      <p className="text-sm text-gray-400">
+                      <Target className="h-4 w-4 text-white" />
+                      <p className="text-sm text-white">
                         Niche-specific keywords
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <BarChart className="h-4 w-4 text-gray-400" />
-                      <p className="text-sm text-gray-400">
+                      <BarChart className="h-4 w-4 text-white" />
+                      <p className="text-sm text-white">
                         Competition-based categorization
                       </p>
                     </div>
