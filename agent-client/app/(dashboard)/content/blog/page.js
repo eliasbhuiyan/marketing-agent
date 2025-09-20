@@ -38,7 +38,7 @@ export default function BlogGenerator() {
   const [finalHeadings, setFinalHeadings] = useState([]);
   const [blogOptions, setBlogOptions] = useState({
     blogTopic: "",
-    blogLength: "medium",
+    blogLength: "",
     writingStyle: "informative",
     seoKeywords: "",
     numberOfHeadings: "2",
@@ -49,8 +49,6 @@ export default function BlogGenerator() {
 
   const handleGenerateContent = async () => {
     setIsGenerating(true);
-    console.log(blogOptions);
-
     try {
       // Call the blog generator API
       const response = await apiClient.ai.blogheadings({
@@ -60,8 +58,7 @@ export default function BlogGenerator() {
         numberOfHeadings: blogOptions.numberOfHeadings,
         outputLanguage: blogOptions.outputLanguage,
       });
-
-      // Store the headings and show the popup
+      
       setBlogHeadings(response.headings);
       setShowHeadingPopup(true);
     } catch (error) {
@@ -97,23 +94,20 @@ export default function BlogGenerator() {
   };
 
   const generateBlogWithHeadings = async (headings) => {
-    setIsGenerating(true);
-    console.log(blogOptions); return
-    
+    setIsGenerating(true);    
     try {
       // Call the blog generator API with the customized headings
-      const response = await apiClient.ai.bloggenerator({
+      const response = await apiClient.ai.blogGenerator({
         blogTopic: blogOptions.blogTopic,
         blogLength: blogOptions.blogLength,
         writingStyle: blogOptions.writingStyle,
         seoKeywords: blogOptions.seoKeywords,
         outputLanguage: blogOptions.outputLanguage,
         headings: headings, // Pass the customized headings
-      });
-
-      setGeneratedContent(response.content);
+      });      
+      setGeneratedContent(response.blog);
     } catch (error) {
-      console.error("Error generating blog content:", error);
+      console.log("Error generating blog content:", error);
       setApiError(
         error.message || "Failed to generate blog content. Please try again."
       );
@@ -308,7 +302,7 @@ export default function BlogGenerator() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {finalHeadings.length > 0 && (
+            {(finalHeadings.length > 0 && !generatedContent) && (
               <div className="mb-6 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
                 <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
                   <Sparkles className="h-4 w-4 text-blue-400" />
@@ -323,10 +317,10 @@ export default function BlogGenerator() {
                       <div className="flex-1">
                         <p className="text-white font-medium">{heading.title}</p>
                       </div>
-                      {heading.selectedImage && (
+                      {heading.imageLink && (
                         <div className="w-12 h-12 rounded-lg overflow-hidden border border-gray-600">
                           <img
-                            src={heading.selectedImage}
+                            src={heading.imageLink}
                             alt={`Heading ${index + 1}`}
                             className="w-full h-full object-cover"
                           />
@@ -337,7 +331,6 @@ export default function BlogGenerator() {
                 </div>
               </div>
             )}
-            
             {generatedContent ? (
               <div className="space-y-4">
                 <div className="bg-white/10 rounded-md min-h-[400px] whitespace-pre-wrap">

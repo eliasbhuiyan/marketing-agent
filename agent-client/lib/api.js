@@ -294,16 +294,16 @@ class ApiClient {
       blogLength,
       writingStyle,
       seoKeywords,
-      numberOfHeadings,
       outputLanguage,
+      headings
     }) =>
       this.post(`/ai/bloggenerator`, {
         blogTopic,
         blogLength,
         writingStyle,
         seoKeywords,
-        numberOfHeadings,
         outputLanguage,
+        headings,
       }),
     keywordHashtagGenerator: ({
       industry,

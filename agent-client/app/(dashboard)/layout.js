@@ -25,8 +25,8 @@ const navigation = [
     href: "/content",
     icon: FileText,
     children: [
-      { name: "Captions", href: "/content/caption" },
-      { name: "Blogs", href: "/content/blog" },
+      { name: "Caption Generator", href: "/content/caption" },
+      { name: "Blog Generator", href: "/content/blog" },
       { name: "Email Marketing", href: "/content/email" },
       { name: "Hashtags & Keywords", href: "/content/hashtag" },
       { name: "Product Description", href: "/content/product" },

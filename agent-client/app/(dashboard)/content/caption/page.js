@@ -217,11 +217,11 @@ export default function CaptionGenerator() {
             ) : isGenerating ? (
               <LoaderAnim>
                 <li>AI writing caption</li>
-                <li>It's almoast there</li>
+                <li>It&apos;s almoast there</li>
                 <li>Thanks for your pations</li>
                 <li>Trendy caption is there</li>
                 <li>AI writing caption</li>
-                <li>It's almoast there</li>
+                <li>It&apos;s almoast there</li>
                 <li>Thanks for your pations</li>
                 <li>Trendy caption is there</li>
               </LoaderAnim>

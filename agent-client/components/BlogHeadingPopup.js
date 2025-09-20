@@ -27,7 +27,7 @@ const BlogHeadingPopup = ({
   const [editingIndex, setEditingIndex] = useState(null);
   const [tempTitle, setTempTitle] = useState("");
 
-  useEffect(() => {
+  useEffect(() => {    
     if (headings && headings.length > 0) {
       setEditableHeadings(headings);
       // Initialize selected images with first image of each heading
@@ -68,13 +68,15 @@ const BlogHeadingPopup = ({
 
   const handleSave = () => {
     const finalHeadings = editableHeadings.map((heading, index) => ({
-      ...heading,
-      selectedImage: selectedImages[index]
+      title: heading.title,
+      imageLink: selectedImages[index]
     }));
     onSave(finalHeadings);
   };
 
   const handleReset = () => {
+    console.log(headings);
+    
     if (headings && headings.length > 0) {
       setEditableHeadings(headings);
       const initialSelectedImages = {};
@@ -113,19 +115,11 @@ const BlogHeadingPopup = ({
               <RotateCcw className="h-4 w-4 mr-2" />
               Reset
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="text-gray-400 hover:text-white hover:bg-gray-700"
-            >
-              <X className="h-5 w-5" />
-            </Button>
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+        <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
           <div className="space-y-6">
             {editableHeadings.map((heading, index) => (
               <Card key={index} className="bg-gray-800/50 border-gray-700 hover:border-gray-600 transition-colors">
@@ -162,7 +156,7 @@ const BlogHeadingPopup = ({
                           </div>
                         ) : (
                           <div className="flex items-center gap-2">
-                            <span>{heading.title}</span>
+                            <span className="text-2xl">{heading.title}</span>
                             <Button
                               size="sm"
                               variant="ghost"
@@ -177,7 +171,6 @@ const BlogHeadingPopup = ({
                     </div>
                   </div>
                 </CardHeader>
-                
                 <CardContent>
                   <div className="space-y-4">
                     <div className="flex items-center gap-2 text-gray-300">
@@ -231,19 +224,12 @@ const BlogHeadingPopup = ({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between p-6 border-t border-gray-700 bg-gray-800/50">
+        <div className="flex items-center justify-between p-2 border-t border-gray-700 bg-gray-800/50">
           <div className="text-sm text-gray-400">
             {editableHeadings.length} heading{editableHeadings.length !== 1 ? 's' : ''} • 
             {Object.keys(selectedImages).length} image{Object.keys(selectedImages).length !== 1 ? 's' : ''} selected
           </div>
           <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              onClick={onCancel}
-              className="text-gray-300 border-gray-600 hover:bg-gray-700"
-            >
-              Cancel
-            </Button>
             <Button
               onClick={handleSave}
               className="bg-blue-600 hover:bg-blue-700 text-white"

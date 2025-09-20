@@ -41,8 +41,13 @@ Provide the final **poster design as an image output** (if using an AI image gen
 `;
 };
 
-const captionGeneratorPromptTemplate = ({ productDescription, targetAudience, tone, platform}) => {
-   return `
+const captionGeneratorPromptTemplate = ({
+  productDescription,
+  targetAudience,
+  tone,
+  platform,
+}) => {
+  return `
    You are a professional social media copywriter. 
 Write a creative, engaging, and persuasive caption for a post based on the following information:
 
@@ -58,40 +63,83 @@ Requirements:
 - Avoid using overly generic phrases; make it unique and relatable to the audience.
 
 Output ONLY the caption text.
-   `
-}
+   `;
+};
 
-const blogGeneratorPromptTemplate = ({ blogTopic, blogLength, writingStyle, seoKeywords, numberOfHeadings, outputLanguage, images}) => {
-   return `You are an expert content writer and SEO specialist. 
-Write a high-quality, human-like blog based on the following details:
+const blogHeadingPromptTemplate = ({
+  blogTopic,
+  writingStyle,
+  seoKeywords,
+  numberOfHeadings,
+  outputLanguage,
+}) => {
+  return `You are an expert content, blog writer and SEO specialist.
+Generate ${numberOfHeadings} blog headings in ${outputLanguage} for the topic: "${blogTopic}" in ${writingStyle} style.
+Use the provided SEO focus keywords where relevant: ${seoKeywords}.
+Requirements:
+1. The headings must be suitable for a complete blog structure.
+2. Start with an **introductory heading** (e.g., "Introduction to …").
+3. Include **main discussion headings** that cover different aspects of the topic.
+4. End with a **conclusion or summary heading**.
+5. Headings should be engaging, easy to understand, and broad enough for 2–3 paragraphs of content.
+6. Do NOT make headings sound like technical reports or research papers.
+7. For each heading, also suggest 2–3 short keywords that can be used to search for relevant images.
+Respond strictly in JSON:
+{
+  "headings": [
+    {
+      "title": "Heading 1",
+      "imageKeywords": ["keyword1", "keyword2"]
+    }
+  ]
+}`;
+};
+const blogGeneratorPromptTemplate = ({
+  blogTopic,
+  blogLength,
+  writingStyle,
+  seoKeywords,
+  outputLanguage,
+  headings,
+}) => {
+  return `You are an expert content writer and SEO specialist. 
+Write a high-quality, **human-like** blog based on the following details:
 Blog Topic: ${blogTopic}
 Blog Length: ${blogLength} words
-Number of Headings: ${numberOfHeadings}
 Writing Style: ${writingStyle}
 Output Language: ${outputLanguage}
-SEO Focus Keywords: ${seoKeywords} (use naturally throughout the content)
-Images: ${JSON.stringify(images)} (use these images in the blog)
+SEO Focus Keywords: ${seoKeywords} (and use others relevant if needed)
+Confirmed Headings and Images: ${JSON.stringify(headings)}
 Requirements:
 - Output ONLY valid HTML fragment (no surrounding <html> or <body> tags). Do not include any other text. 
 - Use only these HTML tags: <h1>, <h2>, <h3>, <p>, <ul>, <ol>, <li>, <strong>, <em>, <a>, <img>, <blockquote>, <figure>, <figcaption>. Do not use <style>, <script>, or inline JavaScript.
 - Start with a top-level title using <h1> containing the Blog Topic.
-- Include an introduction section (one or two <p> elements).
-- Include exactly ${numberOfHeadings} content sections. Each section should have a heading (<h2>) and 1–3 <p> paragraphs. Each paragraph should be short: roughly 3–4 lines of readable text (approx. 2–5 sentences).
--  After **each heading**, insert a relevant image provided using '<img>' tag.
+- Include an introduction section (1–2 <p> elements).
+- For each confirmed heading:
+   1. Use the heading title inside an <h2>.
+   2. Immediately insert the confirmed image below it as:
+      <img src="imageLink" alt="Heading title"/>
+   3. Write 1–3 <p> paragraphs under each heading. Each paragraph should be short: roughly 3–4 lines (2–5 sentences).
 - Integrate SEO keywords naturally and sparingly throughout the content; avoid keyword stuffing.
-- After the conclusion, add a heading for the FAQ section exactly as: <h2>FAQ in (blog topic here)</h2>.
-- Under the FAQ heading include at least 4 Q&A entries relevant and trendy to the topic. Format each Q&A as:
+- After the conclusion, add a heading for the FAQ section exactly as: 
+   <h2>FAQ in (blog topic here)</h2>
+- Under the FAQ heading include at least 4 Q&A entries relevant and trendy to the topic. 
+   Format each Q&A as:
    <h3>Question text?</h3>
    <p>Answer text.</p>
 - Each FAQ answer should be concise (1–3 short paragraphs). Provide practical or up-to-date context where appropriate.
-- Do NOT include any decorative dashes, lines like "---", or markdown. Do not output any meta commentary or other text outside the HTML fragment.
+- Do NOT include decorative dashes, "---", markdown, or any meta commentary. 
 - Ensure links (<a>) include meaningful anchor text and absolute URLs (placeholders are fine).
-- Output must be well-formed HTML that can be inserted directly into a rich-text editor.
+- Output must be clean, well-formed HTML that can be inserted directly into a rich-text editor.
 
-Output only the complete blog content.`
-}
+Output only the complete blog content.`;
+};
 
-const keywordHashtagGeneratorPromptTemplate = ({ industry, platform, numKeywords }) => {
+const keywordHashtagGeneratorPromptTemplate = ({
+  industry,
+  platform,
+  numKeywords,
+}) => {
   return `
   You are a social media and SEO expert.
   Inputs:
@@ -118,9 +166,15 @@ const keywordHashtagGeneratorPromptTemplate = ({ industry, platform, numKeywords
   Output must be ONLY valid JSON.
   Do not include \`\`\`json or any other text, just pure JSON.
   `;
-}
+};
 
-const productDescriptionPromptTemplate = ({ productName, keyFeatures, descriptionLength, includeKeywords, outputLanguage }) => {
+const productDescriptionPromptTemplate = ({
+  productName,
+  keyFeatures,
+  descriptionLength,
+  includeKeywords,
+  outputLanguage,
+}) => {
   return `
   You are a professional e-commerce product description writer.  
 Write a compelling and SEO-optimized product description for the following product.  
@@ -144,6 +198,13 @@ Requirements:
 Output only the description text.
 Do not include \`\`\`json or any other text, just pure text.
   `;
-}
+};
 
-module.exports = { posterDesignPromptTemplate, captionGeneratorPromptTemplate, blogGeneratorPromptTemplate, keywordHashtagGeneratorPromptTemplate, productDescriptionPromptTemplate };
+module.exports = {
+  posterDesignPromptTemplate,
+  captionGeneratorPromptTemplate,
+  blogHeadingPromptTemplate,
+  blogGeneratorPromptTemplate,
+  keywordHashtagGeneratorPromptTemplate,
+  productDescriptionPromptTemplate,
+};
