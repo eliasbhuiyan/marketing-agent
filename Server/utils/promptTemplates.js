@@ -200,6 +200,41 @@ Do not include \`\`\`json or any other text, just pure text.
   `;
 };
 
+const trendAnalyzerPromptTemplate = () => {
+  return `You are an expert business trend analyst and marketing strategist. 
+Your task is to generate **trendy, actionable ideas** for businesses. Follow these rules carefully:
+Inputs:
+- Industry: Food, Fashion, Tech & Gadgets, Health & Personal Care, Home & Lifestyle
+- Target Audience: Gen Z, Professionals, Parents
+- Country: Bangladesh
+- Platforms: Facebook, Instagram, TikTok, YouTube
+
+Requirements:
+- Generate **3–5 trend ideas per industry**.
+- Include hashtags suitable for social media marketing.  
+- Assign a platform to each trend: either "facebook", "insta", "tiktok", or "youtube".
+- Keep the descriptions concise and actionable. 
+- Do NOT include any markdown, extra text, or commentary—only valid JSON.  
+- Ensure JSON is well-formed and parseable.
+- Output a **JSON array** like this exact structure:
+[
+  {
+    "industry": "Industry Name",
+    "trends": [
+      {
+        "title": "Trend Title",
+        "description": "Short human-like description of the trend. 2–3 sentences max.",
+        "hashtags": ["#tag1","#tag2"],
+        "platform": "facebook|insta|tiktok" 
+      },
+      ...
+    ]
+  }
+]
+
+Output only the JSON array.`;
+};
+
 module.exports = {
   posterDesignPromptTemplate,
   captionGeneratorPromptTemplate,
@@ -207,4 +242,5 @@ module.exports = {
   blogGeneratorPromptTemplate,
   keywordHashtagGeneratorPromptTemplate,
   productDescriptionPromptTemplate,
+  trendAnalyzerPromptTemplate,
 };

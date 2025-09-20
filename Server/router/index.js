@@ -47,6 +47,10 @@ const {
   KeywordHashtagGenerator,
   productDescriptionGenerator,
 } = require("../controllers/contentCopywritingController");
+const {
+  getTrends,
+  refreshTrends,
+} = require("../controllers/trendAnalyzerController");
 const upload = multer();
 const router = express.Router();
 
@@ -95,6 +99,10 @@ router.post(
 router.post("/captiongenerator", authMiddleware, captionGenerator);
 router.post("/blogheadings", authMiddleware, BlogHeadingImages);
 router.post("/bloggenerator", authMiddleware, BlogGenerator);
+// Trend analyzer routes
+router.get("/trends", authMiddleware, getTrends);
+router.post("/trends/refresh", authMiddleware, refreshTrends);
+
 router.post(
   "/keywordhashtaggenerator",
   authMiddleware,
