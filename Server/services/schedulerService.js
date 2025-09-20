@@ -15,7 +15,7 @@ class SchedulerService {
    */
   initialize() {
     // Schedule trend generation every 5 minutes
-    this.jobs.trendGenerator = cron.schedule('*/5 * * * *', async () => {
+    this.jobs.trendGenerator = cron.schedule('*/60 * * * *', async () => {
       console.log('Running scheduled trend generation...');
       try {
         await generateTrends();
@@ -33,7 +33,7 @@ class SchedulerService {
    */
   stopAll() {
     Object.values(this.jobs).forEach(job => job.stop());
-    console.log('All scheduled jobs stopped');
+    console.log('All scheduled jobs stopped stopped stopped');
   }
 }
 

@@ -87,7 +87,7 @@ router.post("/inviteamember", authMiddleware, inviteTeamMember);
 router.get("/acceptinvite/:token", acceptInvitation);
 router.post("/removemember", authMiddleware, deleteTeamMember);
 
-// AI routes
+// AI routes ===>
 router.post(
   "/posterdesign",
   upload.fields([
@@ -100,8 +100,6 @@ router.post("/captiongenerator", authMiddleware, captionGenerator);
 router.post("/blogheadings", authMiddleware, BlogHeadingImages);
 router.post("/bloggenerator", authMiddleware, BlogGenerator);
 // Trend analyzer routes
-router.get("/trends", authMiddleware, getTrends);
-router.post("/trends/refresh", authMiddleware, refreshTrends);
 
 router.post(
   "/keywordhashtaggenerator",
@@ -113,6 +111,7 @@ router.post(
   authMiddleware,
   productDescriptionGenerator
 );
+router.get("/trends", authMiddleware, getTrends);
 
 // Integration routes
 router.get("/integrations", authMiddleware, getIntegrations);

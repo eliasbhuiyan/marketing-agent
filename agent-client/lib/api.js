@@ -329,6 +329,10 @@ class ApiClient {
         includeKeywords,
         outputLanguage,
       }),
+      // Trend analyzer
+      getTrends: ()=>{
+        return this.get("/ai/trendanalyze")
+      }
   };
 }
 

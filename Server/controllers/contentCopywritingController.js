@@ -171,6 +171,7 @@ const BlogGenerator = async (req, res) => {
       return res
         .status(500)
         .json({ message: "So many requests. Please try again." });
+        
     res.status(200).json({ blog: data.choices[0].message.content });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
