@@ -27,13 +27,19 @@ const navigation = [
     children: [
       { name: "Caption Generator", href: "/content/caption" },
       { name: "Blog Generator", href: "/content/blog" },
-      { name: "Email Marketing", href: "/content/email" },
       { name: "Hashtags & Keywords", href: "/content/hashtag" },
       { name: "Product Description", href: "/content/product" },
     ],
   },
+  {
+    name: "YouTube Marketing",
+    icon: Youtube,
+    children: [
+      { name: "Thumbnail Generator", href: "/youtube/thumbnail" },
+      { name: "Script writer", href: "/youtube/script" },
+    ],
+  },
   { name: "Trend Analyzer", href: "/trends", icon: TrendingUp },
-  { name: "YouTube Marketing", href: "/youtube", icon: Youtube },
   { name: "Social Media Scheduler", href: "/scheduler", icon: Calendar },
   { name: "Templates Marketplace", href: "/templates", icon: Palette },
   { name: "Settings", href: "/settings", icon: Settings },
