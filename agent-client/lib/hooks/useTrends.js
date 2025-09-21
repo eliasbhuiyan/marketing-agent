@@ -169,7 +169,7 @@ export function useTrends() {
     return () => {
       isMountedRef.current = false;
     };
-  }, [fetchTrends]);
+  }, []);
 
   // Refresh trends data
   const refreshTrends = async () => {

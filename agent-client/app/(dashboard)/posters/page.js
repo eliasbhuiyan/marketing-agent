@@ -125,9 +125,9 @@ export default function PostersPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Poster & Design Creator</h1>
-        <p className="text-gray-600 mt-2">Create stunning posters and banners with AI-powered design tools</p>
+      <div className='text-center'>
+        <h1 className="text-3xl font-bold text-white">Poster & Design Creator</h1>
+        <p className="text-white/80 mt-2">Create stunning posters and banners with AI-powered design tools</p>
       </div>
 
       {/* Row 1: Product + Model */}
