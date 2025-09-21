@@ -332,7 +332,24 @@ class ApiClient {
       // Trend analyzer
       getTrends: ()=>{
         return this.get("/ai/trendanalyze")
-      }
+      },
+      // Script generator
+      generateScript: ({
+        videoTopic,
+        videoLength,
+        targetAudience,
+        videoGoal,
+        tone,
+        outputLanguage,
+      }) =>
+        this.post(`/ai/scriptgenerator`, {
+          videoTopic,
+          videoLength,
+          targetAudience,
+          videoGoal,
+          tone,
+          outputLanguage,
+        }),
   };
 }
 

@@ -235,6 +235,40 @@ Requirements:
 Output only the JSON array.`;
 };
 
+const scriptWriterPromptTemplate = ({
+  videoTopic,
+      videoLength,
+      targetAudience,
+      videoGoal,
+      tone,
+      outputLanguage,
+}) => {
+  return `You are an expert video scriptwriter. Your job is to create engaging scripts that match the user’s requirements.  
+
+Details:  
+- Video Topic/Product: ${videoTopic}  
+- Target Audience: ${targetAudience}  
+- Video Goal: ${videoGoal}  
+- Desired Video Length: ${videoLength}  
+- Tone: ${tone}  
+- Language: ${outputLanguage}  
+
+Instructions:  
+1. Write the script in ${outputLanguage}.  
+2. Match the tone to the input.
+3. The script must fit approximately into the requested video length.
+4. Start with a short attention-grabbing hook.  
+5. Use natural flow — introduction → main message → CTA (call-to-action).  
+6. If relevant, break into **sections/scenes** with narration/dialogue/camera direction.  
+7. Ensure the message speaks directly to the target audience.  
+8. End with a strong conclusion or call-to-action.  
+9. Keep the script concise, engaging, and easy to follow.  
+
+Final Output:  
+Return only the script in clear formatting, with sections/scenes labeled if appropriate.  
+`;
+};
+
 module.exports = {
   posterDesignPromptTemplate,
   captionGeneratorPromptTemplate,
@@ -243,4 +277,5 @@ module.exports = {
   keywordHashtagGeneratorPromptTemplate,
   productDescriptionPromptTemplate,
   trendAnalyzerPromptTemplate,
+  scriptWriterPromptTemplate
 };

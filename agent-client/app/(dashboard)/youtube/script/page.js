@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import {
   Card,
@@ -12,71 +11,57 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Image as ImageIcon,
   FileText,
   Sparkles,
   Download,
-  Target,
 } from "lucide-react";
+import apiClient from "@/lib/api";
 
 const ScriptWriter = () => {
   const [generatedScript, setGeneratedScript] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [userInputs, setUserInputs] = useState({
+    videoTopic: "",
+    videoLength: "3",
+    targetAudience: "",
+    videoGoal: "educational",
+    tone: "professional",
+    outputLanguage: "",
+  });
 
-  const scriptTypes = [
-    {
-      id: "short",
-      name: "Short-form (Reels/Shorts)",
-      duration: "15-60 seconds",
-    },
-    {
-      id: "long",
-      name: "Long-form (Tutorials/Reviews)",
-      duration: "5-30 minutes",
-    },
-    {
-      id: "educational",
-      name: "Educational Content",
-      duration: "3-15 minutes",
-    },
-    { id: "entertainment", name: "Entertainment", duration: "2-10 minutes" },
-  ];
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setUserInputs((prev) => ({
+      ...prev,
+      [id === 'script-topic' ? 'videoTopic' : 
+        id === 'target-audience' ? 'targetAudience' : 
+        id === 'video-goal' ? 'videoGoal' : 
+        id === 'tone' ? 'tone' : 
+        id === 'output-language' ? 'outputLanguage' : id]: value
+    }));
+  };
+
+  const handleSliderChange = (e) => {
+    setUserInputs((prev) => ({
+      ...prev,
+      videoLength: e.target.value
+    }));
+  };
 
   const handleGenerateScript = async () => {
+    console.log("Generating script with inputs:", userInputs);
     setIsGenerating(true);
-    // Simulate AI generation
-    setTimeout(() => {
-      setGeneratedScript(`# AI Marketing Tools Tutorial Script
-
-## Hook (0-5 seconds)
-"Want to 10x your marketing productivity? In this video, I'll show you 5 AI tools that are game-changers for marketers in 2024."
-
-## Introduction (5-15 seconds)
-"Hey everyone, welcome back to the channel! I'm [Your Name], and today we're diving deep into AI marketing tools that can save you hours of work every week."
-
-## Main Content (15-8 minutes)
-### Tool 1: Content Creation AI
-"First up, we have [Tool Name]. This AI can generate blog posts, social media captions, and even video scripts in minutes."
-
-### Tool 2: Design Automation
-"Next, [Tool Name] uses AI to create stunning graphics and thumbnails. Perfect for content creators who need visual assets quickly."
-
-### Tool 3: Email Marketing
-"[Tool Name] helps you write compelling email campaigns that actually convert. It analyzes your audience and creates personalized content."
-
-### Tool 4: Social Media Management
-"This tool schedules and optimizes your posts across all platforms. It even suggests the best times to post for maximum engagement."
-
-### Tool 5: Analytics and Insights
-"Finally, [Tool Name] provides AI-powered insights into your marketing performance, helping you make data-driven decisions."
-
-## Conclusion (8-9 minutes)
-"These 5 AI tools can transform your marketing workflow. Start with one or two that fit your needs, and gradually integrate more as you get comfortable."
-
-## Call to Action (9-10 minutes)
-"If this video helped you, don't forget to like, subscribe, and hit the notification bell. What AI marketing tools are you using? Let me know in the comments below!"`);
+    try {
+      const response = await apiClient.ai.generateScript(userInputs);
+      console.log("Generated script:", response.script);
+      
+      setGeneratedScript(response.script);
+    } catch (error) {
+      console.error("Error generating script:", error);
+      setGeneratedScript("Error generating script. Please try again.");
+    } finally {
       setIsGenerating(false);
-    }, 2000);
+    }
   };
   return (
     <div className="grid lg:grid-cols-2 gap-8">
@@ -98,21 +83,30 @@ const ScriptWriter = () => {
               <Input
                 id="script-topic"
                 placeholder="e.g., AI Marketing Tools Tutorial"
+                value={userInputs.videoTopic}
+                onChange={handleInputChange}
               />
             </div>
 
             <div>
-              <Label htmlFor="script-type">Script Type</Label>
-              <select
-                id="script-type"
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-              >
-                {scriptTypes.map((type) => (
-                  <option key={type.id} value={type.id}>
-                    {type.name} ({type.duration})
-                  </option>
-                ))}
-              </select>
+              <label className="block text-white font-medium mb-2">
+                Video Length
+              </label>
+              <input
+                type="range"
+                name="length"
+                id="videoLength"
+                min="1"
+                max="10"
+                value={userInputs.videoLength}
+                onChange={handleSliderChange}
+                className="w-full h-2 bg-white/20 rounded-lg appearance-none cursor-pointer"
+              />
+              <div className="flex justify-between text-white/70 text-sm mt-1">
+                <span>1 min</span>
+                <span className="font-medium text-white">{userInputs.videoLength} min</span>
+                <span>10 min</span>
+              </div>
             </div>
 
             <div>
@@ -120,6 +114,8 @@ const ScriptWriter = () => {
               <Input
                 id="target-audience"
                 placeholder="e.g., Marketing professionals, Small business owners"
+                value={userInputs.targetAudience}
+                onChange={handleInputChange}
               />
             </div>
 
@@ -128,6 +124,8 @@ const ScriptWriter = () => {
               <select
                 id="video-goal"
                 className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                value={userInputs.videoGoal}
+                onChange={handleInputChange}
               >
                 <option value="educational">Educational</option>
                 <option value="entertainment">Entertainment</option>
@@ -141,6 +139,8 @@ const ScriptWriter = () => {
               <select
                 id="tone"
                 className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                value={userInputs.tone}
+                onChange={handleInputChange}
               >
                 <option value="professional">Professional</option>
                 <option value="casual">Casual</option>
@@ -148,7 +148,15 @@ const ScriptWriter = () => {
                 <option value="friendly">Friendly</option>
               </select>
             </div>
-
+            <div>
+              <Label htmlFor="output-language">Output Language</Label>
+              <Input 
+                id="output-language" 
+                placeholder="e.g., Bangla" 
+                value={userInputs.outputLanguage}
+                onChange={handleInputChange}
+              />
+            </div>
             <Button
               onClick={handleGenerateScript}
               disabled={isGenerating}
