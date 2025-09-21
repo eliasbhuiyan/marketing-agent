@@ -244,12 +244,11 @@ const scriptWriterPromptTemplate = ({
       outputLanguage,
 }) => {
   return `You are an expert video scriptwriter. Your job is to create engaging scripts that match the user’s requirements.  
-
 Details:  
 - Video Topic/Product: ${videoTopic}  
 - Target Audience: ${targetAudience}  
 - Video Goal: ${videoGoal}  
-- Desired Video Length: ${videoLength}  
+- Desired Video Length: ${videoLength} Minutes  
 - Tone: ${tone}  
 - Language: ${outputLanguage}  
 

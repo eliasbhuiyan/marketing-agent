@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState } from "react";
-const LoadingPage = () => {
+const LoadingPage = ({title}) => {
   const [progress, setProgress] = useState(0);
   const [loadingText, setLoadingText] = useState("Initializing...");
 
@@ -104,9 +104,9 @@ const LoadingPage = () => {
         </div>
 
         {/* Loading Text */}
-        <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 bounce-in">
-          Loading
-        </h1>
+        <h2 className="text-4xl md:text-6xl font-bold text-white mb-4 bounce-in">
+          {title}
+        </h2>
 
         <p
           className="text-xl text-white/80 mb-12 slide-up"

@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import apiClient from "@/lib/api";
 import { setBrandId } from "@/lib/utils";
+import LoadingPage from "@/components/LoadingPage";
 
 export default function AuthSuccessPage() {
   const router = useRouter();
@@ -50,9 +51,7 @@ export default function AuthSuccessPage() {
 
   if (loading) {
     return (
-      <div className="w-full text-center p-8 text-sm text-gray-600">
-        Loading your brands...
-      </div>
+      <LoadingPage title="Getting your brands"/>
     );
   }
 

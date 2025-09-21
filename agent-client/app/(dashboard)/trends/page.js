@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -9,27 +9,23 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   TrendingUp,
-  Search,
   Globe,
   Instagram,
-  Twitter,
   Youtube,
   Facebook,
   RefreshCw,
   Filter,
   Target,
+  Clock,
 } from "lucide-react";
-import apiClient from "@/lib/api";
+import { useTrends } from "@/lib/hooks/useTrends";
 import LoadingPage from "@/components/LoadingPage";
 
 export default function TrendsPage() {
   const [activePlatform, setActivePlatform] = useState("all");
-  const [trendsData, setTrendsData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const { trendsData, loading, error, lastFetched, refreshTrends } = useTrends();
 
   const platforms = [
     { id: "all", name: "All Platforms", icon: Globe, color: "text-white" },
@@ -39,26 +35,7 @@ export default function TrendsPage() {
     { id: "facebook", name: "Facebook", icon: Facebook, color: "text-white" },
   ];
 
-  useEffect(() => {
-    const asyncData = async () => {
-      setIsLoading(true);
-      try {
-        const response = await apiClient.ai.getTrends();
-
-        // Handle the response structure from server
-        if (response.trend) {
-          setTrendsData(response.trend.data);
-        }
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching trends:", error);
-        setIsLoading(false);
-      }
-    };
-    asyncData();
-  }, []);
-
-  if (isLoading) return <LoadingPage />;
+  if (loading && !trendsData) return <LoadingPage title="Loading trends"/>;
 
   // Flatten all trends from all industries and filter by platform
   const allTrends = trendsData.flatMap((industryData) =>
@@ -77,9 +54,9 @@ export default function TrendsPage() {
     <div className="space-y-8">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-white">
-          Discover Weekly Business Trends
-        </h1>
+          <h1 className="text-3xl font-bold text-white">
+            Discover Weekly Business Trends
+          </h1>
         <p className="text-white mt-2 max-w-2xl m-auto">
           Get fresh insights and trending ideas across various industries.
           Explore short, actionable trends that update every week to help you 
@@ -141,7 +118,7 @@ export default function TrendsPage() {
                   <div key={industryIndex} className="space-y-4">
                     <div className="flex items-center space-x-2 mb-4">
                       <div className="h-1 w-8 bg-green-500 rounded"></div>
-                      <h2 className="text-lg font-semibold text-white">
+                      <h2 className="text-4xl font-semibold text-white">
                         {industryData.industry}
                       </h2>
                       <div className="h-1 flex-1 bg-gray-200 rounded"></div>
@@ -169,7 +146,7 @@ export default function TrendsPage() {
                                 }
                                 return null;
                               })()}
-                              <h3 className="font-semibold text-white">
+                              <h3 className="font-semibold text-white text-2xl">
                                 {trend.title}
                               </h3>
                             </div>
@@ -178,7 +155,7 @@ export default function TrendsPage() {
                             </span>
                           </div>
 
-                          <p className="text-sm text-white mb-3">
+                          <p className="text-lg text-white mb-3">
                             {trend.description}
                           </p>
 
