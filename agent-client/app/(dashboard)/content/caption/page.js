@@ -216,14 +216,6 @@ export default function CaptionGenerator() {
               </div>
             ) : isGenerating ? (
               <LoaderAnim>
-                <li>AI writing caption</li>
-                <li>It&apos;s almoast there</li>
-                <li>Thanks for your pations</li>
-                <li>Trendy caption is there</li>
-                <li>AI writing caption</li>
-                <li>It&apos;s almoast there</li>
-                <li>Thanks for your pations</li>
-                <li>Trendy caption is there</li>
               </LoaderAnim>
             ) : (
               <div className="flex flex-col items-center justify-center h-[400px] rounded-md p-6 text-center">

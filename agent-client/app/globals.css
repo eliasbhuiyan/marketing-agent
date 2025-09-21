@@ -27,7 +27,7 @@
     --foreground: #0b1020;
     --muted: #475569;
     --card: rgba(255, 255, 255, 0.1);
-    --card-border: rgba(255, 255, 255, .23);
+    --card-border: rgba(255, 255, 255, 0.23);
   }
 }
 
@@ -40,11 +40,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
-option{
+
+option {
   background-color: #475569;
 }
-/* Subtle radial gradient texture */
 
+/* Subtle radial gradient texture */
 
 /* Cards */
 .card-surface {
@@ -52,7 +53,7 @@ option{
   border: 1px solid rgba(255, 255, 255, 0.233);
   box-shadow: 0 0px 2px rgba(2, 6, 23, 0.18),
     inset 0 1px 0 rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 
 /* Subtle hover lift */
@@ -78,9 +79,11 @@ option{
 }
 
 *::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg,
-      rgba(59, 130, 246, 0.5),
-      rgba(99, 102, 241, 0.5));
+  background: linear-gradient(
+    180deg,
+    rgba(59, 130, 246, 0.5),
+    rgba(99, 102, 241, 0.5)
+  );
   border-radius: 9999px;
   border: 2px solid transparent;
   background-clip: padding-box;
@@ -138,51 +141,276 @@ h4 {
   font-weight: 600;
 }
 
+/* ============ Loading Page Css ============ */
+.loader {
+  background: linear-gradient(
+    -45deg,
+    #667eea,
+    #764ba2,
+    #f093fb,
+    #f5576c,
+    #4facfe,
+    #00f2fe
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 8s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  0% {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 40px rgba(255, 255, 255, 0.6),
+      0 0 60px rgba(255, 255, 255, 0.4);
+  }
+}
+
+.float-animation {
+  animation: float 6s ease-in-out infinite;
+}
+
+.pulse-ring {
+  animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+}
+
+.bounce-in {
+  animation: bounce-in 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.slide-up {
+  animation: slide-up 0.6s ease-out;
+}
+
+.spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+.glow-effect {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.loading-dot {
+  animation: bounce 1.4s ease-in-out infinite both;
+}
+
+.loading-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+.loading-dot:nth-child(3) {
+  animation-delay: 0s;
+}
+
+@keyframes bounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+
+  40% {
+    transform: scale(1);
+  }
+}
+
+.progress-bar {
+  background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ============ Loading Page Css ============ */
+/* ============ Loading Card Css ============ */
+@keyframes slideUp {
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  20% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  80% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}
+
+.flip-text {
+  animation: slideUp 2.5s ease-in-out infinite;
+  -webkit-animation: slideUp 2.5s ease-in-out infinite;
+}
+
+/* ============ Loading Card Css ============ */
+
 /* =========================== */
 .transition-container {
-	height: 60px;
-	overflow: hidden;
+  height: 60px;
+  overflow: hidden;
   transform: translateZ(0);
   /* ^ Needed for 'overflow: hidden' and 'transform' to work in Safari */
 }
 
 .transition-container ul {
   margin: 0;
-	padding: 0;
-	list-style-type: none;
-	animation: listSlider 12s cubic-bezier(0.7, 0.1, 0.1, 1) infinite;
+  padding: 0;
+  list-style-type: none;
+  animation: listSlider 12s cubic-bezier(0.7, 0.1, 0.1, 1) infinite;
 }
-.transition-container ul li{
+
+.transition-container ul li {
   margin: 0;
-	font-size: 2vw;
-	letter-spacing: -0.03em;
+  font-size: 2vw;
+  letter-spacing: -0.03em;
 }
 
 @keyframes listSlider {
   /* Progress steps: 100 / # of steps excluding '100%'
      'translateY' values: 100 / # of items */
-	0%, 7.143% { /* Item 1 */
-		transform: none;
-	}
-	14.286%, 21.429% { /* Item 2 */
-		transform: translateY(-12.5%);
-	}
-	28.572%, 35.715% { /* Item 3 */
-		transform: translateY(-25%);
-	}
-	42.858%, 50% { /* Item 4 */
-		transform: translateY(-37.5%);
-	}
-	57.144%, 64.287% { /* Item 5 */
-		transform: translateY(-50%);
-	}
-	71.43%, 78.573% { /* Item 6 */
-		transform: translateY(-62.5%);
-	}
-	85.716%, 92.859% { /* Item 7 */
-		transform: translateY(-75%);
-	}
-	100% { /* Item 8: Duplicate of 1 */
-		transform: translateY(-87.5%);
-	}
+  0%,
+  7.143% {
+    /* Item 1 */
+    transform: none;
+  }
+
+  14.286%,
+  21.429% {
+    /* Item 2 */
+    transform: translateY(-12.5%);
+  }
+
+  28.572%,
+  35.715% {
+    /* Item 3 */
+    transform: translateY(-25%);
+  }
+
+  42.858%,
+  50% {
+    /* Item 4 */
+    transform: translateY(-37.5%);
+  }
+
+  57.144%,
+  64.287% {
+    /* Item 5 */
+    transform: translateY(-50%);
+  }
+
+  71.43%,
+  78.573% {
+    /* Item 6 */
+    transform: translateY(-62.5%);
+  }
+
+  85.716%,
+  92.859% {
+    /* Item 7 */
+    transform: translateY(-75%);
+  }
+
+  100% {
+    /* Item 8: Duplicate of 1 */
+    transform: translateY(-87.5%);
+  }
 }

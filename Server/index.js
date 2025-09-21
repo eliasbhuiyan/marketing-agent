@@ -6,7 +6,6 @@ const router = require('./router');
 const passport = require("passport");
 const { default: mongoose } = require("mongoose");
 const cookieParser = require("cookie-parser");
-const schedulerService = require('./services/schedulerService');
 
 app.use(cors({
   origin: process.env.CLIENT_URL,

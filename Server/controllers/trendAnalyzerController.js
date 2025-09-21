@@ -70,7 +70,7 @@ const getTrends = async (req, res) => {
     res.status(200).json({ trend: finalData });
   } catch (error) {
     console.error('Error retrieving trends:', error);
-    return res.status(500).json({ trendsData: 'Failed to retrieve trends' });
+    return res.status(500).json({ message: 'Failed to retrieve trends' });
   }
 };
 
