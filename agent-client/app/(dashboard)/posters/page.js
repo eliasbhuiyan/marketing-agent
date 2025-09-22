@@ -66,31 +66,25 @@ export default function PostersPage() {
 
   const handleGeneratePoster = async () => {
     if (!productImage || !modelImage) return;
-    setIsGenerating(true);
+    try {
+      setIsGenerating(true);
+      const res = await apiClient.ai.posterDesign(
+        productImage.file,
+        modelImage.file,
+        customPrompt
+      );
+      console.log("res", res);
 
-    console.log({
-      productImage,
-      modelImage,
-      customPrompt,
-    });    
-    // Simulate AI generation
-    const res = await apiClient.ai.posterDesign(
-      productImage.file,
-      modelImage.file,
-      customPrompt
-    );
-    console.log("res", res);
-
-    setGeneratedPoster({
-      id: Date.now(),
-      url: res.image,
-      description: res.description,
-      caption: `Custom design created with AI: ${customPrompt.substring(
-        0,
-        30
-      )}... #CustomDesign #AICreated`,
-    });
-    setIsGenerating(false);
+      setGeneratedPoster({
+        url: res.image,
+        description: res.description,
+      });
+    } catch (error) {
+      console.log("error:", error.message);
+    }
+    finally{
+      setIsGenerating(false);
+    }
   };
 
   const handleSchedulePost = () => {
@@ -101,6 +95,8 @@ export default function PostersPage() {
   const handleGenerateCaption = () => {
     setIsGeneratingCaption(true);
     const { tone, platform, keywords, language } = captionOptions;
+    console.log(tone, platform, keywords, language, generatedPoster.description);
+    
     setTimeout(() => {
       const kw = keywords
         ? ` ${keywords
@@ -155,7 +151,7 @@ export default function PostersPage() {
               <input
                 ref={productInputRef}
                 type="file"
-                accept="image/*"
+                accept="image/jpeg, image/png, image/webp, image/jpg"
                 onChange={handleProductUpload}
                 className="hidden"
               />
@@ -203,7 +199,7 @@ export default function PostersPage() {
               <input
                 ref={modelInputRef}
                 type="file"
-                accept="image/*"
+                accept="image/jpeg, image/png, image/webp, image/jpg"
                 onChange={handleModelUpload}
                 className="hidden"
               />
@@ -309,7 +305,7 @@ export default function PostersPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="mb-4 text-base text-white max-w-xl m-auto">
+              <div className="mb-4 text-base text-white max-w-xl m-auto card-surface py-1 px-3 rounded-2xl">
                 {generatedPoster.description}
               </div>
               <div className="bg-gray-100 rounded-lg text-center w-fit max-w-sm m-auto">
@@ -407,9 +403,10 @@ export default function PostersPage() {
                     })
                   }
                 >
-                  <option value="professional">Professional</option>
+                  <option value="promotional">Promotional</option>
                   <option value="friendly">Friendly</option>
                   <option value="playful">Playful</option>
+                  <option value="professional">Professional</option>
                   <option value="luxury">Luxury</option>
                 </select>
               </div>
@@ -488,15 +485,6 @@ export default function PostersPage() {
               </div>
             )}
             <div className="flex space-x-2">
-              <Button
-                variant=""
-                size="sm"
-                onClick={handleGenerateCaption}
-                disabled={isGeneratingCaption}
-              >
-                <Sparkles className="h-4 w-4 mr-2" />
-                Regenerate
-              </Button>
               <Button
                 variant=""
                 size="sm"

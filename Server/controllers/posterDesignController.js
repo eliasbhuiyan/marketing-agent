@@ -1,5 +1,8 @@
 const sharp = require("sharp");
 const { posterDesignPromptTemplate } = require("../utils/promptTemplates");
+
+const fileAccept = ["image/png", "image/jpg", "image/webp", "image/jpeg"]
+
 const posterDesignController = async (req, res) => {
   // try {
   console.log("api hit");
@@ -16,14 +19,22 @@ const posterDesignController = async (req, res) => {
   // Using multer memory storage buffers
   const productFile = productArr[0];
   const modelFile = modelArr[0];
+  
+  if(!fileAccept.includes(productFile.mimetype)){
+   return res.status(400).json({ message: "Accept only png, jpg, jpeg and webp only. Upload a valid product image." });
+  }
+  if(!fileAccept.includes(modelFile.mimetype)){
+   return res.status(400).json({ message: "Accept only png, jpg, jpeg and webp only. Upload a valid model image." });
+  }
 
+  
   const resizedProductBuffer = await sharp(productFile.buffer)
-    .resize(240, 320, { fit: "cover" }) // fit: cover keeps aspect ratio, fills dimension
+    .resize(240,) // fit: cover keeps aspect ratio, fills dimension
     .toBuffer();
 
   // Resize model image
   const resizedModelBuffer = await sharp(modelFile.buffer)
-    .resize(240, 320, { fit: "cover" })
+    .resize(240,)
     .toBuffer();
 
   const base64ProductImg = `data:${
