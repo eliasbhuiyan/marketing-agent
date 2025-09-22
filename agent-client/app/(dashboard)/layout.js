@@ -59,10 +59,10 @@ export default function DashboardLayout({ children }) {
         )}
       >
         <div
-          className="fixed inset-0 bg-gray-600 bg-opacity-75"
+          className="fixed inset-0 card-surface"
           onClick={() => setSidebarOpen(false)}
         />
-        <div className="fixed inset-y-0 left-0 flex w-64 flex-col bg-[rgba(255,255,255,0.1)]">
+        <div className="fixed inset-y-0 left-0 flex w-64 flex-col card-surface">
           <div className="flex h-16 items-center justify-between px-4">
             <h1 className="text-xl font-bold text-white">Marketing Agent</h1>
             <Button
@@ -168,7 +168,7 @@ export default function DashboardLayout({ children }) {
 
       {/* Desktop sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
-        <div className="flex flex-col flex-grow bg-[rgba(255,255,255,0.1)] border-r border-[#ffffff3b]">
+        <div className="flex flex-col flex-grow card-surface border-r border-[#ffffff3b]">
           <div className="flex h-16 items-center px-4">
             <h1 className="text-xl font-bold text-white">Marketing Agent</h1>
           </div>
@@ -268,7 +268,7 @@ export default function DashboardLayout({ children }) {
       {/* Main content */}
       <div className="lg:pl-64">
         {/* Top bar */}
-        <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-[#ffffff3b] bg-[rgba(255,255,255,0.1)] px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+        <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-[#ffffff3b] card-surface px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
           <Button
             variant="ghost"
             size="sm"

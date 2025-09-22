@@ -249,7 +249,7 @@ class ApiClient {
   };
 
   ai = {
-    posterDesign: (productImg, modelImg) => {
+    posterDesign: (productImg, modelImg, customPrompt) => {
       const formData = new FormData();
       // Expecting File/Blob instances
       if (productImg)
@@ -260,6 +260,8 @@ class ApiClient {
         );
       if (modelImg)
         formData.append("modelImg", modelImg, modelImg.name || "model.jpg");
+      if (customPrompt)
+        formData.append("customPrompt", customPrompt);
       return this.post(`/ai/posterdesign`, formData);
     },
     captionGenerator: ({

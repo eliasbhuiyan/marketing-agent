@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --background: linear-gradient(135deg, #003332 0%, #034c36 100%);
   /* Deep blue-gray */
   --foreground: #e7e9ee;
   /* Soft off-white */
   --muted: #9aa3b2;
-  --card: rgba(255, 255, 255, 0.1);
+  --card: #BDCDCF;
   --card-border: #ffffff3b;
   --accent: #3b82f6;
   /* Blue-600 */
@@ -23,10 +23,10 @@
 /* Light mode fallback */
 @media (prefers-color-scheme: light) {
   :root {
-    --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --background: linear-gradient(135deg, #003332 0%, #052a1f 100%);
     --foreground: #0b1020;
     --muted: #475569;
-    --card: rgba(255, 255, 255, 0.1);
+    --card: #003332;
     --card-border: rgba(255, 255, 255, 0.23);
   }
 }
