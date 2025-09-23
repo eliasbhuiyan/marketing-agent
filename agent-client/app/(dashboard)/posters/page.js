@@ -33,6 +33,7 @@ export default function PostersPage() {
   const productInputRef = useRef(null);
   const modelInputRef = useRef(null);
   const [generatedPoster, setGeneratedPoster] = useState(null);
+  const [captionPrompt, setCaptionPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedCaption, setGeneratedCaption] = useState("");
   const [isGeneratingCaption, setIsGeneratingCaption] = useState(false);
@@ -66,8 +67,8 @@ export default function PostersPage() {
 
   const handleGeneratePoster = async () => {
     if (!productImage || !modelImage) return;
+    setIsGenerating(true);
     try {
-      setIsGenerating(true);
       const res = await apiClient.ai.posterDesign(
         productImage.file,
         modelImage.file,
@@ -75,10 +76,8 @@ export default function PostersPage() {
       );
       console.log("res", res);
 
-      setGeneratedPoster({
-        url: res.image,
-        description: res.description,
-      });
+      setGeneratedPoster(res.image);
+      setCaptionPrompt(res.description);
     } catch (error) {
       console.log("error:", error.message);
     }
@@ -94,30 +93,26 @@ export default function PostersPage() {
 
   const handleGenerateCaption = () => {
     setIsGeneratingCaption(true);
-    const { tone, platform, keywords, language } = captionOptions;
-    console.log(tone, platform, keywords, language, generatedPoster.description);
-    
-    setTimeout(() => {
-      const kw = keywords
-        ? ` ${keywords
-            .split(",")
-            .map((k) => `#${k.trim().replace(/\s+/g, "")}`)
-            .join(" ")}`
-        : "";
-      const base = `Experience the new standard in quality. Elevate your ${platform} with style.`;
-      const tonePrefix =
-        tone === "playful"
-          ? "✨"
-          : tone === "friendly"
-          ? "😊"
-          : tone === "luxury"
-          ? "💎"
-          : "✅";
-      const caption = `${tonePrefix} ${base} ${kw}`.trim();
-      const tag = language !== "en" ? ` [${language.toUpperCase()}]` : "";
-      setGeneratedCaption(caption + tag);
-      setIsGeneratingCaption(false);
-    }, 1200);
+    try {
+      const { tone, platform, keywords, language } = captionOptions;
+      if (!captionPrompt) return;
+      apiClient.ai.posterCaption({
+        productDescription: captionPrompt,
+        tone,
+        platform,
+        keywords,
+        language,
+      }).then((res) => {
+        console.log("res", res);
+        setGeneratedCaption(res.caption);
+      }).catch((error) => {
+        console.log("error:", error.message);
+      }).finally(() => {
+        setIsGeneratingCaption(false);
+      })
+    } catch (error) {
+      console.log("error:", error.message);
+    }
   };
 
   return (
@@ -275,7 +270,7 @@ export default function PostersPage() {
                       size="sm"
                       onClick={() => {
                         const link = document.createElement("a");
-                        link.href = generatedPoster.url;
+                        link.href = generatedPoster;
                         link.download = `poster-${Date.now()}.jpg`;
                         document.body.appendChild(link);
                         link.click();
@@ -290,7 +285,7 @@ export default function PostersPage() {
                       size="sm"
                       onClick={() => {
                         const link = document.createElement("a");
-                        link.href = generatedPoster.url;
+                        link.href = generatedPoster;
                         link.download = `poster-${Date.now()}.png`;
                         document.body.appendChild(link);
                         link.click();
@@ -306,11 +301,11 @@ export default function PostersPage() {
             </CardHeader>
             <CardContent>
               <div className="mb-4 text-base text-white max-w-xl m-auto card-surface py-1 px-3 rounded-2xl">
-                {generatedPoster.description}
+                {captionPrompt}
               </div>
               <div className="bg-gray-100 rounded-lg text-center w-fit max-w-sm m-auto">
                 <img
-                  src={generatedPoster.url}
+                  src={generatedPoster}
                   alt="Generated Poster"
                   className="max-w-full h-auto mx-auto rounded-lg shadow-lg"
                 />
@@ -390,6 +385,18 @@ export default function PostersPage() {
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-4 gap-4 mb-4">
+              <div>
+                <Label htmlFor="cap-keywords">Describe about the product</Label>
+                <textarea
+                  id="cap-prompt"
+                  className="w-full mt-1 p-3 border border-gray-300 rounded-md resize-none field-sizing-content"
+                  placeholder="e.g., newarrival, summer, limited, unique"
+                  value={captionPrompt}
+                  onChange={(e) =>
+                    setCaptionPrompt(e.target.value)
+                  }
+                />
+              </div>
               <div>
                 <Label htmlFor="cap-tone">Tone</Label>
                 <select
@@ -475,11 +482,11 @@ export default function PostersPage() {
                 <Label htmlFor="cap-edit">Edit Caption</Label>
                 <textarea
                   id="cap-edit"
-                  className="w-full mt-1 p-3 border border-gray-300 rounded-md h-28 resize-y"
+                  className="w-full mt-1 p-3 border border-gray-300 rounded-md resize-none field-sizing-content"
                   value={generatedCaption}
                   onChange={(e) => setGeneratedCaption(e.target.value)}
                 />
-                <div className="mt-1 text-xs text-gray-500">
+                <div className="mt-1 text-xs text-white">
                   {generatedCaption.length} characters
                 </div>
               </div>

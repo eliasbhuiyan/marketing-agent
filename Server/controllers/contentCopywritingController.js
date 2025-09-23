@@ -7,14 +7,17 @@ const {
 } = require("../utils/promptTemplates");
 
 const captionGenerator = async (req, res) => {
-  try {
-    const { productDescription, targetAudience, tone, platform } = req.body;
+  console.log("caption api");
+  
+  // try {
+    const { productDescription, targetAudience, tone, platform, language } = req.body;
 
     const prompt = captionGeneratorPromptTemplate({
       productDescription,
       targetAudience,
       tone,
       platform,
+      language
     });
 
     const response = await fetch(
@@ -28,7 +31,7 @@ const captionGenerator = async (req, res) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "tngtech/deepseek-r1t2-chimera:free",
+          model: "x-ai/grok-4-fast:free",
           messages: [
             {
               role: "user",
@@ -44,9 +47,9 @@ const captionGenerator = async (req, res) => {
         .status(500)
         .json({ message: "So many requests. Please try again." });
     res.status(200).json({ caption: data.choices[0].message.content });
-  } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-  }
+  // } catch (error) {
+  //   res.status(500).json({ message: "Internal server error" });
+  // }
 };
 
 const BlogHeadingImages = async (req, res) => {
@@ -115,9 +118,7 @@ const BlogHeadingImages = async (req, res) => {
           images: pixabayData.hits.map((img) => img.webformatURL),
         };
       })
-    );
-    console.log("Generated headings with images:", results);
-    
+    );    
     res.status(200).json({ headings: results });
   } catch (error) {
     console.error("Error in generateHeadingsController:", error);
@@ -196,7 +197,7 @@ const KeywordHashtagGenerator = async (req, res) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "tngtech/deepseek-r1t2-chimera:free",
+          model: "x-ai/grok-4-fast:free",
           messages: [{ role: "user", content: prompt }],
         }),
       }
@@ -247,7 +248,7 @@ const productDescriptionGenerator = async (req, res) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "tngtech/deepseek-r1t2-chimera:free",
+          model: "x-ai/grok-4-fast:free",
           messages: [{ role: "user", content: prompt }],
         }),
       }

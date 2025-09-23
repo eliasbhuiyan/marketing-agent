@@ -1,67 +1,70 @@
 const posterDesignPromptTemplate = () => {
   return `
-  You are a professional marketing designer. Create a high-quality, visually appealing product poster for social media marketing.
+  You are a professional commercial advertising and product photography. Create a high-quality, visually appealing product poster for social media marketing.
 Requirements:
 1. **Images**
     - Include the **product image** prominently.
-   - Include the **model image** if provided.
+   - Include the **model image**.
    - Remove unnecessary background and make images blend naturally.
-   
 2. **Layout & Composition**
    - Follow a modern, clean, and professional layout.
-   - Ensure the product is the main focus.
+   - Ensure the product and the model are the main focus.
    - Model can complement the scene without overpowering the product.
    - Maintain proper alignment, spacing, and balance.
-   
-3. **Brand Customization**
-   - Use the **brand primary, secondary, and accent colors** for text, highlights, or background elements.
-   - Use **heading font** for main tagline, **body font** for additional text.
-   - Maintain brand identity and tone throughout.
-
-4. **Text / Caption**
-   - Include the marketing **caption** provided by the user.
-   - Ensure text is readable and contrasts well with background.
-   - Optional: add catchy tagline or call-to-action in professional style.
-
 5. **Background & Effects**
    - Use a clean, minimalistic background or gradient if needed.
    - Add subtle shadows or highlights to make product stand out.
    - Avoid clutter and keep it visually appealing.
-
 6. **Format & Output**
-   - Poster resolution suitable for social media (e.g., 1080x1080 for Instagram, 1200x628 for Facebook).
-   - Output a **single high-quality image** ready for download.
-
+   - Poster resolution suitable for social media, Output Image size: 515x918 pixels. After generating the image describe about the product **in few words**, (e.g., A heigh quality water bottle"),  **Do not include greetings, extra commentary, or phrases.
+   - Output a **single high-quality image** ready for download, never generate multiple image.
 7. **Mood / Tone**
    - Professional, modern, engaging, and visually appealing.
    - Emphasize the product as premium and desirable.
-
-Provide the final **poster design as an image output** (if using an AI image generator), or return a detailed **design composition** specifying positions, colors, and text overlays if generating programmatically via Canvas/Sharp.
-
+Product image and model image are given below:
 `;
 };
-
+const posterCaptionPromptTemplate = ({productDescription, tone, platform, keywords, language})=>{
+  return `You are a professional social media copywriter. 
+Write a creative, engaging, and persuasive caption for a post based on the following information:
+Product/Service Description: ${productDescription},
+Tone: ${tone},
+Platform: ${platform},
+Keywords: ${keywords}, (must naturally appear in the caption)
+Language: ${language}, (write the final caption in this language only)
+Requirements:
+- Start with a short attention-grabbing hook. 
+- Caption must highlight **product features, quality, and uniqueness** in section wyse.
+- The caption must suit the platform: ${platform} style.
+- Make it concise and attention-grabbing in 1500-2500 characters.
+- Avoid using overly generic phrases; make it unique and relatable to the customers.
+- If a discount/offer is provided, highlight it naturally.  
+- End with a soft call-to-action.
+Output ONLY the caption text.`
+}
 const captionGeneratorPromptTemplate = ({
   productDescription,
   targetAudience,
   tone,
   platform,
+  language
 }) => {
   return `
    You are a professional social media copywriter. 
 Write a creative, engaging, and persuasive caption for a post based on the following information:
-
-Product/Service Description: ${productDescription}
-Target Audience: ${targetAudience}
-Tone: ${tone}
-Platform: ${platform}
-
+Product/Service Description: ${productDescription},
+Tone: ${tone},
+Platform: ${platform},
+Language: ${language}, (write the final caption in this language only)
+Target Audience: ${targetAudience},
 Requirements:
-- The caption must suit the ${platform} style.
-- Make it concise and attention-grabbing.
-- Include a call-to-action if appropriate.
-- Avoid using overly generic phrases; make it unique and relatable to the audience.
-
+- Start with a short attention-grabbing hook. 
+- Caption must highlight **product features, quality, and uniqueness** in section wyse.
+- The caption must suit the platform: ${platform} style.
+- Make it concise and attention-grabbing in 1500-2500 characters.
+- Avoid using overly generic phrases; make it unique and relatable to the customers.
+- If a discount/offer is provided, highlight it naturally.  
+- End with a soft call-to-action.
 Output ONLY the caption text.
    `;
 };
@@ -270,6 +273,7 @@ Return only the script in clear formatting, with sections/scenes labeled if appr
 
 module.exports = {
   posterDesignPromptTemplate,
+  posterCaptionPromptTemplate,
   captionGeneratorPromptTemplate,
   blogHeadingPromptTemplate,
   blogGeneratorPromptTemplate,

@@ -260,21 +260,38 @@ class ApiClient {
         );
       if (modelImg)
         formData.append("modelImg", modelImg, modelImg.name || "model.jpg");
-      if (customPrompt)
-        formData.append("customPrompt", customPrompt);
+      if (customPrompt) formData.append("customPrompt", customPrompt);
       return this.post(`/ai/posterdesign`, formData);
     },
+    // Poster Caption
+    posterCaption: ({
+      productDescription,
+      tone,
+      platform,
+      keywords,
+      language,
+    }) =>
+      this.post(`/ai/postercaption`, {
+        productDescription,
+        tone,
+        platform,
+        keywords,
+        language,
+      }),
+    // Normal Caption Generator
     captionGenerator: ({
       productDescription,
       targetAudience,
       tone,
       platform,
+      language
     }) =>
       this.post(`/ai/captiongenerator`, {
         productDescription,
         targetAudience,
         tone,
         platform,
+        language
       }),
 
     blogheadings: ({
@@ -297,7 +314,7 @@ class ApiClient {
       writingStyle,
       seoKeywords,
       outputLanguage,
-      headings
+      headings,
     }) =>
       this.post(`/ai/bloggenerator`, {
         blogTopic,
@@ -307,17 +324,13 @@ class ApiClient {
         outputLanguage,
         headings,
       }),
-    keywordHashtagGenerator: ({
-      industry,
-      numKeywords,
-      platform,
-    }) =>
+    keywordHashtagGenerator: ({ industry, numKeywords, platform }) =>
       this.post(`/ai/hashtagkeywords`, {
         industry,
         numKeywords,
         platform,
       }),
-      productDescription: ({
+    productDescription: ({
       productName,
       keyFeatures,
       descriptionLength,
@@ -331,27 +344,27 @@ class ApiClient {
         includeKeywords,
         outputLanguage,
       }),
-      // Trend analyzer
-      getTrends: ()=>{
-        return this.get("/ai/trendanalyze")
-      },
-      // Script generator
-      generateScript: ({
+    // Trend analyzer
+    getTrends: () => {
+      return this.get("/ai/trendanalyze");
+    },
+    // Script generator
+    generateScript: ({
+      videoTopic,
+      videoLength,
+      targetAudience,
+      videoGoal,
+      tone,
+      outputLanguage,
+    }) =>
+      this.post(`/ai/scriptgenerator`, {
         videoTopic,
         videoLength,
         targetAudience,
         videoGoal,
         tone,
         outputLanguage,
-      }) =>
-        this.post(`/ai/scriptgenerator`, {
-          videoTopic,
-          videoLength,
-          targetAudience,
-          videoGoal,
-          tone,
-          outputLanguage,
-        }),
+      }),
   };
 }
 

@@ -23,13 +23,14 @@ export default function CaptionGenerator() {
     targetAudience: "",
     tone: "promotional",
     platform: "facebook",
+    language: "Bangla",
   });
 
   const handleGenerateContent = async () => {
     setIsGenerating(true);
 
     try {
-      const { productDescription, targetAudience, tone, platform } =
+      const { productDescription, targetAudience, tone, platform, language } =
         captionOptions;
 
       // Call the caption generator API
@@ -38,6 +39,7 @@ export default function CaptionGenerator() {
         targetAudience,
         tone,
         platform,
+        language,
       });
       console.log(response);
       // Set the generated content from the API response
@@ -45,7 +47,7 @@ export default function CaptionGenerator() {
     } catch (error) {
       console.log(error);
       
-      alert("Failed to generate content. Please try again.");
+      // alert("Failed to generate content. Please try again.");
     } finally {
       setIsGenerating(false);
     }
@@ -163,6 +165,23 @@ export default function CaptionGenerator() {
                   TikTok
                 </option>
               </select>
+            </div>
+            <div>
+              <Label htmlFor="language" className="text-white">
+                Output Language
+              </Label>
+              <Input
+                id="language"
+                className="text-white"
+                placeholder="e.g., Bangla"
+                value={captionOptions.language}
+                onChange={(e) =>
+                  setCaptionOptions({
+                    ...captionOptions,
+                    language: e.target.value,
+                  })
+                }
+              />
             </div>
             <Button
               onClick={handleGenerateContent}

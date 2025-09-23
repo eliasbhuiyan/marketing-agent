@@ -39,6 +39,7 @@ const {
 } = require("../controllers/integrationController");
 const {
   posterDesignController,
+  posterCaptionGenerator,
 } = require("../controllers/posterDesignController");
 const {
   captionGenerator,
@@ -52,6 +53,7 @@ const {
   refreshTrends,
 } = require("../controllers/trendAnalyzerController");
 const { scriptWriterController } = require("../controllers/youtubeMarketingController");
+
 const upload = multer();
 const router = express.Router();
 
@@ -97,6 +99,10 @@ router.post(
   ]),
   posterDesignController
 );
+// Poster Caption
+router.post("/postercaption", authMiddleware, posterCaptionGenerator);
+
+// Normal Caption Generator
 router.post("/captiongenerator", authMiddleware, captionGenerator);
 router.post("/blogheadings", authMiddleware, BlogHeadingImages);
 router.post("/bloggenerator", authMiddleware, BlogGenerator);
@@ -116,6 +122,7 @@ router.get("/trends", authMiddleware, getTrends);
 
 // Youtube routes
 router.post("/generatescript", authMiddleware, scriptWriterController);
+
 
 // Integration routes
 router.get("/integrations", authMiddleware, getIntegrations);
