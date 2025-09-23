@@ -58,15 +58,15 @@ export default function SelfModelingPage() {
   };
 
   const handleRemoveAsset = (id) => {
-    setAssets(assets.filter(asset => asset.id !== id));
+    setAssets(assets.filter((asset) => asset.id !== id));
   };
 
   const handleGenerateModel = async () => {
     if (!personImage) return;
     console.log("personImage", personImage);
-    console.log("assets", assets);    
+    console.log("assets", assets);
     setIsGenerating(true);
-    
+
     // Simulating generation for UI demo
     setTimeout(() => {
       setIsGenerating(false);
@@ -88,7 +88,7 @@ export default function SelfModelingPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-6xl m-auto">
       {/* Header */}
       <div className="text-center">
         <h1 className="text-3xl font-bold text-white">Self Modeling Creator</h1>
@@ -96,7 +96,7 @@ export default function SelfModelingPage() {
           Create virtual try-on images with your photo and selected items
         </p>
       </div>
-      
+
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Person Image Upload */}
         <Card>
@@ -126,7 +126,7 @@ export default function SelfModelingPage() {
                   <img
                     src={personImage.url}
                     alt="Person"
-                    className="max-w-3xs object-cover rounded-lg"
+                    className="max-w-28 object-cover rounded-lg"
                   />
                   <Button variant="glass" className="cursor-pointer">
                     Replace Image
@@ -158,7 +158,7 @@ export default function SelfModelingPage() {
               Upload clothing, shoes, accessories you want to try on
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-2">
             <div
               onClick={() => assetInputRef.current?.click()}
               className="border-2 border-dashed border-gray-300 hover:bg-white/10 cursor-pointer rounded-lg p-6 text-center"
@@ -169,6 +169,7 @@ export default function SelfModelingPage() {
                 accept="image/jpeg, image/png, image/webp, image/jpg"
                 onChange={handleAssetUpload}
                 className="hidden"
+                multiple
               />
               <Plus className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <p className="text-sm text-white mb-4">
@@ -178,18 +179,17 @@ export default function SelfModelingPage() {
                 Choose File
               </Button>
             </div>
-
             {/* Display uploaded assets */}
             {assets.length > 0 && (
-              <div className="mt-4">
+              <div>
                 <h3 className="text-sm font-medium mb-2">Uploaded Assets:</h3>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="flex gap-2">
                   {assets.map((asset) => (
-                    <div key={asset.id} className="relative group">
+                    <div key={asset.id} className="relative group max-w-20">
                       <img
                         src={asset.url}
                         alt={asset.type}
-                        className="w-full h-24 object-cover rounded-md"
+                        className="w-full object-cover rounded-md"
                       />
                       <div className="absolute top-1 right-1">
                         <Button
@@ -204,7 +204,6 @@ export default function SelfModelingPage() {
                           <X className="h-3 w-3" />
                         </Button>
                       </div>
-                      
                     </div>
                   ))}
                 </div>
@@ -213,72 +212,77 @@ export default function SelfModelingPage() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Additional Options */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Sparkles className="h-5 w-5 mr-2" />
-            Additional Options
-          </CardTitle>
-          <CardDescription>
-            Fine-tune your self-modeling with custom instructions
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label htmlFor="customPrompt">Custom Instructions (Optional)</Label>
-            <Input
-              id="customPrompt"
-              placeholder="E.g., Maintain natural pose, realistic lighting, etc."
-              value={customPrompt}
-              onChange={(e) => setCustomPrompt(e.target.value)}
-            />
-          </div>
-          <Button
-            onClick={handleGenerateModel}
-            disabled={!personImage || isGenerating}
-            className="w-full"
-          >
-            {isGenerating ? "Generating..." : "Generate Self Model"}
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Generated Image */}
-      {generatedImage && (
+      <div className="grid lg:grid-cols-2 gap-6">
+        {/* Additional Options */}
         <Card>
           <CardHeader>
-            <CardTitle>Generated Self Model</CardTitle>
+            <CardTitle className="flex items-center">
+              <Sparkles className="h-5 w-5 mr-2" />
+              Additional Options
+            </CardTitle>
             <CardDescription>
-              Your AI-generated self model is ready
+              Fine-tune your self-modeling with custom instructions
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex justify-center">
-              <img
-                src={generatedImage}
-                alt="Generated Self Model"
-                className="max-w-full h-auto rounded-lg"
+            <div>
+              <Label htmlFor="customPrompt">
+                Custom Instructions (Optional)
+              </Label>
+              <textarea
+                className="w-full mt-1 p-3 border border-gray-300 rounded-md h-24 resize-none text-white"
+                id="customPrompt"
+                placeholder="E.g., Maintain natural pose, realistic lighting, etc."
+                value={customPrompt}
+                onChange={(e) => setCustomPrompt(e.target.value)}
               />
             </div>
-            <div className="flex space-x-2 justify-center">
-              <Button onClick={handleDownload} className="flex items-center">
-                <Download className="h-4 w-4 mr-2" />
-                Download
-              </Button>
-              <Button
-                variant="outline"
-                onClick={handleGenerateModel}
-                className="flex items-center"
-              >
-                <RotateCcw className="h-4 w-4 mr-2" />
-                Regenerate
-              </Button>
+            <Button
+              onClick={handleGenerateModel}
+              disabled={!personImage || isGenerating}
+              className="w-full"
+            >
+              {isGenerating ? "Generating..." : "Generate Self Model"}
+            </Button>
+          </CardContent>
+        </Card>
+        {/* Generated Output */}
+        <Card>
+          <CardHeader>
+            <div className="flex justify-between">
+              <div>
+                <CardTitle>Generated Self Model</CardTitle>
+                <CardDescription>
+                  Your AI-generated self model is ready
+                </CardDescription>
+              </div>
+              {generatedImage && (
+                <Button
+                  onClick={handleDownload}
+                  className="flex items-center"
+                  variant="glass"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download
+                </Button>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex justify-center">
+              {generatedImage ? (
+                <img
+                  src={generatedImage}
+                  alt="Generated Self Model"
+                  className="max-w-full h-auto rounded-lg"
+                />
+              ) : (
+                <p>Generate</p>
+              )}
             </div>
           </CardContent>
         </Card>
-      )}
+      </div>
     </div>
   );
 }
