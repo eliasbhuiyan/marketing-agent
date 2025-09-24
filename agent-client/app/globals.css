@@ -23,7 +23,7 @@
 /* Light mode fallback */
 @media (prefers-color-scheme: light) {
   :root {
-    --background: linear-gradient(135deg, #003332 0%, #052a1f 100%);
+    --background: linear-gradient(135deg, #001f1f 0%, #084b37 100%);
     --foreground: #0b1020;
     --muted: #475569;
     --card: #003332;
