@@ -386,18 +386,6 @@ export default function PostersPage() {
           <CardContent>
             <div className="grid md:grid-cols-4 gap-4 mb-4">
               <div>
-                <Label htmlFor="cap-keywords">Describe about the product</Label>
-                <textarea
-                  id="cap-prompt"
-                  className="w-full mt-1 p-3 border border-gray-300 rounded-md resize-none field-sizing-content"
-                  placeholder="e.g., newarrival, summer, limited, unique"
-                  value={captionPrompt}
-                  onChange={(e) =>
-                    setCaptionPrompt(e.target.value)
-                  }
-                />
-              </div>
-              <div>
                 <Label htmlFor="cap-tone">Tone</Label>
                 <select
                   id="cap-tone"
@@ -475,6 +463,18 @@ export default function PostersPage() {
                   <option value="ru">Russian</option>
                   <option value="ja">Japanese</option>
                 </select>
+              </div>
+              <div>
+                <Label htmlFor="cap-keywords">Describe about the product</Label>
+                <textarea
+                  id="cap-prompt"
+                  className="w-full min-h-10 mt-1 p-3 border border-gray-300 rounded-md resize-none field-sizing-content"
+                  placeholder="e.g., newarrival, summer, limited, unique"
+                  value={captionPrompt}
+                  onChange={(e) =>
+                    setCaptionPrompt(e.target.value)
+                  }
+                />
               </div>
             </div>
             {generatedCaption && (
