@@ -204,7 +204,7 @@ class ApiClient {
     /**
      * Get all integrations for the current brand
      */
-    getAll: () => this.get("/integrations"),
+    getAll: () => this.get(`/integrations?t=${Date.now()}`),
 
     /**
      * Get details for a specific platform integration
@@ -214,7 +214,7 @@ class ApiClient {
     /**
      * Initiate OAuth flow for a platform
      */
-    connect: (platform) => this.post(`/integrations/${platform}/connect`),
+    connect: (platform, data) => this.post(`/integrations/${platform}/connect`, data || {}),
 
     /**
      * Disconnect an integration

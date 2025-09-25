@@ -50,7 +50,14 @@ export default function SettingsPage() {
   const [apiBusy, setApiBusy] = useState(false);
   const [error, setError] = useState("");
   const { userData } = useAuth();
-  const { integrations, connectPlatform, disconnectPlatform, getIntegrationStatus } = useIntegrations();
+  const { integrations, connectPlatform, disconnectPlatform, getIntegrationStatus, refreshIntegrations } = useIntegrations();
+  // WordPress connect modal state
+  const [wpOpen, setWpOpen] = useState(false);
+  const [wpSiteUrl, setWpSiteUrl] = useState("");
+  const [wpUsername, setWpUsername] = useState("");
+  const [wpPassword, setWpPassword] = useState("");
+  const [wpBusy, setWpBusy] = useState(false);
+  const [wpError, setWpError] = useState("");
   // Invite member state
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
@@ -128,6 +135,11 @@ export default function SettingsPage() {
 
   const handleConnectAccount = async (platform) => {
     try {
+      if (platform === 'wordpress') {
+        setWpError("");
+        setWpOpen(true);
+        return;
+      }
       await connectPlatform(platform);
     } catch (error) {
       console.error('Failed to connect platform:', error);
@@ -135,9 +147,34 @@ export default function SettingsPage() {
     }
   };
 
+  const handleConnectWordPress = async () => {
+    try {
+      setWpBusy(true);
+      setWpError("");
+      if (!wpSiteUrl || !wpUsername || !wpPassword) {
+        setWpError('All fields are required');
+        return;
+      }
+      const payload = { credentials: { siteUrl: wpSiteUrl.trim(), username: wpUsername.trim(), appPassword: wpPassword } };
+      const data = await connectPlatform('wordpress', payload);
+      if (data?.integration || data?.message) {
+        setWpOpen(false);
+        setWpSiteUrl("");
+        setWpUsername("");
+        setWpPassword("");
+        await refreshIntegrations();
+      }
+    } catch (e) {
+      setWpError(e?.message || 'Failed to connect WordPress');
+    } finally {
+      setWpBusy(false);
+    }
+  };
+
   const handleDisconnectAccount = async (platform) => {
     try {
       await disconnectPlatform(platform);
+      await refreshIntegrations();
     } catch (error) {
       console.error('Failed to disconnect platform:', error);
       setError(`Failed to disconnect ${platform}: ${error.message}`);
@@ -627,7 +664,7 @@ export default function SettingsPage() {
                                 <div className="flex items-center text-green-600">
                                   <Check className="h-4 w-4 mr-1" />
                                   <span className="text-sm">
-                                    {isActive ? 'Connected' : 'Inactive'}
+                                    {isActive ? 'Connected' : 'Active'}
                                   </span>
                                 </div>
                                 <Button
@@ -679,6 +716,38 @@ export default function SettingsPage() {
                 )}
               </CardContent>
             </Card>
+          )}
+
+          {wpOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+              <div className="w-full max-w-md rounded-lg card-surface shadow-lg">
+                <div className="px-6 py-4 border-b">
+                  <h3 className="text-lg font-semibold">Connect WordPress</h3>
+                  <p className="text-sm text-gray-600 mt-1">Enter your site credentials. Use an Application Password.</p>
+                </div>
+                <div className="px-6 py-4 space-y-4">
+                  {wpError && (
+                    <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded p-2">{wpError}</div>
+                  )}
+                  <div>
+                    <Label htmlFor="wp-site">Site URL</Label>
+                    <Input id="wp-site" placeholder="https://example.com" value={wpSiteUrl} onChange={(e) => setWpSiteUrl(e.target.value)} />
+                  </div>
+                  <div>
+                    <Label htmlFor="wp-user">Username</Label>
+                    <Input id="wp-user" placeholder="your-username" value={wpUsername} onChange={(e) => setWpUsername(e.target.value)} />
+                  </div>
+                  <div>
+                    <Label htmlFor="wp-pass">Application Password</Label>
+                    <Input id="wp-pass" type={showPassword ? 'text' : 'password'} placeholder="abcd efgh ijkl mnop" value={wpPassword} onChange={(e) => setWpPassword(e.target.value)} />
+                  </div>
+                </div>
+                <div className="px-6 py-4 border-t flex items-center justify-end gap-2">
+                  <Button variant="destructive" onClick={() => setWpOpen(false)} disabled={wpBusy}>Cancel</Button>
+                  <Button onClick={handleConnectWordPress} disabled={wpBusy}>{wpBusy ? 'Connecting…' : 'Connect'}</Button>
+                </div>
+              </div>
+            </div>
           )}
 
           {/* Notifications */}

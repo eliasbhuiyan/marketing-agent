@@ -21,6 +21,7 @@ import {
 import apiClient from "@/lib/api";
 import dynamic from "next/dynamic";
 import BlogHeadingPopup from "@/components/BlogHeadingPopup";
+import ContentPublisher from "@/components/ContentPublisher";
 
 // Dynamically import TiptapEditor to avoid SSR issues
 const TiptapEditor = dynamic(() => import("@/components/TiptapEditor"), {
@@ -58,7 +59,7 @@ export default function BlogGenerator() {
         numberOfHeadings: blogOptions.numberOfHeadings,
         outputLanguage: blogOptions.outputLanguage,
       });
-      
+
       setBlogHeadings(response.headings);
       setShowHeadingPopup(true);
     } catch (error) {
@@ -83,7 +84,7 @@ export default function BlogGenerator() {
   const handleSaveHeadings = (customizedHeadings) => {
     setFinalHeadings(customizedHeadings);
     setShowHeadingPopup(false);
-    
+
     // Generate the blog content with the customized headings
     generateBlogWithHeadings(customizedHeadings);
   };
@@ -94,7 +95,7 @@ export default function BlogGenerator() {
   };
 
   const generateBlogWithHeadings = async (headings) => {
-    setIsGenerating(true);    
+    setIsGenerating(true);
     try {
       // Call the blog generator API with the customized headings
       const response = await apiClient.ai.blogGenerator({
@@ -104,7 +105,7 @@ export default function BlogGenerator() {
         seoKeywords: blogOptions.seoKeywords,
         outputLanguage: blogOptions.outputLanguage,
         headings: headings, // Pass the customized headings
-      });      
+      });
       setGeneratedContent(response.blog);
     } catch (error) {
       console.log("Error generating blog content:", error);
@@ -383,6 +384,26 @@ export default function BlogGenerator() {
           </CardContent>
         </Card>
       </div>
+      {
+        generatedContent && (
+          <ContentPublisher
+            content={editorContent}
+            onPublished={() => {
+              setGeneratedContent("");
+              setEditorContent("");
+              setBlogHeadings([]);
+              setFinalHeadings([]);
+              setBlogOptions({
+                blogTopic: "",
+                blogLength: "",
+                writingStyle: "informative",
+                seoKeywords: "",
+                numberOfHeadings: "2",
+                outputLanguage: "English",
+              });
+            }}
+          />)
+      }
     </div>
   );
 }

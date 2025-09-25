@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useIntegrations } from '@/lib/hooks/useIntegrations';
+import Link from 'next/link';
 
 const platformConfig = {
   facebook: { name: 'Facebook', icon: '📘', color: 'bg-blue-500' },
@@ -14,14 +15,15 @@ const platformConfig = {
   medium: { name: 'Medium', icon: '📝', color: 'bg-green-600' }
 };
 
-export default function ContentPublisher({ content, mediaUrls = [] }) {
+export default function ContentPublisher({ content, mediaUrls = [], onPublished = () => {} }) {
   const { integrations, publishContent, getIntegrationStatus } = useIntegrations();
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
   const [publishing, setPublishing] = useState(false);
   const [results, setResults] = useState({});
   const [mediaInput, setMediaInput] = useState('');
 
-  const connectedPlatforms = integrations.filter(integration => integration.isActive);
+  const connectedPlatforms = integrations.filter(integration => integration.status === 'active');
+console.log(integrations);
 
   const handlePlatformToggle = (platform) => {
     setSelectedPlatforms(prev => 
@@ -65,6 +67,11 @@ export default function ContentPublisher({ content, mediaUrls = [] }) {
     });
 
     setResults(resultsMap);
+    // If at least one publish succeeded, trigger the published callback
+    const anySuccess = publishResults.some(r => r.success);
+    if (anySuccess) {
+      onPublished();
+    }
     setPublishing(false);
   };
 
@@ -76,12 +83,12 @@ export default function ContentPublisher({ content, mediaUrls = [] }) {
           <p className="text-gray-600 mb-4">
             You need to connect at least one platform before you can publish content.
           </p>
-          <Button 
-            onClick={() => window.location.href = '/integrations'}
-            className="bg-blue-600 hover:bg-blue-700"
+          <Link 
+            href='/settings'
+            className="bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded-lg"
           >
-            Go to Integrations
-          </Button>
+            Go to Settings
+          </Link>
         </div>
       </Card>
     );

@@ -43,7 +43,8 @@ export async function makeBackendRequest(endpoint, options = {}) {
     if (isAuthProfileGet) {
       nextConfig = { revalidate: 60 }; // Cache profile for 1 minute
     } else if (isIntegrationsGet) {
-      nextConfig = { revalidate: 300 }; // Cache integrations for 5 minutes
+      // Always fetch fresh integrations to reflect immediate changes after connect/disconnect
+      nextConfig = { revalidate: 0 };
     }
   }
 
@@ -55,6 +56,7 @@ export async function makeBackendRequest(endpoint, options = {}) {
     },
     // Apply caching configuration
     next: nextConfig,
+    cache: isIntegrationsGet ? 'no-store' : options.cache,
   });
   
   return response;

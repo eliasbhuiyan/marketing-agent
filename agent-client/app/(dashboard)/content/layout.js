@@ -37,7 +37,7 @@ export default function ContentPage({children}) {
       </div>
       {children}
       {/* Content Publisher */}
-      <ContentPublisher />
+      
     </div>
   );
 }

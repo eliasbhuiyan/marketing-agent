@@ -20,6 +20,10 @@ export function useIntegrations() {
       try {
         setLoading(true);
         setError(null);
+        // Ensure backend session has the correct active brand before fetching
+        try {
+          await apiClient.auth.setActiveBrand(brandID);
+        } catch {}
         const data = await apiClient.integrations.getAll();
         setIntegrations(data.integrations || []);
       } catch (err) {
@@ -31,11 +35,20 @@ export function useIntegrations() {
     }
   };
 
-  const connectPlatform = async (platform) => {
+  const connectPlatform = async (platform, options = {}) => {
     try {
-      const data = await apiClient.integrations.connect(platform);
-      // Redirect to OAuth URL
-      window.location.href = data.authURL;
+      const brandID = getBrandId();
+      if (brandID) {
+        try { await apiClient.auth.setActiveBrand(brandID); } catch {}
+      }
+      const data = await apiClient.integrations.connect(platform, options.credentials);
+      // For OAuth platforms, backend returns authURL; for credential-based, return success
+      if (data.authURL) {
+        window.location.href = data.authURL;
+      }
+      // Refresh list on successful credential connect
+      await fetchIntegrations();
+      return data;
     } catch (err) {
       console.error(`Failed to connect ${platform}:`, err);
       throw err;
@@ -44,6 +57,10 @@ export function useIntegrations() {
 
   const disconnectPlatform = async (platform) => {
     try {
+      const brandID = getBrandId();
+      if (brandID) {
+        try { await apiClient.auth.setActiveBrand(brandID); } catch {}
+      }
       await apiClient.integrations.disconnect(platform);
       // Refresh integrations list
       await fetchIntegrations();
@@ -81,7 +98,7 @@ export function useIntegrations() {
     const integration = integrations.find((int) => int.platform === platform);
     return {
       isConnected: !!integration,
-      isActive: integration?.isActive || false,
+      isActive: integration?.status === 'active',
       connectedAt: integration?.connectedAt,
       accountId: integration?.accountId,
     };
@@ -128,10 +145,13 @@ export function usePlatformIntegration(platform) {
     }
   };
 
-  const connect = async () => {
+  const connect = async (credentials) => {
     try {
-      const data = await apiClient.integrations.connect(platform);
-      window.location.href = data.authURL;
+      const data = await apiClient.integrations.connect(platform, credentials);
+      if (data.authURL) {
+        window.location.href = data.authURL;
+      }
+      return data;
     } catch (err) {
       console.error(`Failed to connect ${platform}:`, err);
       throw err;

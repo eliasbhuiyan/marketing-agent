@@ -7,5 +7,6 @@ import { handleApiRoute } from '@/lib/api-utils';
  */
 export async function POST(request, { params }) {
   const { platform } = params;
-  return handleApiRoute(`/integrations/${platform}/connect`, { method: 'POST' });
+  const body = await request.json().catch(() => ({}));
+  return handleApiRoute(`/integrations/${platform}/connect`, { method: 'POST', body: JSON.stringify(body), headers: { 'Content-Type': 'application/json' } });
 }
