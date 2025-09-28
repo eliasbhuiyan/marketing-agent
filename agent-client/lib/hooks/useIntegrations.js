@@ -37,14 +37,11 @@ export function useIntegrations() {
 
   const connectPlatform = async (platform, options = {}) => {
     try {
-      const brandID = getBrandId();
-      if (brandID) {
-        try { await apiClient.auth.setActiveBrand(brandID); } catch {}
-      }
-      const data = await apiClient.integrations.connect(platform, options.credentials);
+      const data = await apiClient.integrations.connect(platform, options.credentials);      
       // For OAuth platforms, backend returns authURL; for credential-based, return success
-      if (data.authURL) {
+      if (data.authURL && typeof window !== 'undefined') {
         window.location.href = data.authURL;
+        return data;
       }
       // Refresh list on successful credential connect
       await fetchIntegrations();
@@ -57,10 +54,6 @@ export function useIntegrations() {
 
   const disconnectPlatform = async (platform) => {
     try {
-      const brandID = getBrandId();
-      if (brandID) {
-        try { await apiClient.auth.setActiveBrand(brandID); } catch {}
-      }
       await apiClient.integrations.disconnect(platform);
       // Refresh integrations list
       await fetchIntegrations();

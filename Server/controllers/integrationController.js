@@ -5,14 +5,14 @@ const queueService = require('../services/queueService');
 const FacebookService = require('../services/integrations/facebookService');
 const InstagramService = require('../services/integrations/instagramService');
 const WordPressService = require('../services/integrations/wordpressService');
-const MediumService = require('../services/integrations/mediumService');
+const BloggerService = require('../services/integrations/bloggerService');
 
 // Platform service mapping
 const platformServices = {
   facebook: FacebookService,
   instagram: InstagramService,
   wordpress: WordPressService,
-  medium: MediumService
+  blogger: BloggerService,
 };
 
 // Get all integrations for the current brand
@@ -184,6 +184,76 @@ const initiateOAuth = async (req, res) => {
       }
     }
 
+    // Handle Blogger credential-based connection
+    if (platform === 'blogger') {
+      const { siteName, blogId } = req.body || {};
+
+      if (!siteName || !blogId) {
+        return res.status(400).json({ error: 'siteName and blogId are required' });
+      }
+
+      try {
+        // Validate blog ID format (should be numeric)
+        if (!/^\d+$/.test(blogId)) {
+          return res.status(400).json({ error: 'Invalid blog ID format. Blog ID should be numeric.' });
+        }
+
+        // Generate state parameter for OAuth flow
+        const state = `${req.user.id}_${brandId}_${Date.now()}_${encodeURIComponent(JSON.stringify({ siteName, blogId }))}`;
+        
+        const ServiceClass = platformServices[platform];
+        const service = new ServiceClass();
+        
+        const authURL = service.generateAuthURL(state);
+        
+        return res.status(200).json({
+          message: 'OAuth URL generated successfully',
+          authURL,
+          state
+        });
+      } catch (err) {
+        console.error('Blogger connect failed:', err);
+        return res.status(500).json({ error: 'Failed to initiate Blogger connection' });
+      }
+    }
+
+    // Handle Facebook credential-based connection
+    if (platform === 'facebook') {
+      const { appId, appSecret } = req.body || {};
+
+      if (!appId || !appSecret) {
+        return res.status(400).json({ error: 'appId and appSecret are required' });
+      }
+
+      try {
+        // Validate app ID format (should be numeric)
+        if (!/^\d+$/.test(appId)) {
+          return res.status(400).json({ error: 'Invalid App ID format. App ID should be numeric.' });
+        }
+
+        // Generate state parameter for OAuth flow
+        const state = `${req.user.id}_${brandId}_${Date.now()}_${encodeURIComponent(JSON.stringify({ appId, appSecret }))}`;
+        
+        const ServiceClass = platformServices[platform];
+        const service = new ServiceClass();
+        
+        // Temporarily set credentials for OAuth URL generation
+        service.clientId = appId;
+        service.clientSecret = appSecret;
+        
+        const authURL = service.generateAuthURL(state);
+        
+        return res.status(200).json({
+          message: 'OAuth URL generated successfully',
+          authURL,
+          state
+        });
+      } catch (err) {
+        console.error('Facebook connect failed:', err);
+        return res.status(500).json({ error: 'Failed to initiate Facebook connection' });
+      }
+    }
+
     // Default OAuth flow for other platforms
     const ServiceClass = platformServices[platform];
     const service = new ServiceClass();
@@ -219,7 +289,11 @@ const handleOAuthCallback = async (req, res) => {
     }
 
     // Parse state to get user and brand info
-    const [userId, brandId, timestamp] = state.split('_');
+    const stateParts = state.split('_');
+    const userId = stateParts[0];
+    const brandId = stateParts[1];
+    const timestamp = stateParts[2];
+    const credentialsData = stateParts[3] ? JSON.parse(decodeURIComponent(stateParts[3])) : null;
     
     if (!userId || !brandId) {
       return res.redirect(`${process.env.CLIENT_URL}/settings?error=invalid_state`);
@@ -231,6 +305,28 @@ const handleOAuthCallback = async (req, res) => {
     }
 
     const service = new ServiceClass();
+
+    // Platform-specific: use provided credentials
+    let blogId = null;
+    let blogName = null;
+    let facebookAppId = null;
+    let facebookAppSecret = null;
+    
+    if (platform === 'blogger' && credentialsData) {
+      blogId = credentialsData.blogId;
+      blogName = credentialsData.siteName;
+    }
+    
+    if (platform === 'facebook' && credentialsData) {
+      facebookAppId = credentialsData.appId;
+      facebookAppSecret = credentialsData.appSecret;
+    }
+
+    // Set credentials if provided
+    if (platform === 'facebook' && facebookAppId && facebookAppSecret) {
+      service.clientId = facebookAppId;
+      service.clientSecret = facebookAppSecret;
+    }
 
     // Exchange code for tokens
     const tokens = await service.exchangeCodeForToken(code);
@@ -250,10 +346,14 @@ const handleOAuthCallback = async (req, res) => {
       userId: userId,
       platform: platform,
       accountId: userProfile.id,
+      accountName: platform === 'blogger' ? blogName : userProfile.name,
+      accountUsername: userProfile.email,
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
       expiresAt: tokens.expiresIn ? new Date(Date.now() + tokens.expiresIn * 1000) : null,
-      status: 'active'
+      status: 'active',
+      platformData: platform === 'blogger' && blogId ? { blogId, blogName } : 
+                    platform === 'facebook' && facebookAppId ? { appId: facebookAppId, appSecret: facebookAppSecret } : {},
     };
 
     if (integration) {
@@ -380,11 +480,27 @@ const publishContent = async (req, res) => {
       }
     }
 
-    // Publish content
+    // Platform-specific publish handling
+    if (platform === 'blogger') {
+      const bloggerBlogId = integration.platformData?.blogId;
+      if (!bloggerBlogId) {
+        return res.status(400).json({ error: 'No Blogger blog connected to this account' });
+      }
+      const title = (content || '').split('\n')[0].slice(0, 80) || 'New Post';
+      const result = await service.publishContent({
+        blogId: bloggerBlogId,
+        title,
+        content,
+        accessToken,
+      });
+      return res.status(200).json({ message: 'Content published successfully', result });
+    }
+
+    // Default publish content
     const result = await service.publishContent({
       content,
       mediaUrls,
-      accessToken
+      accessToken,
     });
 
     res.status(200).json({

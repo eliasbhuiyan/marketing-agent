@@ -7,6 +7,9 @@ class FacebookService extends BaseIntegrationService {
       clientId: process.env.FACEBOOK_APP_ID,
       clientSecret: process.env.FACEBOOK_APP_SECRET
     });
+    // Ensure OAuth credentials are available as instance properties
+    this.clientId = process.env.FACEBOOK_APP_ID;
+    this.clientSecret = process.env.FACEBOOK_APP_SECRET;
   }
 
   generateAuthURL(state) {
@@ -42,7 +45,8 @@ class FacebookService extends BaseIntegrationService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.error?.message || 'Unknown error'}`);
       }
 
       const data = await response.json();

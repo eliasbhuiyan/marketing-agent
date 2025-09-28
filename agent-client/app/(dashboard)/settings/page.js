@@ -58,6 +58,18 @@ export default function SettingsPage() {
   const [wpPassword, setWpPassword] = useState("");
   const [wpBusy, setWpBusy] = useState(false);
   const [wpError, setWpError] = useState("");
+  // Blogger connect modal state
+  const [bloggerOpen, setBloggerOpen] = useState(false);
+  const [bloggerSiteName, setBloggerSiteName] = useState("");
+  const [bloggerBlogId, setBloggerBlogId] = useState("");
+  const [bloggerBusy, setBloggerBusy] = useState(false);
+  const [bloggerError, setBloggerError] = useState("");
+  // Facebook connect modal state
+  const [facebookOpen, setFacebookOpen] = useState(false);
+  const [facebookAppId, setFacebookAppId] = useState("");
+  const [facebookAppSecret, setFacebookAppSecret] = useState("");
+  const [facebookBusy, setFacebookBusy] = useState(false);
+  const [facebookError, setFacebookError] = useState("");
   // Invite member state
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
@@ -115,12 +127,12 @@ export default function SettingsPage() {
       color: "text-gray-600",
     },
     {
-      id: 4,
-      platform: "medium",
-      name: "Medium",
-      description: "Connect your Medium account",
-      icon: FileText,
-      color: "text-green-600",
+      id: 5,
+      platform: "blogger",
+      name: "Blogger",
+      description: "Connect your Google Blogger account",
+      icon: Globe,
+      color: "text-orange-600",
     },
   ];
 
@@ -135,11 +147,26 @@ export default function SettingsPage() {
 
   const handleConnectAccount = async (platform) => {
     try {
+      console.log("platform", platform);
+      
       if (platform === 'wordpress') {
         setWpError("");
         setWpOpen(true);
         return;
       }
+      
+      if (platform === 'blogger') {
+        setBloggerError("");
+        setBloggerOpen(true);
+        return;
+      }
+      
+      if (platform === 'facebook') {
+        setFacebookError("");
+        setFacebookOpen(true);
+        return;
+      }
+      
       await connectPlatform(platform);
     } catch (error) {
       console.error('Failed to connect platform:', error);
@@ -168,6 +195,52 @@ export default function SettingsPage() {
       setWpError(e?.message || 'Failed to connect WordPress');
     } finally {
       setWpBusy(false);
+    }
+  };
+
+  const handleConnectBlogger = async () => {
+    try {
+      setBloggerBusy(true);
+      setBloggerError("");
+      if (!bloggerSiteName || !bloggerBlogId) {
+        setBloggerError('Site name and Blog ID are required');
+        return;
+      }
+      const payload = { credentials: { siteName: bloggerSiteName.trim(), blogId: bloggerBlogId.trim() } };
+      const data = await connectPlatform('blogger', payload);
+      if (data?.integration || data?.message) {
+        setBloggerOpen(false);
+        setBloggerSiteName("");
+        setBloggerBlogId("");
+        await refreshIntegrations();
+      }
+    } catch (e) {
+      setBloggerError(e?.message || 'Failed to connect Blogger');
+    } finally {
+      setBloggerBusy(false);
+    }
+  };
+
+  const handleConnectFacebook = async () => {
+    try {
+      setFacebookBusy(true);
+      setFacebookError("");
+      if (!facebookAppId || !facebookAppSecret) {
+        setFacebookError('App ID and App Secret are required');
+        return;
+      }
+      const payload = { credentials: { appId: facebookAppId.trim(), appSecret: facebookAppSecret.trim() } };
+      const data = await connectPlatform('facebook', payload);
+      if (data?.integration || data?.message) {
+        setFacebookOpen(false);
+        setFacebookAppId("");
+        setFacebookAppSecret("");
+        await refreshIntegrations();
+      }
+    } catch (e) {
+      setFacebookError(e?.message || 'Failed to connect Facebook');
+    } finally {
+      setFacebookBusy(false);
     }
   };
 
@@ -745,6 +818,87 @@ export default function SettingsPage() {
                 <div className="px-6 py-4 border-t flex items-center justify-end gap-2">
                   <Button variant="destructive" onClick={() => setWpOpen(false)} disabled={wpBusy}>Cancel</Button>
                   <Button onClick={handleConnectWordPress} disabled={wpBusy}>{wpBusy ? 'Connecting…' : 'Connect'}</Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {bloggerOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+              <div className="w-full max-w-md rounded-lg card-surface shadow-lg">
+                <div className="px-6 py-4 border-b">
+                  <h3 className="text-lg font-semibold">Connect Blogger</h3>
+                  <p className="text-sm text-gray-600 mt-1">Enter your Blogger site details. You'll be redirected to Google for authorization.</p>
+                </div>
+                <div className="px-6 py-4 space-y-4">
+                  {bloggerError && (
+                    <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded p-2">{bloggerError}</div>
+                  )}
+                  <div>
+                    <Label htmlFor="blogger-site">Site Name</Label>
+                    <Input 
+                      id="blogger-site" 
+                      placeholder="My Awesome Blog" 
+                      value={bloggerSiteName} 
+                      onChange={(e) => setBloggerSiteName(e.target.value)} 
+                    />
+                    <p className="text-xs text-gray-500 mt-1">A friendly name for your blog</p>
+                  </div>
+                  <div>
+                    <Label htmlFor="blogger-id">Blog ID</Label>
+                    <Input 
+                      id="blogger-id" 
+                      placeholder="1234567890123456789" 
+                      value={bloggerBlogId} 
+                      onChange={(e) => setBloggerBlogId(e.target.value)} 
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Find this in your Blogger dashboard URL or settings</p>
+                  </div>
+                </div>
+                <div className="px-6 py-4 border-t flex items-center justify-end gap-2">
+                  <Button variant="destructive" onClick={() => setBloggerOpen(false)} disabled={bloggerBusy}>Cancel</Button>
+                  <Button onClick={handleConnectBlogger} disabled={bloggerBusy}>{bloggerBusy ? 'Connecting…' : 'Connect'}</Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {facebookOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+              <div className="w-full max-w-md rounded-lg card-surface shadow-lg">
+                <div className="px-6 py-4 border-b">
+                  <h3 className="text-lg font-semibold">Connect Facebook</h3>
+                  <p className="text-sm text-gray-600 mt-1">Enter your Facebook App credentials. You'll be redirected to Facebook for authorization.</p>
+                </div>
+                <div className="px-6 py-4 space-y-4">
+                  {facebookError && (
+                    <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded p-2">{facebookError}</div>
+                  )}
+                  <div>
+                    <Label htmlFor="facebook-app-id">App ID</Label>
+                    <Input 
+                      id="facebook-app-id" 
+                      placeholder="1234567890123456" 
+                      value={facebookAppId} 
+                      onChange={(e) => setFacebookAppId(e.target.value)} 
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Find this in your Facebook App settings</p>
+                  </div>
+                  <div>
+                    <Label htmlFor="facebook-app-secret">App Secret</Label>
+                    <Input 
+                      id="facebook-app-secret" 
+                      type="password"
+                      placeholder="abcdef1234567890abcdef1234567890" 
+                      value={facebookAppSecret} 
+                      onChange={(e) => setFacebookAppSecret(e.target.value)} 
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Keep this secure - it's your app's private key</p>
+                  </div>
+                </div>
+                <div className="px-6 py-4 border-t flex items-center justify-end gap-2">
+                  <Button variant="destructive" onClick={() => setFacebookOpen(false)} disabled={facebookBusy}>Cancel</Button>
+                  <Button onClick={handleConnectFacebook} disabled={facebookBusy}>{facebookBusy ? 'Connecting…' : 'Connect'}</Button>
                 </div>
               </div>
             </div>

@@ -12,7 +12,7 @@ const platformConfig = {
   facebook: { name: 'Facebook', icon: '📘', color: 'bg-blue-500' },
   instagram: { name: 'Instagram', icon: '📷', color: 'bg-pink-500' },
   wordpress: { name: 'WordPress', icon: '🌐', color: 'bg-gray-600' },
-  medium: { name: 'Medium', icon: '📝', color: 'bg-green-600' }
+  blogger: { name: 'Blogger', icon: '🅱️', color: 'bg-orange-500' }
 };
 
 export default function ContentPublisher({ content, mediaUrls = [], onPublished = () => {} }) {

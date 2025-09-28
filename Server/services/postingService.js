@@ -3,7 +3,6 @@ const Post = require('../models/postSchema');
 const FacebookService = require('./integrations/facebookService');
 const InstagramService = require('./integrations/instagramService');
 const WordPressService = require('./integrations/wordpressService');
-const MediumService = require('./integrations/mediumService');
 const LinkedInService = require('./integrations/linkedinService');
 
 // Platform service mapping
@@ -11,7 +10,6 @@ const platformServices = {
   facebook: FacebookService,
   instagram: InstagramService,
   wordpress: WordPressService,
-  medium: MediumService,
   linkedin: LinkedInService
 };
 
@@ -363,7 +361,6 @@ class PostingService {
       instagram: { maxLength: 2200, maxMedia: 10, requiresMedia: true },
       linkedin: { maxLength: 3000, maxMedia: 9 },
       wordpress: { maxLength: 10000, maxMedia: 0 },
-      medium: { maxLength: 10000, maxMedia: 0 }
     };
 
     const limits = platformLimits[platform];

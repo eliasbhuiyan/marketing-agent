@@ -24,7 +24,7 @@ const postSchema = new mongoose.Schema({
   // Platform Information
   platform: {
     type: String,
-    enum: ["facebook", "instagram", "linkedin", "wordpress", "medium"],
+    enum: ["facebook", "instagram", "linkedin", "wordpress"],
     required: true,
     index: true
   },

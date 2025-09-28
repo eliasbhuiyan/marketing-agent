@@ -2,7 +2,6 @@ const Integration = require('../models/integrationSchema');
 const FacebookService = require('./integrations/facebookService');
 const InstagramService = require('./integrations/instagramService');
 const WordPressService = require('./integrations/wordpressService');
-const MediumService = require('./integrations/mediumService');
 const LinkedInService = require('./integrations/linkedinService');
 
 // Platform service mapping
@@ -10,7 +9,6 @@ const platformServices = {
   facebook: FacebookService,
   instagram: InstagramService,
   wordpress: WordPressService,
-  medium: MediumService,
   linkedin: LinkedInService
 };
 

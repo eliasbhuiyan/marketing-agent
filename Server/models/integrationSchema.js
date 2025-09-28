@@ -20,7 +20,7 @@ const integrationSchema = new mongoose.Schema(
     // Platform Information
     platform: {
       type: String,
-      enum: ["facebook", "instagram", "linkedin", "wordpress", "medium"],
+      enum: ["facebook", "instagram", "linkedin", "wordpress", "blogger"],
       required: true,
       index: true,
     },

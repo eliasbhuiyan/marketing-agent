@@ -2,7 +2,6 @@ const Integration = require('../models/integrationSchema');
 const FacebookService = require('../services/integrations/facebookService');
 const InstagramService = require('../services/integrations/instagramService');
 const WordPressService = require('../services/integrations/wordpressService');
-const MediumService = require('../services/integrations/mediumService');
 const LinkedInService = require('../services/integrations/linkedinService');
 
 // Platform service mapping
@@ -10,7 +9,6 @@ const platformServices = {
   facebook: FacebookService,
   instagram: InstagramService,
   wordpress: WordPressService,
-  medium: MediumService,
   linkedin: LinkedInService
 };
 
@@ -52,14 +50,6 @@ const oauthConfigs = {
       'posts'
     ],
     tokenUrl: 'https://public-api.wordpress.com/oauth2/token'
-  },
-  medium: {
-    authUrl: 'https://medium.com/m/oauth/authorize',
-    scopes: [
-      'basicProfile',
-      'publishPost'
-    ],
-    tokenUrl: 'https://api.medium.com/v1/tokens'
   }
 };
 
@@ -313,7 +303,6 @@ const revokePlatformToken = async (platform, accessToken) => {
     facebook: `https://graph.facebook.com/v18.0/me/permissions?access_token=${accessToken}`,
     linkedin: `https://www.linkedin.com/oauth/v2/revoke`,
     wordpress: null, // WordPress doesn't support token revocation
-    medium: null, // Medium doesn't support token revocation
     instagram: `https://graph.facebook.com/v18.0/me/permissions?access_token=${accessToken}`
   };
 
@@ -334,9 +323,7 @@ const getClientId = (platform) => {
   const clientIds = {
     facebook: process.env.FACEBOOK_APP_ID,
     instagram: process.env.FACEBOOK_APP_ID, // Instagram uses Facebook app
-    linkedin: process.env.LINKEDIN_CLIENT_ID,
     wordpress: process.env.WORDPRESS_CLIENT_ID,
-    medium: process.env.MEDIUM_CLIENT_ID
   };
   
   const clientId = clientIds[platform];
@@ -356,7 +343,6 @@ const getClientSecret = (platform) => {
     instagram: process.env.FACEBOOK_APP_SECRET, // Instagram uses Facebook app
     linkedin: process.env.LINKEDIN_CLIENT_SECRET,
     wordpress: process.env.WORDPRESS_CLIENT_SECRET,
-    medium: process.env.MEDIUM_CLIENT_SECRET
   };
   
   const clientSecret = clientSecrets[platform];

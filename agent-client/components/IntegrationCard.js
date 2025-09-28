@@ -27,13 +27,6 @@ const platformConfig = {
     color: 'bg-gray-600',
     requirements: 'Requires WordPress.com account'
   },
-  medium: {
-    name: 'Medium',
-    description: 'Connect your Medium account to publish articles',
-    icon: '📝',
-    color: 'bg-green-600',
-    requirements: 'Requires Medium account'
-  }
 };
 
 export default function IntegrationCard({ platform }) {
