@@ -45,10 +45,56 @@ export default function BlogGenerator() {
     numberOfHeadings: "2",
     outputLanguage: "English",
   });
+  const [errors, setErrors] = useState({});
 
   // Set up effect to update editor content when generated content changes
 
-  const handleGenerateContent = async () => {
+  const validateInputs = () => {
+    const newErrors = {};
+    if (!blogOptions.blogTopic.trim()) newErrors.blogTopic = true;
+    if (!blogOptions.blogLength.trim()) newErrors.blogLength = true;
+    if (!blogOptions.seoKeywords.trim()) newErrors.seoKeywords = true;
+    if (!blogOptions.outputLanguage.trim()) newErrors.outputLanguage = true;
+    
+    setErrors(newErrors);
+    
+    if (Object.keys(newErrors).length > 0) {
+      setApiError("Please fill in all required fields.");
+      return false;
+    }
+    
+    setApiError(null);
+    return true;
+  };
+  
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setBlogOptions((prev) => ({
+      ...prev,
+      [id === 'blog-topic' ? 'blogTopic' : 
+       id === 'blog-length' ? 'blogLength' : 
+       id === 'writing-style' ? 'writingStyle' : 
+       id === 'seo-keywords' ? 'seoKeywords' :
+       id === 'number-of-headings' ? 'numberOfHeadings' :
+       id === 'output-language' ? 'outputLanguage' : id]: value
+    }));
+    
+    if (errors[id === 'blog-topic' ? 'blogTopic' : 
+         id === 'blog-length' ? 'blogLength' : 
+         id === 'seo-keywords' ? 'seoKeywords' :
+         id === 'output-language' ? 'outputLanguage' : id]) {
+      setErrors((prev) => ({ ...prev, [id === 'blog-topic' ? 'blogTopic' : 
+         id === 'blog-length' ? 'blogLength' : 
+         id === 'seo-keywords' ? 'seoKeywords' :
+         id === 'output-language' ? 'outputLanguage' : id]: false }));
+    }
+  };
+
+  const handleGenerateContent = async (e) => {
+    e.preventDefault();
+
+    if (!validateInputs()) return;
+
     setIsGenerating(true);
     try {
       // Call the blog generator API
@@ -140,155 +186,161 @@ export default function BlogGenerator() {
             <CardTitle className="text-white">Blog Generation Settings</CardTitle>
             <CardDescription className="text-white">Configure your blog requirements</CardDescription>
           </CardHeader>
-          <CardContent className="grid grid-cols-3 gap-4">
-            <div>
-              <Label htmlFor="blog-topic" className="text-white">Blog Topic</Label>
-              <Input
-                id="blog-topic"
-                placeholder="e.g., The Future of AI in Marketing"
-                value={blogOptions.blogTopic}
-                onChange={(e) =>
-                  setBlogOptions({ ...blogOptions, blogTopic: e.target.value })
-                }
-                className="text-white"
-              />
-            </div>
-            <div>
-              <Label htmlFor="blog-length" className="text-white">Blog Length</Label>
-              <select
-                id="blog-length"
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md text-white bg-transparent"
-                value={blogOptions.blogLength}
-                onChange={(e) =>
-                  setBlogOptions({ ...blogOptions, blogLength: e.target.value })
-                }
-              >
-                <option value="300-500">Short (300-500 words)</option>
-                <option value="500-1000">Medium (500-1000 words)</option>
-                <option value="1000+">Long (1000+ words)</option>
-              </select>
-            </div>
-            <div>
-              <Label htmlFor="blog-length" className="text-white">Number of headings</Label>
-              <select
-                id="number-of-headings"
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md text-white bg-transparent"
-                value={blogOptions.numberOfHeadings}
-                onChange={(e) =>
-                  setBlogOptions({
-                    ...blogOptions,
-                    numberOfHeadings: e.target.value,
-                  })
-                }
-              >
-                <option value="1">1 heading</option>
-                <option value="2">2 headings</option>
-                <option value="3">3 headings</option>
-                <option value="4">4 headings</option>
-                <option value="5">5 headings</option>
-                <option value="6">6 headings</option>
-              </select>
-            </div>
-            <div>
-              <Label htmlFor="writing-style" className="text-white">Writing Style</Label>
-              <select
-                id="writing-style"
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md text-white bg-transparent"
-                value={blogOptions.writingStyle}
-                onChange={(e) =>
-                  setBlogOptions({
-                    ...blogOptions,
-                    writingStyle: e.target.value,
-                  })
-                }
-              >
-                <option value="informative">Informative</option>
-                <option value="conversational">Conversational</option>
-                <option value="technical">Technical</option>
-                <option value="storytelling">Storytelling</option>
-              </select>
-            </div>
-            <div>
-              <Label htmlFor="seo-keywords" className="text-white">SEO Focus Keywords</Label>
-              <Input
-                id="seo-keywords"
-                placeholder="e.g., marketing, AI, content creation"
-                value={blogOptions.seoKeywords}
-                onChange={(e) =>
-                  setBlogOptions({
-                    ...blogOptions,
-                    seoKeywords: e.target.value,
-                  })
-                }
-                className="text-white"
-              />
-            </div>
-            <div>
-              <Label htmlFor="output-language" className="text-white">Output Language</Label>
-              <Input
-                id="output-language"
-                placeholder="e.g., Bangla, English, Spanish, French"
-                value={blogOptions.outputLanguage}
-                onChange={(e) =>
-                  setBlogOptions({
-                    ...blogOptions,
-                    outputLanguage: e.target.value,
-                  })
-                }
-                className="text-white"
-              />
-            </div>
-            <div>
-              <div className="flex gap-1 items-center">
-                <p className="text-xs text-white">✅</p>
-                <Label htmlFor="human-like" className="text-white">
-                  FAQ (Frequently Asked Questions)
-                </Label>
+          <CardContent >
+            <form className="grid grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="blog-topic" className="text-white">Blog Topic</Label>
+                <Input
+                  id="blog-topic"
+                  placeholder="e.g., The Future of AI in Marketing"
+                  value={blogOptions.blogTopic}
+                  onChange={handleInputChange}
+                  className={`text-white ${errors.blogTopic ? "border-red-500" : ""}`}
+                />
+                {errors.blogTopic && <p className="text-red-500 text-sm mt-1">This field is required</p>}
               </div>
-              <p className="text-sm text-white">
-                Add frequently asked questions (FAQs) to the blog.
-              </p>
-            </div>
-            <div>
-              <div className="flex gap-1 items-center">
-                <p className="text-xs text-white">✅</p>
-                <Label htmlFor="human-like" className="text-white">Human like content</Label>
+              <div>
+                <Label htmlFor="blog-length" className="text-white">Blog Length</Label>
+                <select
+                  id="blog-length"
+                  className="w-full mt-1 p-2 border border-gray-300 rounded-md text-white bg-transparent"
+                  value={blogOptions.blogLength}
+                  onChange={(e) =>
+                    setBlogOptions({ ...blogOptions, blogLength: e.target.value })
+                  }
+                  required
+                >
+                  <option hidden>Select length</option>
+                  <option value="300-500">300-500 words</option>
+                  <option value="500-1000">500-1000 words</option>
+                  <option value="1000-1500">1000-1500 words</option>
+                  <option value="1500-2500">1500-2500 words</option>
+                  <option value="3000+">3000+ words</option>
+                  <option value="4000+">4000+ words</option>
+                  <option value="5000+">5000+ words</option>
+                  <option value="7000+">7000+ words</option>
+                  <option value="9000+">9000+ words</option>
+                  <option value="12000+">12000+ words</option>
+                </select>
               </div>
-              <p className="text-sm text-white">
-                Generate content that is more human like.
-              </p>
-            </div>
-            <div>
-              <div className="flex gap-1 items-center">
-                <p className="text-xs text-white">✅</p>
-                <Label htmlFor="human-like" className="text-white">Image in the blog post</Label>
+              <div>
+                <Label htmlFor="number-of-headings" className="text-white">Number of headings</Label>
+                <select
+                  id="number-of-headings"
+                  className="w-full mt-1 p-2 border border-gray-300 rounded-md text-white bg-transparent"
+                  value={blogOptions.numberOfHeadings}
+                  onChange={(e) =>
+                    setBlogOptions({
+                      ...blogOptions,
+                      numberOfHeadings: e.target.value,
+                    })
+                  }
+                  required
+                >
+                  <option value="4">4 headings</option>
+                  <option value="5">5 headings</option>
+                  <option value="6">6 headings</option>
+                  <option value="7">7 headings</option>
+                  <option value="8">8 headings</option>
+                  <option value="9">9 headings</option>
+                  <option value="10">10 headings</option>
+                </select>
               </div>
-              <p className="text-sm text-white">
-                Add pixabay images to the blog post.
-              </p>
-            </div>
-            <div className="col-span-3 flex flex-col items-center">
-              {apiError && (
-                <div className="text-red-500 text-sm mt-2">{apiError}</div>
-              )}
-              <Button
-                onClick={handleGenerateContent}
-                className="w-fit text-white"
-                disabled={isGenerating}
-              >
-                {isGenerating ? (
-                  <>
-                    <Sparkles className="mr-2 h-4 w-4 animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    Generate Blog
-                  </>
+              <div>
+                <Label htmlFor="writing-style" className="text-white">Writing Style</Label>
+                <select
+                  id="writing-style"
+                  className="w-full mt-1 p-2 border border-gray-300 rounded-md text-white bg-transparent"
+                  value={blogOptions.writingStyle}
+                  required
+                  onChange={(e) =>
+                    setBlogOptions({
+                      ...blogOptions,
+                      writingStyle: e.target.value,
+                    })
+                  }
+                >
+                  <option value="informative">Informative</option>
+                  <option value="conversational">Conversational</option>
+                  <option value="technical">Technical</option>
+                  <option value="storytelling">Storytelling</option>
+                </select>
+              </div>
+              <div>
+                <Label htmlFor="seo-keywords" className="text-white">SEO Focus Keywords</Label>
+                <Input
+                  id="seo-keywords"
+                  placeholder="e.g., marketing, AI, content creation"
+                  value={blogOptions.seoKeywords}
+                  onChange={handleInputChange}
+                  className={`text-white ${errors.seoKeywords ? "border-red-500" : ""}`}
+                />
+                {errors.seoKeywords && <p className="text-red-500 text-sm mt-1">This field is required</p>}
+              </div>
+              <div>
+                <Label htmlFor="output-language" className="text-white">Output Language</Label>
+                <Input
+                  id="output-language"
+                  placeholder="e.g., Bangla, English, Spanish, French"
+                  value={blogOptions.outputLanguage}
+                  onChange={handleInputChange}
+                  className={`text-white ${errors.outputLanguage ? "border-red-500" : ""}`}
+                />
+                {errors.outputLanguage && <p className="text-red-500 text-sm mt-1">This field is required</p>}
+              </div>
+              <div>
+                <div className="flex gap-1 items-center">
+                  <p className="text-xs text-white">✅</p>
+                  <Label htmlFor="human-like" className="text-white">
+                    FAQ (Frequently Asked Questions)
+                  </Label>
+                </div>
+                <p className="text-sm text-white">
+                  Add frequently asked questions (FAQs) to the blog.
+                </p>
+              </div>
+              <div>
+                <div className="flex gap-1 items-center">
+                  <p className="text-xs text-white">✅</p>
+                  <Label htmlFor="human-like" className="text-white">Human like content</Label>
+                </div>
+                <p className="text-sm text-white">
+                  Generate content that is more human like.
+                </p>
+              </div>
+              <div>
+                <div className="flex gap-1 items-center">
+                  <p className="text-xs text-white">✅</p>
+                  <Label htmlFor="human-like" className="text-white">Image in the blog post</Label>
+                </div>
+                <p className="text-sm text-white">
+                  Add pixabay images to the blog post.
+                </p>
+              </div>
+              <div className="col-span-3 flex flex-col items-center">
+                {apiError && (
+                  <div className="text-red-500 text-sm mb-2">{apiError}</div>
                 )}
-              </Button>
-            </div>
+                <Button
+                  onClick={handleGenerateContent}
+                  className="w-fit text-white"
+                  disabled={isGenerating}
+                  type="submit"
+                >
+                  {isGenerating ? (
+                    <>
+                      <Sparkles className="mr-2 h-4 w-4 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      Generate Blog
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
           </CardContent>
         </Card>
       </div>

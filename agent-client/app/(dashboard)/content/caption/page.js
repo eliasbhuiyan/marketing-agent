@@ -25,8 +25,41 @@ export default function CaptionGenerator() {
     platform: "facebook",
     language: "Bangla",
   });
+  const [errors, setErrors] = useState({});
 
-  const handleGenerateContent = async () => {
+  // Validate required fields
+  const validateInputs = () => {
+    const newErrors = {};
+    if (!captionOptions.productDescription.trim()) newErrors.productDescription = true;
+    if (!captionOptions.targetAudience.trim()) newErrors.targetAudience = true;
+    if (!captionOptions.language.trim()) newErrors.language = true;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setCaptionOptions((prev) => ({
+      ...prev,
+      [id === 'product-description' ? 'productDescription' : 
+        id === 'target-audience' ? 'targetAudience' : 
+        id === 'tone' ? 'tone' : 
+        id === 'platform' ? 'platform' : 
+        id === 'language' ? 'language' : id]: value
+    }));
+    if (errors[id === 'product-description' ? 'productDescription' : 
+        id === 'target-audience' ? 'targetAudience' : 
+        id === 'language' ? 'language' : id]) {
+      setErrors((prev) => ({ ...prev, [id === 'product-description' ? 'productDescription' : 
+        id === 'target-audience' ? 'targetAudience' : 
+        id === 'language' ? 'language' : id]: false }));
+    }
+  };
+
+  const handleGenerateContent = async (e) => {
+    e.preventDefault(); // Prevent default form submission
+    if (!validateInputs()) return; // Guard against incomplete form
+
     setIsGenerating(true);
 
     try {
@@ -46,7 +79,7 @@ export default function CaptionGenerator() {
       setGeneratedContent(response.caption);
     } catch (error) {
       console.log(error);
-      
+
       // alert("Failed to generate content. Please try again.");
     } finally {
       setIsGenerating(false);
@@ -70,136 +103,128 @@ export default function CaptionGenerator() {
               Configure your caption requirements
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="product-description" className="text-white">
-                Product/Service Description
-              </Label>
-              <textarea
-                id="product-description"
-                className="w-full mt-1 p-3 border border-gray-300 rounded-md h-24 resize-none text-white"
-                placeholder="Describe your product or service..."
-                value={captionOptions.productDescription}
-                onChange={(e) =>
-                  setCaptionOptions({
-                    ...captionOptions,
-                    productDescription: e.target.value,
-                  })
-                }
-              />
-            </div>
-            <div>
-              <Label htmlFor="target-audience" className="text-white">
-                Target Audience
-              </Label>
-              <Input
-                id="target-audience"
-                className="text-white"
-                placeholder="e.g., Young professionals, Tech enthusiasts"
-                value={captionOptions.targetAudience}
-                onChange={(e) =>
-                  setCaptionOptions({
-                    ...captionOptions,
-                    targetAudience: e.target.value,
-                  })
-                }
-              />
-            </div>
-            <div>
-              <Label htmlFor="tone" className="text-white">
-                Tone
-              </Label>
-              <select
-                id="tone"
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md text-white"
-                value={captionOptions.tone}
-                onChange={(e) =>
-                  setCaptionOptions({ ...captionOptions, tone: e.target.value })
-                }
+          <CardContent>
+            <form className="space-y-4" onSubmit={handleGenerateContent}>
+              <div>
+                <Label htmlFor="product-description" className="text-white">
+                  Product/Service Description *
+                </Label>
+                <textarea
+                  id="product-description"
+                  className={`w-full mt-1 p-3 border ${errors.productDescription ? "border-red-500" : "border-gray-300"} rounded-md h-24 resize-none text-white`}
+                  placeholder="Describe your product or service..."
+                  value={captionOptions.productDescription}
+                  onChange={handleInputChange}
+                />
+                {errors.productDescription && <p className="text-red-500 text-sm mt-1">This field is required</p>}
+              </div>
+              <div>
+                <Label htmlFor="target-audience" className="text-white">
+                  Target Audience *
+                </Label>
+                <Input
+                  id="target-audience"
+                  className={`text-white ${errors.targetAudience ? "border-red-500" : ""}`}
+                  placeholder="e.g., Young professionals, Tech enthusiasts"
+                  value={captionOptions.targetAudience}
+                  onChange={handleInputChange}
+                />
+                {errors.targetAudience && <p className="text-red-500 text-sm mt-1">This field is required</p>}
+              </div>
+              <div>
+                <Label htmlFor="tone" className="text-white">
+                  Tone
+                </Label>
+                <select
+                  required
+                  id="tone"
+                  className="w-full mt-1 p-2 border border-gray-300 rounded-md text-white"
+                  value={captionOptions.tone}
+                  onChange={(e) =>
+                    setCaptionOptions({ ...captionOptions, tone: e.target.value })
+                  }
+                >
+                  <option value="promotional" className="text-white">
+                    Promotional
+                  </option>
+                  <option value="professional" className="text-white">
+                    Professional
+                  </option>
+                  <option value="casual" className="text-white">
+                    Casual
+                  </option>
+                  <option value="playful" className="text-white">
+                    Playful
+                  </option>
+                  <option value="luxury" className="text-white">
+                    Luxury
+                  </option>
+                </select>
+              </div>
+              <div>
+                <Label htmlFor="platform" className="text-white">
+                  Platform
+                </Label>
+                <select
+                  required
+                  id="platform"
+                  className="w-full mt-1 p-2 border border-gray-300 rounded-md text-white"
+                  value={captionOptions.platform}
+                  onChange={(e) =>
+                    setCaptionOptions({
+                      ...captionOptions,
+                      platform: e.target.value,
+                    })
+                  }
+                >
+                  <option value="facebook" className="text-white">
+                    Facebook
+                  </option>
+                  <option value="instagram" className="text-white">
+                    Instagram
+                  </option>
+                  <option value="linkedin" className="text-white">
+                    LinkedIn
+                  </option>
+                  <option value="twitter" className="text-white">
+                    Twitter
+                  </option>
+                  <option value="tiktok" className="text-white">
+                    TikTok
+                  </option>
+                </select>
+              </div>
+              <div>
+                <Label htmlFor="language" className="text-white">
+                  Output Language *
+                </Label>
+                <Input
+                  id="language"
+                  className={`text-white ${errors.language ? "border-red-500" : ""}`}
+                  placeholder="e.g., Bangla"
+                  value={captionOptions.language}
+                  onChange={handleInputChange}
+                />
+                {errors.language && <p className="text-red-500 text-sm mt-1">This field is required</p>}
+              </div>
+              <Button
+                className="w-full text-white"
+                disabled={isGenerating}
+                type="submit"
               >
-                <option value="promotional" className="text-white">
-                  Promotional
-                </option>
-                <option value="professional" className="text-white">
-                  Professional
-                </option>
-                <option value="casual" className="text-white">
-                  Casual
-                </option>
-                <option value="playful" className="text-white">
-                  Playful
-                </option>
-                <option value="luxury" className="text-white">
-                  Luxury
-                </option>
-              </select>
-            </div>
-            <div>
-              <Label htmlFor="platform" className="text-white">
-                Platform
-              </Label>
-              <select
-                id="platform"
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md text-white"
-                value={captionOptions.platform}
-                onChange={(e) =>
-                  setCaptionOptions({
-                    ...captionOptions,
-                    platform: e.target.value,
-                  })
-                }
-              >
-                <option value="facebook" className="text-white">
-                  Facebook
-                </option>
-                <option value="instagram" className="text-white">
-                  Instagram
-                </option>
-                <option value="linkedin" className="text-white">
-                  LinkedIn
-                </option>
-                <option value="twitter" className="text-white">
-                  Twitter
-                </option>
-                <option value="tiktok" className="text-white">
-                  TikTok
-                </option>
-              </select>
-            </div>
-            <div>
-              <Label htmlFor="language" className="text-white">
-                Output Language
-              </Label>
-              <Input
-                id="language"
-                className="text-white"
-                placeholder="e.g., Bangla"
-                value={captionOptions.language}
-                onChange={(e) =>
-                  setCaptionOptions({
-                    ...captionOptions,
-                    language: e.target.value,
-                  })
-                }
-              />
-            </div>
-            <Button
-              onClick={handleGenerateContent}
-              className="w-full text-white"
-              disabled={isGenerating}
-            >
-              {isGenerating ? (
-                <>
-                  <Sparkles className="mr-2 h-4 w-4 animate-spin" />
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Generate Caption
-                </>
-              )}
-            </Button>
+                {isGenerating ? (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Generate Caption
+                  </>
+                )}
+              </Button>
+            </form>
           </CardContent>
         </Card>
       </div>

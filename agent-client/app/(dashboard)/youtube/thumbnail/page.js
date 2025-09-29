@@ -17,12 +17,21 @@ import {
   Sparkles,
   Upload,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
 const ThumbnailDesign = () => {
+  const imageInputRef = useRef(null);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [generatedThumbnails, setGeneratedThumbnails] = useState([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [formData, setFormData] = useState({
+    videoTitle: "",
+    videoDescription: "",
+    thumbnailStyle: "professional",
+    brandColor: "#3B82F6"
+  });
+  const [errors, setErrors] = useState({});
+  const [apiError, setApiError] = useState(null);
 
   const thumbnailStyles = [
     {
@@ -39,16 +48,92 @@ const ThumbnailDesign = () => {
     { id: "minimal", name: "Minimal", description: "Simple and elegant" },
   ];
 
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setUploadedImage({ file, url });
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    const fieldName = id === 'video-title' ? 'videoTitle' :
+      id === 'video-description' ? 'videoDescription' :
+        id === 'thumbnail-style' ? 'thumbnailStyle' :
+          id === 'brand-colors' ? 'brandColor' : id;
+
+    setFormData(prev => ({
+      ...prev,
+      [fieldName]: value
+    }));
+
+    // Clear error when user types
+    if (errors[fieldName]) {
+      setErrors(prev => ({
+        ...prev,
+        [fieldName]: false
+      }));
     }
   };
 
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setErrors(prev => ({
+          ...prev,
+          image: 'Please upload a valid image file'
+        }));
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setErrors(prev => ({
+          ...prev,
+          image: 'Image size should be less than 5MB'
+        }));
+        return;
+      }
+
+      const url = URL.createObjectURL(file);
+      setUploadedImage({ file, url });
+
+      // Clear image error if exists
+      if (errors.image) {
+        setErrors(prev => ({
+          ...prev,
+          image: false
+        }));
+      }
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!uploadedImage) {
+      newErrors.image = 'Please upload an image';
+    }
+    if (!formData.videoTitle.trim()) {
+      newErrors.videoTitle = 'Video title is required';
+    }
+    if (!formData.videoDescription.trim()) {
+      newErrors.videoDescription = 'Video description is required';
+    }
+    if (!formData.thumbnailStyle) {
+      newErrors.thumbnailStyle = 'Please select a thumbnail style';
+    }
+    if (!formData.brandColor) {
+      newErrors.brandColor = 'Brand color is required';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleGenerateThumbnails = async () => {
+    if (!validateForm()) {
+      setApiError('Please fill in all required fields');
+      return;
+    }
+    console.log(formData, uploadedImage);
+    
+    setApiError(null);
     setIsGenerating(true);
+
     // Simulate AI generation
     setTimeout(() => {
       setGeneratedThumbnails([
@@ -80,35 +165,41 @@ const ThumbnailDesign = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-              <ImageIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-sm text-gray-600 mb-4">
-                Drop image here or click to upload
-              </p>
+            <div
+              onClick={() => imageInputRef.current?.click()}
+              className={`border-2 border-dashed cursor-pointer hover:bg-white/10 ${errors.image ? 'border-red-500' : 'border-gray-300'} rounded-lg p-6 text-center`}
+            >
               <input
+                ref={imageInputRef}
                 type="file"
-                accept="image/*"
+                accept="image/jpeg, image/png, image/webp, image/jpg"
                 onChange={handleImageUpload}
                 className="hidden"
-                id="image-upload"
               />
-              <Label htmlFor="image-upload">
-                <Button variant="outline" className="cursor-pointer">
-                  Choose Image
-                </Button>
-              </Label>
+              {uploadedImage ? (
+                <div className="space-y-2 flex flex-col items-center">
+                  <img
+                    src={uploadedImage.url}
+                    alt="Uploaded"
+                    className="max-w-3xs object-cover rounded-lg"
+                  />
+                  <Button variant="glass" className="cursor-pointer">
+                    Replace Image
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <ImageIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-sm text-white mb-4">
+                    Drop image here or click to upload
+                  </p>
+                  <Button variant="outline" className="cursor-pointer">
+                    Choose Image
+                  </Button>
+                </>
+              )}
+              {errors.image && <p className="text-red-500 text-sm mt-2">{errors.image}</p>}
             </div>
-
-            {uploadedImage && (
-              <div className="space-y-2">
-                <h4 className="font-medium text-gray-900">Uploaded Image</h4>
-                <img
-                  src={uploadedImage.url}
-                  alt="Uploaded"
-                  className="w-full h-32 object-cover rounded-lg"
-                />
-              </div>
-            )}
           </CardContent>
         </Card>
 
@@ -123,28 +214,43 @@ const ThumbnailDesign = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {apiError && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-4">
+                {apiError}
+              </div>
+            )}
+
             <div>
               <Label htmlFor="video-title">Video Title/Topic</Label>
               <Input
                 id="video-title"
                 placeholder="e.g., AI Marketing Tools Tutorial"
+                value={formData.videoTitle}
+                onChange={handleInputChange}
+                className={errors.videoTitle ? "border-red-500" : ""}
               />
+              {errors.videoTitle && <p className="text-red-500 text-sm mt-1">{errors.videoTitle}</p>}
             </div>
 
             <div>
               <Label htmlFor="video-description">Video Description</Label>
               <textarea
                 id="video-description"
-                className="w-full p-3 border border-gray-300 rounded-md h-20 resize-none"
+                className={`w-full p-3 border ${errors.videoDescription ? "border-red-500" : "border-gray-300"} rounded-md h-20 resize-none`}
                 placeholder="Brief description of your video content..."
+                value={formData.videoDescription}
+                onChange={handleInputChange}
               />
+              {errors.videoDescription && <p className="text-red-500 text-sm mt-1">{errors.videoDescription}</p>}
             </div>
 
             <div>
               <Label htmlFor="thumbnail-style">Thumbnail Style</Label>
               <select
                 id="thumbnail-style"
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                className={`w-full mt-1 p-2 border ${errors.thumbnailStyle ? "border-red-500" : "border-gray-300"} rounded-md`}
+                value={formData.thumbnailStyle}
+                onChange={handleInputChange}
               >
                 {thumbnailStyles.map((style) => (
                   <option key={style.id} value={style.id}>
@@ -152,6 +258,7 @@ const ThumbnailDesign = () => {
                   </option>
                 ))}
               </select>
+              {errors.thumbnailStyle && <p className="text-red-500 text-sm mt-1">{errors.thumbnailStyle}</p>}
             </div>
 
             <div>
@@ -160,16 +267,22 @@ const ThumbnailDesign = () => {
                 <input
                   type="color"
                   id="brand-colors"
-                  defaultValue="#3B82F6"
-                  className="w-10 h-10 rounded border"
+                  value={formData.brandColor}
+                  onChange={handleInputChange}
+                  className={`w-10 h-10 rounded border ${errors.brandColor ? "border-red-500" : ""}`}
                 />
-                <Input defaultValue="#3B82F6" />
+                <Input
+                  value={formData.brandColor}
+                  onChange={handleInputChange}
+                  className={errors.brandColor ? "border-red-500" : ""}
+                />
               </div>
+              {errors.brandColor && <p className="text-red-500 text-sm mt-1">{errors.brandColor}</p>}
             </div>
 
             <Button
               onClick={handleGenerateThumbnails}
-              disabled={!uploadedImage || isGenerating}
+              disabled={isGenerating}
               className="w-full"
               size="lg"
             >

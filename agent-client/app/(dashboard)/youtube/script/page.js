@@ -28,6 +28,16 @@ const ScriptWriter = () => {
     tone: "professional",
     outputLanguage: "",
   });
+  const [errors, setErrors] = useState({});
+
+  const validateInputs = () => {
+    const newErrors = {};
+    if (!userInputs.videoTopic.trim()) newErrors.videoTopic = true;
+    if (!userInputs.targetAudience.trim()) newErrors.targetAudience = true;
+    if (!userInputs.outputLanguage.trim()) newErrors.outputLanguage = true;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
@@ -39,6 +49,13 @@ const ScriptWriter = () => {
         id === 'tone' ? 'tone' : 
         id === 'output-language' ? 'outputLanguage' : id]: value
     }));
+    if (errors[id === 'script-topic' ? 'videoTopic' : 
+        id === 'target-audience' ? 'targetAudience' : 
+        id === 'output-language' ? 'outputLanguage' : id]) {
+      setErrors((prev) => ({ ...prev, [id === 'script-topic' ? 'videoTopic' : 
+        id === 'target-audience' ? 'targetAudience' : 
+        id === 'output-language' ? 'outputLanguage' : id]: false }));
+    }
   };
 
   const handleSliderChange = (e) => {
@@ -49,6 +66,7 @@ const ScriptWriter = () => {
   };
 
   const handleGenerateScript = async () => {
+    if (!validateInputs()) return;
     console.log("Generating script with inputs:", userInputs);
     setIsGenerating(true);
     try {
@@ -85,7 +103,9 @@ const ScriptWriter = () => {
                 placeholder="e.g., AI Marketing Tools Tutorial"
                 value={userInputs.videoTopic}
                 onChange={handleInputChange}
+                className={errors.videoTopic ? "border-red-500" : ""}
               />
+              {errors.videoTopic && <p className="text-red-500 text-sm mt-1">This field is required</p>}
             </div>
 
             <div>
@@ -116,7 +136,9 @@ const ScriptWriter = () => {
                 placeholder="e.g., Marketing professionals, Small business owners"
                 value={userInputs.targetAudience}
                 onChange={handleInputChange}
+                className={errors.targetAudience ? "border-red-500" : ""}
               />
+              {errors.targetAudience && <p className="text-red-500 text-sm mt-1">This field is required</p>}
             </div>
 
             <div>
@@ -155,7 +177,9 @@ const ScriptWriter = () => {
                 placeholder="e.g., Bangla" 
                 value={userInputs.outputLanguage}
                 onChange={handleInputChange}
+                className={errors.outputLanguage ? "border-red-500" : ""}
               />
+              {errors.outputLanguage && <p className="text-red-500 text-sm mt-1">This field is required</p>}
             </div>
             <Button
               onClick={handleGenerateScript}

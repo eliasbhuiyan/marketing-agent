@@ -551,11 +551,11 @@ export default function PostersPage() {
             </div>
 
             <div className="flex space-x-2">
-              <Button onClick={handleSchedulePost} className="flex-1">
+              <Button onClick={handleSchedulePost}>
                 <Calendar className="h-4 w-4 mr-2" />
                 Schedule Post
               </Button>
-              <Button variant="outline">
+              <Button>
                 <Share2 className="h-4 w-4 mr-2" />
                 Publish Now
               </Button>

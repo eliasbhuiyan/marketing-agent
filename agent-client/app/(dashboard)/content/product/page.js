@@ -15,12 +15,6 @@ import { Sparkles, Copy, ShoppingBag, Star, Tag } from "lucide-react";
 import apiClient from "@/lib/api";
 import dynamic from "next/dynamic";
 
-// Dynamically import TiptapEditor to avoid SSR issues
-// const TiptapEditor = dynamic(() => import("@/components/TiptapEditor"), {
-//   ssr: false,
-//   loading: () => <p>Loading Editor...</p>,
-// });
-
 export default function ProductDescriptionGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState("");
@@ -33,15 +27,46 @@ export default function ProductDescriptionGenerator() {
     includeKeywords: "",
     outputLanguage: "English",
   });
-  
-  // Set up effect to update editor content when generated content changes
-  // useEffect(() => {
-  //   if (generatedContent) {
-  //     setEditorContent(generatedContent);
-  //   }
-  // }, [generatedContent]);
+  const [errors, setErrors] = useState({});
+
+  // Validate required fields
+  const validateInputs = () => {
+    const newErrors = {};
+    if (!productOptions.productName.trim()) newErrors.productName = true;
+    if (!productOptions.keyFeatures.trim()) newErrors.keyFeatures = true;
+    if (!productOptions.includeKeywords.trim()) newErrors.includeKeywords = true;
+    if (!productOptions.outputLanguage.trim()) newErrors.outputLanguage = true;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setProductOptions((prev) => ({
+      ...prev,
+      [id === 'product-name' ? 'productName' : 
+        id === 'key-features' ? 'keyFeatures' : 
+        id === 'description-length' ? 'descriptionLength' : 
+        id === 'include-keywords' ? 'includeKeywords' : 
+        id === 'output-language' ? 'outputLanguage' : id]: value
+    }));
+    if (errors[id === 'product-name' ? 'productName' : 
+        id === 'key-features' ? 'keyFeatures' : 
+        id === 'include-keywords' ? 'includeKeywords' : 
+        id === 'output-language' ? 'outputLanguage' : id]) {
+      setErrors((prev) => ({ ...prev, [id === 'product-name' ? 'productName' : 
+        id === 'key-features' ? 'keyFeatures' : 
+        id === 'include-keywords' ? 'includeKeywords' : 
+        id === 'output-language' ? 'outputLanguage' : id]: false }));
+    }
+  };
 
   const handleGenerateContent = async () => {
+    if (!validateInputs()) {
+      setApiError("Please fill in all required fields");
+      return;
+    }
+    setApiError(null);
     setIsGenerating(true);
     console.log(productOptions);
     try {
@@ -79,27 +104,27 @@ export default function ProductDescriptionGenerator() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="product-name">Product Name</Label>
+              <Label htmlFor="product-name">Product Name *</Label>
               <Input
                 id="product-name"
                 placeholder="e.g., Wireless Noise-Cancelling Headphones"
                 value={productOptions.productName}
-                onChange={(e) =>
-                  setProductOptions({ ...productOptions, productName: e.target.value })
-                }
+                onChange={handleInputChange}
+                className={errors.productName ? "border-red-500" : ""}
               />
+              {errors.productName && <p className="text-red-500 text-sm mt-1">This field is required</p>}
             </div>
             
             <div>
-              <Label htmlFor="key-features">Key Features (comma separated)</Label>
+              <Label htmlFor="key-features">Key Features (comma separated) *</Label>
               <Input
                 id="key-features"
                 placeholder="e.g., Bluetooth 5.0, 30-hour battery life, water-resistant"
                 value={productOptions.keyFeatures}
-                onChange={(e) =>
-                  setProductOptions({ ...productOptions, keyFeatures: e.target.value })
-                }
+                onChange={handleInputChange}
+                className={errors.keyFeatures ? "border-red-500" : ""}
               />
+              {errors.keyFeatures && <p className="text-red-500 text-sm mt-1">This field is required</p>}
             </div>
            
             <div>
@@ -108,9 +133,7 @@ export default function ProductDescriptionGenerator() {
                 id="description-length"
                 className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                 value={productOptions.descriptionLength}
-                onChange={(e) =>
-                  setProductOptions({ ...productOptions, descriptionLength: e.target.value })
-                }
+                onChange={handleInputChange}
               >
                 <option value="50-100 words">Short (50-100 words)</option>
                 <option value="100-200 words">Medium (100-200 words)</option>
@@ -118,26 +141,26 @@ export default function ProductDescriptionGenerator() {
               </select>
             </div>
             <div>
-              <Label htmlFor="include-keywords">SEO Keywords (comma separated)</Label>
+              <Label htmlFor="include-keywords">SEO Keywords (comma separated) *</Label>
               <Input
                 id="include-keywords"
                 placeholder="e.g., wireless headphones, noise-cancelling, premium audio"
                 value={productOptions.includeKeywords}
-                onChange={(e) =>
-                  setProductOptions({ ...productOptions, includeKeywords: e.target.value })
-                }
+                onChange={handleInputChange}
+                className={errors.includeKeywords ? "border-red-500" : ""}
               />
+              {errors.includeKeywords && <p className="text-red-500 text-sm mt-1">This field is required</p>}
             </div>
             <div>
-              <Label htmlFor="output-language">Output Language</Label>
+              <Label htmlFor="output-language">Output Language *</Label>
               <Input
                 id="output-language"
                 placeholder="e.g., English, Spanish, French"
                 value={productOptions.outputLanguage}
-                onChange={(e) =>
-                  setProductOptions({ ...productOptions, outputLanguage: e.target.value })
-                }
+                onChange={handleInputChange}
+                className={errors.outputLanguage ? "border-red-500" : ""}
               />
+              {errors.outputLanguage && <p className="text-red-500 text-sm mt-1">This field is required</p>}
             </div>
             <div>
               <div className="flex gap-1 items-center">

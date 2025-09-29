@@ -22,8 +22,34 @@ export default function HashtagGenerator() {
     platform: "instagram",
     numKeywords: "15",
   });
+  const [errors, setErrors] = useState({});
+
+  // Validate required fields
+  const validateInputs = () => {
+    const newErrors = {};
+    if (!hashtagOptions.industry.trim()) newErrors.industry = true;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setHashtagOptions((prev) => ({
+      ...prev,
+      [id === 'industry' ? 'industry' : 
+        id === 'hashtag-platform' ? 'platform' : 
+        id === 'hashtag-count' ? 'numKeywords' : id]: value
+    }));
+    if (errors[id === 'industry' ? 'industry' : id]) {
+      setErrors((prev) => ({ ...prev, [id === 'industry' ? 'industry' : id]: false }));
+    }
+  };
 
   const handleGenerateContent = async () => {
+    if (!validateInputs()) {
+      return;
+    }
+
     setIsGenerating(true);
     console.log(hashtagOptions);
 
@@ -84,18 +110,15 @@ export default function HashtagGenerator() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-3 gap-8">
               <div>
-                <Label htmlFor="industry">Industry/Niche</Label>
+                <Label htmlFor="industry">Industry/Niche *</Label>
                 <Input
                   id="industry"
                   placeholder="e.g., Fashion, Technology, Food"
                   value={hashtagOptions.industry}
-                  onChange={(e) =>
-                    setHashtagOptions({
-                      ...hashtagOptions,
-                      industry: e.target.value,
-                    })
-                  }
+                  onChange={handleInputChange}
+                  className={errors.industry ? "border-red-500" : ""}
                 />
+                {errors.industry && <p className="text-red-500 text-sm mt-1">This field is required</p>}
               </div>
               <div>
                 <Label htmlFor="hashtag-platform">Platform</Label>
@@ -103,12 +126,7 @@ export default function HashtagGenerator() {
                   id="hashtag-platform"
                   className="w-full mt-1 p-2 border border-gray-300 rounded-md bg-transparent"
                   value={hashtagOptions.platform}
-                  onChange={(e) =>
-                    setHashtagOptions({
-                      ...hashtagOptions,
-                      platform: e.target.value,
-                    })
-                  }
+                  onChange={handleInputChange}
                 >
                   <option value="facebook">Facebook</option>
                   <option value="instagram">Instagram</option>
@@ -123,12 +141,7 @@ export default function HashtagGenerator() {
                   id="hashtag-count"
                   className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                   value={hashtagOptions.numKeywords}
-                  onChange={(e) =>
-                    setHashtagOptions({
-                      ...hashtagOptions,
-                      numKeywords: e.target.value,
-                    })
-                  }
+                  onChange={handleInputChange}
                 >
                   <option value="10">10 Hashtags/Keywords</option>
                   <option value="15">15 Hashtags/Keywords</option>
