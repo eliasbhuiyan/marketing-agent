@@ -1,5 +1,4 @@
 'use client';
-import ContentPublisher from "@/components/ContentPublisher";
 import { usePathname } from 'next/navigation';
 export default function ContentPage({children}) {
   const pathname = usePathname();

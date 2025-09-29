@@ -20,11 +20,23 @@ export function useIntegrations() {
       try {
         setLoading(true);
         setError(null);
-        // Ensure backend session has the correct active brand before fetching
-        try {
-          await apiClient.auth.setActiveBrand(brandID);
-        } catch {}
         const data = await apiClient.integrations.getAll();
+        setIntegrations(data.integrations || []);
+      } catch (err) {
+        console.error("Failed to fetch integrations:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+  const freshIntegrations = async () => {
+    const brandID = getBrandId();
+    if (brandID) {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await apiClient.integrations.getAll(Date.now());
         setIntegrations(data.integrations || []);
       } catch (err) {
         console.error("Failed to fetch integrations:", err);
@@ -106,7 +118,7 @@ export function useIntegrations() {
     testConnection,
     publishContent,
     getIntegrationStatus,
-    refreshIntegrations: fetchIntegrations,
+    refreshIntegrations: freshIntegrations,
   };
 }
 

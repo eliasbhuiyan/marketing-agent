@@ -218,7 +218,7 @@ export default function SelfModelingPage() {
           <CardHeader>
             <CardTitle className="flex items-center">
               <Sparkles className="h-5 w-5 mr-2" />
-              Additional Options
+              Customize Self Model
             </CardTitle>
             <CardDescription>
               Fine-tune your self-modeling with custom instructions
@@ -277,7 +277,17 @@ export default function SelfModelingPage() {
                   className="max-w-full h-auto rounded-lg"
                 />
               ) : (
-                <p>Generate</p>
+                <Card>
+                  <CardContent className="flex flex-col items-center justify-center py-10 text-center">
+                    <div className="rounded-full bg-white/10 p-4 mb-4">
+                      <ImageIcon className="h-8 w-8 text-gray-300" />
+                    </div>
+                    <CardTitle className="text-lg text-white mb-2">No Model Generated Yet</CardTitle>
+                    <CardDescription className="max-w-xs text-white/70">
+                      Upload a person image and optionally add assets, then click “Generate Self Model” to see the result here.
+                    </CardDescription>
+                  </CardContent>
+                </Card>
               )}
             </div>
           </CardContent>

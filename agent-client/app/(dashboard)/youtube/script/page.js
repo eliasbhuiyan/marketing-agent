@@ -204,20 +204,36 @@ const ScriptWriter = () => {
           <CardContent>
             {generatedScript ? (
               <div className="bg-gray-50 rounded-lg p-4">
-                <pre className="whitespace-pre-wrap text-sm text-gray-800 font-sans">
+                <pre className="whitespace-pre-wrap text-sm text-white font-sans">
                   {generatedScript}
                 </pre>
               </div>
             ) : (
-              <div className="text-center py-12">
-                <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  No Script Generated Yet
+              <div className="text-center py-12 px-6">
+                <div className="relative inline-block mb-4">
+                  <FileText className="h-16 w-16 text-gray-300 mx-auto" />
+                  <Sparkles className="absolute -top-1 -right-1 h-5 w-5 text-yellow-400 animate-pulse" />
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">
+                  Ready to Craft Your Script?
                 </h3>
-                <p className="text-gray-600">
-                  Fill in the form and click &quot;Generate Script&quot; to
-                  create your video script
+                <p className="text-white/80 max-w-sm mx-auto mb-6">
+                  Tell us your topic, audience, and style—then watch AI turn your ideas into a polished, ready-to-shoot video script in seconds.
                 </p>
+                <ul className="text-left text-white/80 space-y-2 max-w-xs mx-auto mb-6">
+                  <li className="flex items-start">
+                    <span className="text-green-500 mr-2">✓</span>
+                    <span>SEO-optimized hooks & CTAs</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-green-500 mr-2">✓</span>
+                    <span>Exact word-count for your chosen length</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-green-500 mr-2">✓</span>
+                    <span>Multilingual output support</span>
+                  </li>
+                </ul>
               </div>
             )}
           </CardContent>

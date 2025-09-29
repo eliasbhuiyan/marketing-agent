@@ -204,7 +204,7 @@ class ApiClient {
     /**
      * Get all integrations for the current brand
      */
-    getAll: () => this.get(`/integrations?t=${Date.now()}`),
+    getAll: (date) => this.get(`/integrations${date ? "?t=" + date :""}`),
 
     /**
      * Get details for a specific platform integration

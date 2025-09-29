@@ -44,7 +44,7 @@ const navigation = [
   { name: "Modify Image", href: "/modify-image", icon: TrendingUp },
   { name: "Social Media Scheduler", href: "/scheduler", icon: Calendar },
   { name: "Templates Marketplace", href: "/templates", icon: Palette },
-  { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Settings", href: "/settings/profile", icon: Settings },
 ];
 
 export default function DashboardLayout({ children }) {
