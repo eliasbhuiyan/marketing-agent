@@ -85,12 +85,12 @@ export function useIntegrations() {
     }
   };
 
-  const publishContent = async (platform, content, mediaUrls = []) => {
+  const publishContent = async (platform, content, scheduledTime) => {
     try {
       const data = await apiClient.integrations.publish(
         platform,
         content,
-        mediaUrls
+        scheduledTime
       );
       return data.result;
     } catch (err) {

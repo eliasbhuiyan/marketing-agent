@@ -21,22 +21,20 @@ class WordPressService extends BaseIntegrationService {
   }
 
   // No OAuth, so generateAuthURL and exchangeCodeForToken are not needed
-  async publishContent({ content, mediaUrls = [] }) {
+  async publishContent({ content, scheduledTime }) {
     try {
       let postContent = content;
 
-      // Append media URLs to content
-      if (mediaUrls.length > 0) {
-        let mediaContent = "\n\n";
-        for (const mediaUrl of mediaUrls) {
-          const isImage = mediaUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i);
-          if (isImage) {
-            mediaContent += `<img src="${mediaUrl}" alt="Post image" style="max-width:100%;height:auto;" />\n`;
-          } else {
-            mediaContent += `<a href="${mediaUrl}">Media File</a>\n`;
-          }
+      // Determine publish status and date based on scheduledTime
+      let status = "publish";
+      let date = undefined;
+      if (scheduledTime) {
+        const scheduledDate = new Date(scheduledTime);
+        if (!isNaN(scheduledDate.getTime()) && scheduledDate.getTime() > Date.now() + 5000) {
+          status = "future";
+          // WordPress expects site timezone or ISO; we pass ISO string
+          date = scheduledDate.toISOString();
         }
-        postContent += mediaContent;
       }
 
       const response = await fetch(`${this.baseURL}/posts`, {
@@ -46,9 +44,9 @@ class WordPressService extends BaseIntegrationService {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          title: content.substring(0, 100), // first 100 chars as title
           content: postContent,
-          status: "publish",
+          status,
+          ...(date ? { date } : {}),
         }),
       });
 

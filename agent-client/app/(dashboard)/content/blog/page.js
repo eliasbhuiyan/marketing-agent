@@ -31,7 +31,94 @@ const TiptapEditor = dynamic(() => import("@/components/TiptapEditor"), {
 
 export default function BlogGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedContent, setGeneratedContent] = useState("");
+  const [generatedContent, setGeneratedContent] = useState(`
+    
+    <h1>Beauty in Nature</h1>
+<p>Nature has an extraordinary way of captivating our senses, offering a timeless source of inspiration and tranquility. From the towering peaks of mountains to the gentle crash of ocean waves, the beauty in nature reminds us of the world's inherent wonders. In this blog, we'll explore various landscapes that showcase this splendor and discuss how connecting with nature can enhance our well-being.</p>
+<p>Whether you're a seasoned adventurer or someone seeking solace in everyday scenery, embracing the beauty of nature can transform your perspective. Let's dive into some of the most mesmerizing aspects of the natural world.</p>
+
+<h2>Introduction to the Captivating Beauty in Nature</h2>
+<img src="https://pixabay.com/get/g8d8146a5475caeaa56b1d3ce090891683fe61851f1fef38057b9827dce26875eb5ec32b26374ea4b8ede73401b7338bebe82f8093ea54acd245612b838f588e3_640.jpg" alt="Introduction to the Captivating Beauty in Nature"/>
+<p>The beauty in nature is a universal language that speaks to the soul, evoking feelings of awe and peace. It's in the vibrant colors of a sunrise, the intricate patterns of leaves, or the symphony of birdsong at dawn. This natural splendor has inspired artists, poets, and thinkers for centuries, reminding us of our place in a larger, harmonious ecosystem.</p>
+<p>Today, as urban life accelerates, reconnecting with nature becomes essential. Simple walks in parks or hikes in the wilderness can recharge our spirits. Exploring these elements helps us appreciate the delicate balance that sustains our planet.</p>
+
+<h2>Discovering Hidden Gems: Majestic Mountains and Lush Forests</h2>
+<img src="https://pixabay.com/get/g668dd64d608c5570b3137c58afa8b32e47d5f346707b1cb6babf06c11f6381fb555da8a5270b3e7442ed5e20ddf978d38a8764a8301b7ae693d348d9ef539ea1_640.jpg" alt="Discovering Hidden Gems: Majestic Mountains and Lush Forests"/>
+<p>Majestic mountains stand as eternal sentinels, their rugged peaks piercing the sky and offering breathtaking vistas. Places like the Rockies or the Alps showcase layers of rock formations sculpted by time, where fresh air invigorates the lungs. Hiking these trails reveals hidden gems, from alpine meadows blooming with wildflowers to crystal-clear streams cascading down slopes.</p>
+<p>Lush forests, teeming with life, provide a verdant escape into nature's embrace. Towering trees form natural cathedrals, filtering sunlight into ethereal patterns on the forest floor. Biodiversity thrives here, with birds, mammals, and insects creating a living tapestry that underscores the richness of natural ecosystems.</p>
+<p>Visiting these areas encourages mindfulness, as the quiet grandeur prompts reflection. Whether photographing a misty valley or breathing in the earthy scent of pine, these experiences deepen our connection to the environment.</p>
+
+<h2>Coastal Charms: Waves, Beaches, and Sunset Serenity</h2>
+<img src="https://pixabay.com/get/gabacad82bcc557609d497e6dbd00cfa8d06aeb6513f831ee2084ea9bb36d819c71fbfde145983f5371d7b9b4a918cbd22e425b0c5588bd72071db8659f2ac1f8_640.jpg" alt="Coastal Charms: Waves, Beaches, and Sunset Serenity"/>
+<p>Coastal regions captivate with their rhythmic waves lapping against sandy beaches, a soothing soundtrack to relaxation. The ocean's vast expanse, dotted with seashells and driftwood, invites barefoot strolls that wash away daily stresses. Nature's artistry shines in the tides, carving intricate designs in the sand and revealing marine life at low tide.</p>
+<p>Sunset serenity along the shore transforms ordinary evenings into magical spectacles. The sky ignites in hues of orange, pink, and purple, reflecting off the water in a symphony of colors. These moments foster a sense of wonder, reminding us of nature's power to evoke deep emotions.</p>
+<p>Beaches also serve as gateways to underwater worlds, where snorkeling uncovers coral reefs and colorful fish. Protecting these coastal charms is crucial, as they face threats from climate change, making mindful visits all the more rewarding.</p>
+
+<h2>Why Embracing Nature's Beauty Enriches Our Daily Lives</h2>
+<img src="https://pixabay.com/get/g1b1e3b2f1267e5c679fcbbe2dee70d1f671320177fdef351c785b92a4cde39ff8025fdc7b404100bf6522a8e58cb56914a2ffc2698bb73a648c9aa0dc223f339_640.jpg" alt="Why Embracing Nature's Beauty Enriches Our Daily Lives"/>
+<p>Embracing the beauty in nature offers profound benefits for mental and physical health. Studies show that time spent outdoors reduces stress hormones and boosts mood through exposure to natural light and fresh air. Incorporating nature into routines, like morning jogs in green spaces, can improve focus and creativity.</p>
+<p>In a fast-paced world, nature acts as a reset button, promoting mindfulness and gratitude. Activities such as birdwatching or gardening connect us to seasonal changes, fostering a sense of continuity and purpose. This enrichment extends to relationships, as shared outdoor experiences strengthen bonds.</p>
+<p>Ultimately, appreciating nature encourages sustainable living. By valuing its beauty, we become better stewards, advocating for conservation efforts that preserve these wonders for future generations.</p>
+
+<p>In conclusion, the beauty of nature is not just a visual feast but a vital source of renewal. From mountains and forests to beaches and beyond, these landscapes invite us to pause and reflect. By weaving nature into our lives, we unlock a deeper sense of joy and harmony.</p>
+
+<h2>FAQ in Beauty in Nature</h2>
+<h3>What are the best ways to experience the beauty in nature for beginners?</h3>
+<p>For beginners, start with local parks or nature trails that offer easy access and guided paths. Apps like AllTrails can help find beginner-friendly routes near you. Pack essentials like water and comfortable shoes, and focus on sensory experiences—listen to the wind, feel the textures of leaves—to fully immerse yourself.</p>
+
+<h3>How does nature's beauty impact mental health?</h3>
+<p>Nature's beauty significantly reduces anxiety and depression by lowering cortisol levels, as supported by recent studies from the American Psychological Association. Even short exposures, like a 20-minute walk in a green space, can enhance mood and cognitive function. Incorporating biophilic design in homes, such as indoor plants, mimics these benefits indoors.</p>
+
+<h3>Are there trending eco-friendly ways to explore natural beauty in 2023?</h3>
+<p>In 2023, trends include sustainable hiking gear made from recycled materials and virtual reality tours for low-impact exploration via platforms like Google Earth. Eco-tourism destinations, such as national parks with carbon-neutral programs, are popular. Always follow Leave No Trace principles to minimize your footprint while enjoying nature's splendor.</p>
+
+<h3>Which global destinations best showcase nature's captivating beauty?</h3>
+<p>Iconic spots like New Zealand's fjords, Iceland's geothermal landscapes, and Japan's cherry blossom forests highlight diverse natural beauty. For accessibility, consider U.S. national parks like Yellowstone for geysers and wildlife. Plan visits during off-peak seasons to avoid crowds and support conservation through park fees.</p>
+<h3>Can urban dwellers still appreciate beauty in nature daily?</h3>
+<p>Yes, urban dwellers can find nature's beauty in rooftop gardens, community green spaces, or even stargazing in city parks. Initiatives like urban forestry projects in cities such as Singapore provide accessible oases. Simple practices, like window gardening or weekend escapes to nearby reserves, bridge the gap effectively.</p>
+TiptapEditor.js:140 content <h1>Beauty in Nature</h1>
+<p>Nature has an extraordinary way of captivating our senses, offering a timeless source of inspiration and tranquility. From the towering peaks of mountains to the gentle crash of ocean waves, the beauty in nature reminds us of the world's inherent wonders. In this blog, we'll explore various landscapes that showcase this splendor and discuss how connecting with nature can enhance our well-being.</p>
+<p>Whether you're a seasoned adventurer or someone seeking solace in everyday scenery, embracing the beauty of nature can transform your perspective. Let's dive into some of the most mesmerizing aspects of the natural world.</p>
+
+<h2>Introduction to the Captivating Beauty in Nature</h2>
+<img src="https://pixabay.com/get/g8d8146a5475caeaa56b1d3ce090891683fe61851f1fef38057b9827dce26875eb5ec32b26374ea4b8ede73401b7338bebe82f8093ea54acd245612b838f588e3_640.jpg" alt="Introduction to the Captivating Beauty in Nature"/>
+<p>The beauty in nature is a universal language that speaks to the soul, evoking feelings of awe and peace. It's in the vibrant colors of a sunrise, the intricate patterns of leaves, or the symphony of birdsong at dawn. This natural splendor has inspired artists, poets, and thinkers for centuries, reminding us of our place in a larger, harmonious ecosystem.</p>
+<p>Today, as urban life accelerates, reconnecting with nature becomes essential. Simple walks in parks or hikes in the wilderness can recharge our spirits. Exploring these elements helps us appreciate the delicate balance that sustains our planet.</p>
+
+<h2>Discovering Hidden Gems: Majestic Mountains and Lush Forests</h2>
+<img src="https://pixabay.com/get/g668dd64d608c5570b3137c58afa8b32e47d5f346707b1cb6babf06c11f6381fb555da8a5270b3e7442ed5e20ddf978d38a8764a8301b7ae693d348d9ef539ea1_640.jpg" alt="Discovering Hidden Gems: Majestic Mountains and Lush Forests"/>
+<p>Majestic mountains stand as eternal sentinels, their rugged peaks piercing the sky and offering breathtaking vistas. Places like the Rockies or the Alps showcase layers of rock formations sculpted by time, where fresh air invigorates the lungs. Hiking these trails reveals hidden gems, from alpine meadows blooming with wildflowers to crystal-clear streams cascading down slopes.</p>
+<p>Lush forests, teeming with life, provide a verdant escape into nature's embrace. Towering trees form natural cathedrals, filtering sunlight into ethereal patterns on the forest floor. Biodiversity thrives here, with birds, mammals, and insects creating a living tapestry that underscores the richness of natural ecosystems.</p>
+<p>Visiting these areas encourages mindfulness, as the quiet grandeur prompts reflection. Whether photographing a misty valley or breathing in the earthy scent of pine, these experiences deepen our connection to the environment.</p>
+
+<h2>Coastal Charms: Waves, Beaches, and Sunset Serenity</h2>
+<img src="https://pixabay.com/get/gabacad82bcc557609d497e6dbd00cfa8d06aeb6513f831ee2084ea9bb36d819c71fbfde145983f5371d7b9b4a918cbd22e425b0c5588bd72071db8659f2ac1f8_640.jpg" alt="Coastal Charms: Waves, Beaches, and Sunset Serenity"/>
+<p>Coastal regions captivate with their rhythmic waves lapping against sandy beaches, a soothing soundtrack to relaxation. The ocean's vast expanse, dotted with seashells and driftwood, invites barefoot strolls that wash away daily stresses. Nature's artistry shines in the tides, carving intricate designs in the sand and revealing marine life at low tide.</p>
+<p>Sunset serenity along the shore transforms ordinary evenings into magical spectacles. The sky ignites in hues of orange, pink, and purple, reflecting off the water in a symphony of colors. These moments foster a sense of wonder, reminding us of nature's power to evoke deep emotions.</p>
+<p>Beaches also serve as gateways to underwater worlds, where snorkeling uncovers coral reefs and colorful fish. Protecting these coastal charms is crucial, as they face threats from climate change, making mindful visits all the more rewarding.</p>
+
+<h2>Why Embracing Nature's Beauty Enriches Our Daily Lives</h2>
+<img src="https://pixabay.com/get/g1b1e3b2f1267e5c679fcbbe2dee70d1f671320177fdef351c785b92a4cde39ff8025fdc7b404100bf6522a8e58cb56914a2ffc2698bb73a648c9aa0dc223f339_640.jpg" alt="Why Embracing Nature's Beauty Enriches Our Daily Lives"/>
+<p>Embracing the beauty in nature offers profound benefits for mental and physical health. Studies show that time spent outdoors reduces stress hormones and boosts mood through exposure to natural light and fresh air. Incorporating nature into routines, like morning jogs in green spaces, can improve focus and creativity.</p>
+<p>In a fast-paced world, nature acts as a reset button, promoting mindfulness and gratitude. Activities such as birdwatching or gardening connect us to seasonal changes, fostering a sense of continuity and purpose. This enrichment extends to relationships, as shared outdoor experiences strengthen bonds.</p>
+<p>Ultimately, appreciating nature encourages sustainable living. By valuing its beauty, we become better stewards, advocating for conservation efforts that preserve these wonders for future generations.</p>
+
+<p>In conclusion, the beauty of nature is not just a visual feast but a vital source of renewal. From mountains and forests to beaches and beyond, these landscapes invite us to pause and reflect. By weaving nature into our lives, we unlock a deeper sense of joy and harmony.</p>
+
+<h2>FAQ in Beauty in Nature</h2>
+<h3>What are the best ways to experience the beauty in nature for beginners?</h3>
+<p>For beginners, start with local parks or nature trails that offer easy access and guided paths. Apps like AllTrails can help find beginner-friendly routes near you. Pack essentials like water and comfortable shoes, and focus on sensory experiences—listen to the wind, feel the textures of leaves—to fully immerse yourself.</p>
+
+<h3>How does nature's beauty impact mental health?</h3>
+<p>Nature's beauty significantly reduces anxiety and depression by lowering cortisol levels, as supported by recent studies from the American Psychological Association. Even short exposures, like a 20-minute walk in a green space, can enhance mood and cognitive function. Incorporating biophilic design in homes, such as indoor plants, mimics these benefits indoors.</p>
+
+<h3>Are there trending eco-friendly ways to explore natural beauty in 2023?</h3>
+<p>In 2023, trends include sustainable hiking gear made from recycled materials and virtual reality tours for low-impact exploration via platforms like Google Earth. Eco-tourism destinations, such as national parks with carbon-neutral programs, are popular. Always follow Leave No Trace principles to minimize your footprint while enjoying nature's splendor.</p>
+
+<h3>Which global destinations best showcase nature's captivating beauty?</h3>
+<p>Iconic spots like New Zealand's fjords, Iceland's geothermal landscapes, and Japan's cherry blossom forests highlight diverse natural beauty. For accessibility, consider U.S. national parks like Yellowstone for geysers and wildlife. Plan visits during off-peak seasons to avoid crowds and support conservation through park fees.</p>
+<h3>Can urban dwellers still appreciate beauty in nature daily?</h3>
+<p>Yes, urban dwellers can find nature's beauty in rooftop gardens, community green spaces, or even stargazing in city parks. Initiatives like urban forestry projects in cities such as Singapore provide accessible oases. Simple practices, like window gardening or weekend escapes to nearby reserves, bridge the gap effectively.</p>`);
   const [editorContent, setEditorContent] = useState("");
   const [apiError, setApiError] = useState(null);
   const [showHeadingPopup, setShowHeadingPopup] = useState(false);
@@ -55,38 +142,40 @@ export default function BlogGenerator() {
     if (!blogOptions.blogLength.trim()) newErrors.blogLength = true;
     if (!blogOptions.seoKeywords.trim()) newErrors.seoKeywords = true;
     if (!blogOptions.outputLanguage.trim()) newErrors.outputLanguage = true;
-    
+
     setErrors(newErrors);
-    
+
     if (Object.keys(newErrors).length > 0) {
       setApiError("Please fill in all required fields.");
       return false;
     }
-    
+
     setApiError(null);
     return true;
   };
-  
+
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setBlogOptions((prev) => ({
       ...prev,
-      [id === 'blog-topic' ? 'blogTopic' : 
-       id === 'blog-length' ? 'blogLength' : 
-       id === 'writing-style' ? 'writingStyle' : 
-       id === 'seo-keywords' ? 'seoKeywords' :
-       id === 'number-of-headings' ? 'numberOfHeadings' :
-       id === 'output-language' ? 'outputLanguage' : id]: value
+      [id === 'blog-topic' ? 'blogTopic' :
+        id === 'blog-length' ? 'blogLength' :
+          id === 'writing-style' ? 'writingStyle' :
+            id === 'seo-keywords' ? 'seoKeywords' :
+              id === 'number-of-headings' ? 'numberOfHeadings' :
+                id === 'output-language' ? 'outputLanguage' : id]: value
     }));
-    
-    if (errors[id === 'blog-topic' ? 'blogTopic' : 
-         id === 'blog-length' ? 'blogLength' : 
-         id === 'seo-keywords' ? 'seoKeywords' :
-         id === 'output-language' ? 'outputLanguage' : id]) {
-      setErrors((prev) => ({ ...prev, [id === 'blog-topic' ? 'blogTopic' : 
-         id === 'blog-length' ? 'blogLength' : 
-         id === 'seo-keywords' ? 'seoKeywords' :
-         id === 'output-language' ? 'outputLanguage' : id]: false }));
+
+    if (errors[id === 'blog-topic' ? 'blogTopic' :
+      id === 'blog-length' ? 'blogLength' :
+        id === 'seo-keywords' ? 'seoKeywords' :
+          id === 'output-language' ? 'outputLanguage' : id]) {
+      setErrors((prev) => ({
+        ...prev, [id === 'blog-topic' ? 'blogTopic' :
+          id === 'blog-length' ? 'blogLength' :
+            id === 'seo-keywords' ? 'seoKeywords' :
+              id === 'output-language' ? 'outputLanguage' : id]: false
+      }));
     }
   };
 
@@ -120,11 +209,6 @@ export default function BlogGenerator() {
 
   const handleCopyContent = () => {
     navigator.clipboard.writeText(editorContent);
-  };
-
-  const handleScheduleBlog = () => {
-    // Handle blog scheduling
-    console.log("Scheduling blog...", editorContent);
   };
 
   const handleSaveHeadings = (customizedHeadings) => {
@@ -399,10 +483,6 @@ export default function BlogGenerator() {
                     <Copy className="mr-2 h-4 w-4" />
                     Copy Blog
                   </Button>
-                  <Button variant="outline" onClick={handleScheduleBlog} className="text-white">
-                    <Calendar className="mr-2 h-4 w-4" />
-                    Schedule Post
-                  </Button>
                 </div>
               </div>
             ) : (
@@ -436,26 +516,23 @@ export default function BlogGenerator() {
           </CardContent>
         </Card>
       </div>
-      {
-        generatedContent && (
-          <ContentPublisher
-            content={editorContent}
-            onPublished={() => {
-              setGeneratedContent("");
-              setEditorContent("");
-              setBlogHeadings([]);
-              setFinalHeadings([]);
-              setBlogOptions({
-                blogTopic: "",
-                blogLength: "",
-                writingStyle: "informative",
-                seoKeywords: "",
-                numberOfHeadings: "2",
-                outputLanguage: "English",
-              });
-            }}
-          />)
-      }
+      <ContentPublisher
+        content={editorContent}
+        onPublished={() => {
+          setGeneratedContent("");
+          setEditorContent("");
+          setBlogHeadings([]);
+          setFinalHeadings([]);
+          setBlogOptions({
+            blogTopic: "",
+            blogLength: "",
+            writingStyle: "informative",
+            seoKeywords: "",
+            numberOfHeadings: "2",
+            outputLanguage: "English",
+          });
+        }}
+      />
     </div>
   );
 }

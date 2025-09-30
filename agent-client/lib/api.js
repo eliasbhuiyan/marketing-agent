@@ -224,8 +224,8 @@ class ApiClient {
     /**
      * Publish content to a platform
      */
-    publish: (platform, content, mediaUrls = []) =>
-      this.post(`/integrations/${platform}/publish`, { content, mediaUrls }),
+    publish: (platform, content, scheduledTime) =>
+      this.post(`/integrations/${platform}/publish`, { content, scheduledTime }),
 
     /**
      * Test connection for a platform

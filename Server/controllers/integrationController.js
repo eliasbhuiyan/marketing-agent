@@ -413,7 +413,7 @@ const disconnectIntegration = async (req, res) => {
 const publishContent = async (req, res) => {
   try {
     const { platform } = req.params;
-    const { content, mediaUrls = [] } = req.body;
+    const { content, scheduledTime } = req.body;
     const brandId = req.user.brandId;
     
     if (!brandId) {
@@ -446,7 +446,7 @@ const publishContent = async (req, res) => {
           return res.status(400).json({ error: 'Missing WordPress credentials' });
         }
         const wpService = new WordPressService({ siteUrl, username, appPassword });
-        const result = await wpService.publishContent({ content, mediaUrls });
+        const result = await wpService.publishContent({ content, scheduledTime });
         return res.status(200).json({ message: 'Content published successfully', result });
       } catch (err) {
         console.error('WordPress publish failed:', err);
