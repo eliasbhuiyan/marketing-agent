@@ -23,6 +23,7 @@ class WordPressService extends BaseIntegrationService {
   // No OAuth, so generateAuthURL and exchangeCodeForToken are not needed
   async publishContent({ content, scheduledTime }) {
     try {
+      
       let postContent = content;
 
       // Determine publish status and date based on scheduledTime
