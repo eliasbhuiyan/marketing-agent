@@ -29,10 +29,10 @@ const BlogHeadingPopup = ({
 
   const [editableHeadings, setEditableHeadings] = useState([]);
   const [selectedImages, setSelectedImages] = useState({});
+  const [customImageUrls, setCustomImageUrls] = useState({});
   const [editingIndex, setEditingIndex] = useState(null);
   const [tempTitle, setTempTitle] = useState("");
-  console.log(headings);
-  
+
   useEffect(() => {
     if (headings && headings.length > 0) {
       // Store original headings in ref for reset functionality
@@ -78,6 +78,46 @@ const BlogHeadingPopup = ({
       ...prev,
       [headingIndex]: imageUrl
     }));
+    
+    // Clear custom image URL when selecting a predefined image
+    setCustomImageUrls(prev => ({
+      ...prev,
+      [headingIndex]: ""
+    }));
+  };
+
+  const handleCustomImageChange = (headingIndex, url) => {
+    setCustomImageUrls(prev => ({
+      ...prev,
+      [headingIndex]: url
+    }));
+    
+    // If URL is not empty, set it as the selected image
+    if (url.trim()) {
+      setSelectedImages(prev => ({
+        ...prev,
+        [headingIndex]: url
+      }));
+    }
+  };
+
+  const handleDownloadImage = (e, imageUrl, imageIndex, index) => {
+    e.stopPropagation(); // Prevent triggering the image selection
+    console.log(index, imageIndex);
+    // Find the corresponding download link
+    const heading = editableHeadings[index];
+    if (heading && heading.downLoadImageLink) {
+      const downloadUrl = heading.downLoadImageLink[imageIndex];
+      if (downloadUrl) {
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.target = "_blank"
+        link.download = `image-${index}-${imageIndex}.jpg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    }
   };
 
   const handleSave = () => {
@@ -171,11 +211,32 @@ const BlogHeadingPopup = ({
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex items-center gap-2 text-gray-300">
-                      <ImageIcon className="h-4 w-4" />
-                      <span className="text-sm">Select an image for this heading:</span>
-                    </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                      <div className="flex justify-between">
+                        <div className="flex items-center gap-2 text-gray-300">
+                          <ImageIcon className="h-4 w-4" />
+                          <span className="text-sm">Select an image for this heading:</span>
+                        </div>
+                        <p className="text-sm text-yellow-400">
+                          💡 Tip: Download the image you like and re-upload it for sharper, high-resolution results.
+                        </p>
+                      </div>
+                      
+                      {/* Custom image URL input */}
+                      <div className="mb-4">
+                        <Label htmlFor={`custom-image-${index}`} className="text-sm text-gray-300 mb-1 block">
+                          Or enter a custom image URL:
+                        </Label>
+                        <Input
+                          id={`custom-image-${index}`}
+                          type="text"
+                          placeholder="https://example.com/image.jpg"
+                          value={customImageUrls[index] || ""}
+                          onChange={(e) => handleCustomImageChange(index, e.target.value)}
+                          className="bg-gray-700 border-gray-600 text-white"
+                        />
+                      </div>
+                      
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                       {heading.images && heading.images.map((imageUrl, imageIndex) => (
                         <div
                           key={imageIndex}
@@ -192,6 +253,14 @@ const BlogHeadingPopup = ({
                               className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
                               loading="lazy"
                             />
+                            {/* Download button */}
+                            <button
+                              className="absolute top-2 right-2 p-1.5 bg-gray-900/70 hover:bg-gray-900 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                              onClick={(e) => handleDownloadImage(e, imageUrl, imageIndex, index)}
+                              title="Download image"
+                            >
+                              <Download className="h-6 w-6 text-white" />
+                            </button>
                             {selectedImages[index] === imageUrl && (
                               <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
                                 <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
@@ -207,8 +276,26 @@ const BlogHeadingPopup = ({
                       <div className="mt-4 p-3 bg-gray-700/50 rounded-lg">
                         <div className="flex items-center gap-2 text-green-400 text-sm">
                           <Check className="h-4 w-4" />
-                          <span>Selected image for this heading</span>
+                          <span>
+                            {customImageUrls[index] && selectedImages[index] === customImageUrls[index]
+                              ? "Custom image URL selected for this heading"
+                              : "Selected image for this heading"}
+                          </span>
                         </div>
+                        {customImageUrls[index] && selectedImages[index] === customImageUrls[index] && (
+                          <div className="mt-2 p-2 bg-gray-800 rounded border border-gray-700">
+                            <img 
+                              src={customImageUrls[index]} 
+                              alt="Custom image preview" 
+                              className="max-h-40 mx-auto object-contain"
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%23ff5555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'%3E%3C/path%3E%3Cpath d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'%3E%3C/path%3E%3Cline x1='4' y1='4' x2='20' y2='20'%3E%3C/line%3E%3C/svg%3E";
+                                e.target.alt = "Invalid image URL";
+                              }}
+                            />
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

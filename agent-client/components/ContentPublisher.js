@@ -29,8 +29,6 @@ export default function ContentPublisher({ content, onPublished = () => {} }) {
   const connectedPlatforms = integrations.filter(
     (integration) => integration.status === "active"
   );
-  console.log(integrations);
-
   const handlePlatformToggle = (platform) => {    
     if (!content) return;
     setSelectedPlatforms((prev) =>

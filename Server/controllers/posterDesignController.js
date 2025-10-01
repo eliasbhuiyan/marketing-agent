@@ -1,5 +1,8 @@
 const sharp = require("sharp");
-const { posterDesignPromptTemplate, posterCaptionPromptTemplate } = require("../utils/promptTemplates");
+const {
+  posterDesignPromptTemplate,
+  posterCaptionPromptTemplate,
+} = require("../utils/promptTemplates");
 
 const fileAccept = ["image/png", "image/jpg", "image/webp", "image/jpeg"];
 
@@ -21,24 +24,20 @@ const posterDesignController = async (req, res) => {
   const modelFile = modelArr[0];
 
   if (!fileAccept.includes(productFile.mimetype)) {
-    return res
-      .status(400)
-      .json({
-        message:
-          "Accept only png, jpg, jpeg and webp only. Upload a valid product image.",
-      });
+    return res.status(400).json({
+      message:
+        "Accept only png, jpg, jpeg and webp only. Upload a valid product image.",
+    });
   }
   if (!fileAccept.includes(modelFile.mimetype)) {
-    return res
-      .status(400)
-      .json({
-        message:
-          "Accept only png, jpg, jpeg and webp only. Upload a valid model image.",
-      });
+    return res.status(400).json({
+      message:
+        "Accept only png, jpg, jpeg and webp only. Upload a valid model image.",
+    });
   }
 
   const resizedProductBuffer = await sharp(productFile.buffer)
-    .resize(240) // fit: cover keeps aspect ratio, fills dimension
+    .resize(240)
     .toBuffer();
 
   // Resize model image
@@ -55,67 +54,65 @@ const posterDesignController = async (req, res) => {
 
   const prompt = posterDesignPromptTemplate();
 
-  //   const response = await fetch(
-  //     "https://openrouter.ai/api/v1/chat/completions",
-  //     {
-  //       method: "POST",
-  //       headers: {
-  //         Authorization: `Bearer ${process.env.AI_IMG_API_KEY}`,
-  //         "HTTP-Referer": "http://localhost:3000", // Optional. Site URL for rankings on openrouter.ai.
-  //         "X-Title": "Marketing Agent", // Optional. Site title for rankings on openrouter.ai.
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         model: "google/gemini-2.5-flash-image-preview",
-  //         messages: [
-  //           {
-  //             role: "user",
-  //             content: [
-  //               {
-  //                 type: "text",
-  //                 text: prompt,
-  //               },
-  //               {
-  //                 type: "text",
-  //                 text: customPrompt || "",
-  //               },
-  //               {
-  //                 type: "image_url",
-  //                 image_url: {
-  //                   url: base64ProductImg,
-  //                 },
-  //               },
-  //               {
-  //                 type: "image_url",
-  //                 image_url: {
-  //                   url: base64ModelImg,
-  //                 },
-  //               },
-  //             ],
-  //           },
-  //         ],
-  //       }),
-  //     }
-  //   );
-  //   const result = await response.json();
-  //   //     console.log("full response",result);
-  //   console.log("content", result.choices[0].message);
+  const response = await fetch(
+    "https://openrouter.ai/api/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.AI_IMG_API_KEY}`,
+        "HTTP-Referer": "http://localhost:3000", // Optional. Site URL for rankings on openrouter.ai.
+        "X-Title": "Marketing Agent", // Optional. Site title for rankings on openrouter.ai.
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash-image-preview",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: prompt,
+              },
+              {
+                type: "text",
+                text: customPrompt || "",
+              },
+              {
+                type: "image_url",
+                image_url: {
+                  url: base64ProductImg,
+                },
+              },
+              {
+                type: "image_url",
+                image_url: {
+                  url: base64ModelImg,
+                },
+              },
+            ],
+          },
+        ],
+      }),
+    }
+  );
+  const result = await response.json();
+  //     console.log("full response",result);
+  console.log("content", result.choices[0].message);
 
   //   // Return the result to the client
-  //   res
-  //     .status(200)
-  //     .json({
-  //       image: result.choices[0].message.images[0].image_url.url,
-  //       description: result.choices[0].message.content,
-  //     });
+  res.status(200).json({
+    image: result.choices[0].message.images[0].image_url.url,
+    description: result.choices[0].message.content,
+  });
 
-  res
-    .status(200)
-    .json({
-      image: base64ProductImg,
-      description:
-        "A heigh quality water bottle",
-    });
+  // res
+  //   .status(200)
+  //   .json({
+  //     image: base64ProductImg,
+  //     description:
+  //       "A heigh quality water bottle",
+  //   });
 
   // } catch (error) {
   //   console.error("Error in posterDesignController:", error);
@@ -132,7 +129,7 @@ const posterCaptionGenerator = async (req, res) => {
       keywords,
       language,
     });
-    
+
     const response = await fetch(
       "https://openrouter.ai/api/v1/chat/completions",
       {

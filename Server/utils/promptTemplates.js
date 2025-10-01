@@ -11,6 +11,7 @@ Requirements:
    - Ensure the product and the model are the main focus.
    - Model can complement the scene without overpowering the product.
    - Maintain proper alignment, spacing, and balance.
+   - The model must be holding, wearing, or interacting with the product in a visually engaging and high-quality way.
 5. **Background & Effects**
    - Use a clean, minimalistic background or gradient if needed.
    - Add subtle shadows or highlights to make product stand out.
@@ -21,7 +22,6 @@ Requirements:
 7. **Mood / Tone**
    - Professional, modern, engaging, and visually appealing.
    - Emphasize the product as premium and desirable.
-Product image and model image are given below:
 `;
 };
 const posterCaptionPromptTemplate = ({productDescription, tone, platform, keywords, language})=>{
