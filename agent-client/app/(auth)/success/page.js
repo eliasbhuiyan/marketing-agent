@@ -18,7 +18,7 @@ export default function AuthSuccessPage() {
   const [loading, setLoading] = useState(true);
   const [brands, setBrands] = useState([]);
   const [error, setError] = useState("");
-
+  const [selectLoading, setSelectLoading] = useState(false);
   useEffect(() => {
     const bootstrap = async () => {
       try {
@@ -34,6 +34,7 @@ export default function AuthSuccessPage() {
   }, []);
 
   const proceed = async (selectedBrandId) => {
+    setSelectLoading(true);
     try {
       if (selectedBrandId) {
         // Tell server to set active brand in tokens
@@ -50,9 +51,7 @@ export default function AuthSuccessPage() {
   };
 
   if (loading) {
-    return (
-      <LoadingPage title="Getting your brands"/>
-    );
+    return <LoadingPage title="Getting your brands" />;
   }
 
   if (error) {
@@ -70,16 +69,16 @@ export default function AuthSuccessPage() {
 
   if (!brands || brands.length === 0) {
     // No brands; continue with blank directly
-    return proceed(undefined)
+    return proceed(undefined);
   }
-  
+
   const generateRandomHexColor = () => {
     return "#" + Math.floor(Math.random() * 16777215).toString(16);
   };
 
   return (
     <div className="w-full max-w-lg mx-auto">
-      <Card>
+      <Card className="text-white">
         <CardHeader>
           <CardTitle>Select a workspace</CardTitle>
           <CardDescription>
@@ -94,6 +93,7 @@ export default function AuthSuccessPage() {
                 variant="secondary"
                 className="w-full h-14 justify-start items-start gap-4"
                 onClick={() => proceed(b.brandId)}
+                disabled={selectLoading}
               >
                 <span
                   className={`w-10 h-10 rounded-full flex items-center justify-center text-white`}

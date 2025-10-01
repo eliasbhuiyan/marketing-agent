@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Sparkles, Copy, ShoppingBag, Star, Tag } from "lucide-react";
+import { Sparkles, Copy, ShoppingBag, Star, Tag, Download } from "lucide-react";
 import apiClient from "@/lib/api";
 import dynamic from "next/dynamic";
 import LoaderAnim from "@/components/LoaderAnim";
@@ -19,6 +19,7 @@ import LoaderAnim from "@/components/LoaderAnim";
 export default function ProductDescriptionGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState("");
+  const [isCopied, setIsCopied] = useState(false);
   // const [editorContent, setEditorContent] = useState("");
   const [apiError, setApiError] = useState(null);
   const [productOptions, setProductOptions] = useState({
@@ -127,6 +128,20 @@ export default function ProductDescriptionGenerator() {
 
   const handleCopyContent = () => {
     navigator.clipboard.writeText(generatedContent);
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 2000);
+  };
+
+  const handleDownloadDescription = () => {
+    const element = document.createElement("a");
+    const file = new Blob([generatedContent], { type: "text/plain" });
+    element.href = URL.createObjectURL(file);
+    element.download = `product-description.txt`;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
   };
 
   return (
@@ -280,11 +295,11 @@ export default function ProductDescriptionGenerator() {
                 <div className="flex space-x-2">
                   <Button variant="outline" onClick={handleCopyContent}>
                     <Copy className="mr-2 h-4 w-4" />
-                    Copy Description
+                    {isCopied ? "Copied!" : "Copy Description"}
                   </Button>
-                  <Button variant="outline">
-                    <ShoppingBag className="mr-2 h-4 w-4" />
-                    Save to Products
+                  <Button variant="outline" onClick={handleDownloadDescription}>
+                    <Download className="mr-2 h-4 w-4" />
+                    Download Description
                   </Button>
                 </div>
               </div>

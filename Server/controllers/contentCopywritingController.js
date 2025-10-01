@@ -6,10 +6,8 @@ const {
   blogHeadingPromptTemplate,
 } = require("../utils/promptTemplates");
 
-const captionGenerator = async (req, res) => {
-  console.log("caption api");
-  
-  // try {
+const captionGenerator = async (req, res) => {  
+  try {
     const { productDescription, targetAudience, tone, platform, language } = req.body;
 
     const prompt = captionGeneratorPromptTemplate({
@@ -47,9 +45,9 @@ const captionGenerator = async (req, res) => {
         .status(500)
         .json({ message: "So many requests. Please try again." });
     res.status(200).json({ caption: data.choices[0].message.content });
-  // } catch (error) {
-  //   res.status(500).json({ message: "Internal server error" });
-  // }
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 const BlogHeadingImages = async (req, res) => {
@@ -112,13 +110,16 @@ const BlogHeadingImages = async (req, res) => {
           }&q=${encodeURIComponent(query)}&image_type=photo&per_page=15`
         );
         const pixabayData = await pixabayRes.json();
-
+        
         return {
           title: heading.title,
-          images: pixabayData.hits.map((img) => img.webformatURL),
+          images: pixabayData.hits.map((img) => img.previewURL),
+          downLoadImageLink: pixabayData.hits.map((img) => img.webformatURL),
         };
       })
     );    
+    console.log(results);
+    
     res.status(200).json({ headings: results });
   } catch (error) {
     console.error("Error in generateHeadingsController:", error);

@@ -14,13 +14,14 @@ import {
   X,
   LogOut,
   Youtube,
+  SquareUser,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Posters & Designs", href: "/posters", icon: Image },
-  { name: "Self Modeling", href: "/self-modeling", icon: Image },
+  { name: "Self Modeling", href: "/self-modeling", icon: SquareUser },
   {
     name: "Content & Copywriting",
     href: "/content",
@@ -41,9 +42,9 @@ const navigation = [
     ],
   },
   { name: "Trend Analyzer", href: "/trends", icon: TrendingUp },
-  { name: "Modify Image", href: "/modify-image", icon: TrendingUp },
+  // { name: "Modify Image", href: "/modify-image", icon: TrendingUp },
   { name: "Social Media Scheduler", href: "/scheduler", icon: Calendar },
-  { name: "Templates Marketplace", href: "/templates", icon: Palette },
+  { name: "Templates", href: "/templates", icon: Palette },
   { name: "Settings", href: "/settings/profile", icon: Settings },
 ];
 

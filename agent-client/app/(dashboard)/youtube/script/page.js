@@ -17,6 +17,7 @@ import LoaderAnim from "@/components/LoaderAnim";
 const ScriptWriter = () => {
   const [generatedScript, setGeneratedScript] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
   const [userInputs, setUserInputs] = useState({
     videoTopic: "",
     videoLength: "3",
@@ -98,6 +99,34 @@ const ScriptWriter = () => {
     } finally {
       setIsGenerating(false);
     }
+  };
+  
+  const handleCopyScript = () => {
+    if (!generatedScript) return;
+    navigator.clipboard.writeText(generatedScript);
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 2000); // Reset after 2 seconds
+  };
+  
+  const handleDownloadScript = () => {
+    if (!generatedScript) return;
+    
+    // Create a blob with the script content
+    const blob = new Blob([generatedScript], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    
+    // Create a temporary link element to trigger the download
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${userInputs.videoTopic.replace(/\s+/g, '-').toLowerCase() || 'youtube-script'}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    
+    // Clean up
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
   return (
     <div className="grid lg:grid-cols-2 gap-8">
@@ -246,12 +275,12 @@ const ScriptWriter = () => {
               </div>
               {generatedScript && (
                 <div className="flex space-x-2">
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={handleDownloadScript}>
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </Button>
-                  <Button variant="outline" size="sm">
-                    Copy Script
+                  <Button variant="outline" size="sm" onClick={handleCopyScript}>
+                    {isCopied ? "Copied!" : "Copy Script"}
                   </Button>
                 </div>
               )}
@@ -260,9 +289,9 @@ const ScriptWriter = () => {
           <CardContent>
             {generatedScript ? (
               <div className="bg-white/10 rounded-lg p-4">
-                <pre className="whitespace-pre-wrap text-sm text-white font-sans">
-                  <code>{generatedScript}</code>
-                </pre>
+                <div className="whitespace-pre-wrap text-base text-white font-sans">
+                  {generatedScript}
+                </div>
               </div>
             ) : isGenerating ? (
               <LoaderAnim />

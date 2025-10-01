@@ -13,6 +13,7 @@ import {
   Sparkles,
   Save,
   RotateCcw,
+  Download,
 } from "lucide-react";
 
 const BlogHeadingPopup = ({
@@ -30,7 +31,8 @@ const BlogHeadingPopup = ({
   const [selectedImages, setSelectedImages] = useState({});
   const [editingIndex, setEditingIndex] = useState(null);
   const [tempTitle, setTempTitle] = useState("");
-
+  console.log(headings);
+  
   useEffect(() => {
     if (headings && headings.length > 0) {
       // Store original headings in ref for reset functionality
