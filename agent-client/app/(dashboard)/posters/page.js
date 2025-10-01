@@ -441,28 +441,18 @@ export default function PostersPage() {
               </div>
               <div>
                 <Label htmlFor="cap-lang">Language</Label>
-                <select
+                <Input
                   id="cap-lang"
                   className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                   value={captionOptions.language}
+                  placeholder="e.g., English, Bangla"
                   onChange={(e) =>
                     setCaptionOptions({
                       ...captionOptions,
                       language: e.target.value,
                     })
                   }
-                >
-                  <option value="en">English</option>
-                  <option value="es">Spanish</option>
-                  <option value="fr">French</option>
-                  <option value="de">German</option>
-                  <option value="hi">Hindi</option>
-                  <option value="bn">Bengali</option>
-                  <option value="ar">Arabic</option>
-                  <option value="pt">Portuguese</option>
-                  <option value="ru">Russian</option>
-                  <option value="ja">Japanese</option>
-                </select>
+                />
               </div>
               <div>
                 <Label htmlFor="cap-keywords">Describe about the product</Label>

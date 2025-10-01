@@ -24,23 +24,14 @@ export default function ContentPublisher({ content, onPublished = () => {} }) {
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
   const [publishing, setPublishing] = useState(false);
   const [results, setResults] = useState({});
-  const [scheduledAt, setScheduledAt] = useState(() => {
-    const now = new Date();
-    const pad = (n) => `${n}`.padStart(2, "0");
-    const year = now.getFullYear();
-    const month = pad(now.getMonth() + 1);
-    const day = pad(now.getDate());
-    const hours = pad(now.getHours());
-    const minutes = pad(now.getMinutes());
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  });
-
+  const [scheduledAt, setScheduledAt] = useState("");
+  
   const connectedPlatforms = integrations.filter(
     (integration) => integration.status === "active"
   );
   console.log(integrations);
 
-  const handlePlatformToggle = (platform) => {
+  const handlePlatformToggle = (platform) => {    
     if (!content) return;
     setSelectedPlatforms((prev) =>
       prev.includes(platform)

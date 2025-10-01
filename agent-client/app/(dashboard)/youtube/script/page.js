@@ -10,12 +10,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  FileText,
-  Sparkles,
-  Download,
-} from "lucide-react";
+import { FileText, Sparkles, Download } from "lucide-react";
 import apiClient from "@/lib/api";
+import LoaderAnim from "@/components/LoaderAnim";
 
 const ScriptWriter = () => {
   const [generatedScript, setGeneratedScript] = useState("");
@@ -43,25 +40,46 @@ const ScriptWriter = () => {
     const { id, value } = e.target;
     setUserInputs((prev) => ({
       ...prev,
-      [id === 'script-topic' ? 'videoTopic' : 
-        id === 'target-audience' ? 'targetAudience' : 
-        id === 'video-goal' ? 'videoGoal' : 
-        id === 'tone' ? 'tone' : 
-        id === 'output-language' ? 'outputLanguage' : id]: value
+      [id === "script-topic"
+        ? "videoTopic"
+        : id === "target-audience"
+        ? "targetAudience"
+        : id === "video-goal"
+        ? "videoGoal"
+        : id === "tone"
+        ? "tone"
+        : id === "output-language"
+        ? "outputLanguage"
+        : id]: value,
     }));
-    if (errors[id === 'script-topic' ? 'videoTopic' : 
-        id === 'target-audience' ? 'targetAudience' : 
-        id === 'output-language' ? 'outputLanguage' : id]) {
-      setErrors((prev) => ({ ...prev, [id === 'script-topic' ? 'videoTopic' : 
-        id === 'target-audience' ? 'targetAudience' : 
-        id === 'output-language' ? 'outputLanguage' : id]: false }));
+    if (
+      errors[
+        id === "script-topic"
+          ? "videoTopic"
+          : id === "target-audience"
+          ? "targetAudience"
+          : id === "output-language"
+          ? "outputLanguage"
+          : id
+      ]
+    ) {
+      setErrors((prev) => ({
+        ...prev,
+        [id === "script-topic"
+          ? "videoTopic"
+          : id === "target-audience"
+          ? "targetAudience"
+          : id === "output-language"
+          ? "outputLanguage"
+          : id]: false,
+      }));
     }
   };
 
   const handleSliderChange = (e) => {
     setUserInputs((prev) => ({
       ...prev,
-      videoLength: e.target.value
+      videoLength: e.target.value,
     }));
   };
 
@@ -72,7 +90,7 @@ const ScriptWriter = () => {
     try {
       const response = await apiClient.ai.generateScript(userInputs);
       console.log("Generated script:", response.script);
-      
+
       setGeneratedScript(response.script);
     } catch (error) {
       console.error("Error generating script:", error);
@@ -105,7 +123,11 @@ const ScriptWriter = () => {
                 onChange={handleInputChange}
                 className={errors.videoTopic ? "border-red-500" : ""}
               />
-              {errors.videoTopic && <p className="text-red-500 text-sm mt-1">This field is required</p>}
+              {errors.videoTopic && (
+                <p className="text-red-500 text-sm mt-1">
+                  This field is required
+                </p>
+              )}
             </div>
 
             <div>
@@ -124,7 +146,9 @@ const ScriptWriter = () => {
               />
               <div className="flex justify-between text-white/70 text-sm mt-1">
                 <span>1 min</span>
-                <span className="font-medium text-white">{userInputs.videoLength} min</span>
+                <span className="font-medium text-white">
+                  {userInputs.videoLength} min
+                </span>
                 <span>10 min</span>
               </div>
             </div>
@@ -138,7 +162,11 @@ const ScriptWriter = () => {
                 onChange={handleInputChange}
                 className={errors.targetAudience ? "border-red-500" : ""}
               />
-              {errors.targetAudience && <p className="text-red-500 text-sm mt-1">This field is required</p>}
+              {errors.targetAudience && (
+                <p className="text-red-500 text-sm mt-1">
+                  This field is required
+                </p>
+              )}
             </div>
 
             <div>
@@ -172,14 +200,18 @@ const ScriptWriter = () => {
             </div>
             <div>
               <Label htmlFor="output-language">Output Language</Label>
-              <Input 
-                id="output-language" 
-                placeholder="e.g., Bangla" 
+              <Input
+                id="output-language"
+                placeholder="e.g., Bangla"
                 value={userInputs.outputLanguage}
                 onChange={handleInputChange}
                 className={errors.outputLanguage ? "border-red-500" : ""}
               />
-              {errors.outputLanguage && <p className="text-red-500 text-sm mt-1">This field is required</p>}
+              {errors.outputLanguage && (
+                <p className="text-red-500 text-sm mt-1">
+                  This field is required
+                </p>
+              )}
             </div>
             <Button
               onClick={handleGenerateScript}
@@ -227,11 +259,13 @@ const ScriptWriter = () => {
           </CardHeader>
           <CardContent>
             {generatedScript ? (
-              <div className="bg-gray-50 rounded-lg p-4">
+              <div className="bg-white/10 rounded-lg p-4">
                 <pre className="whitespace-pre-wrap text-sm text-white font-sans">
-                  {generatedScript}
+                  <code>{generatedScript}</code>
                 </pre>
               </div>
+            ) : isGenerating ? (
+              <LoaderAnim />
             ) : (
               <div className="text-center py-12 px-6">
                 <div className="relative inline-block mb-4">
@@ -242,7 +276,9 @@ const ScriptWriter = () => {
                   Ready to Craft Your Script?
                 </h3>
                 <p className="text-white/80 max-w-sm mx-auto mb-6">
-                  Tell us your topic, audience, and style—then watch AI turn your ideas into a polished, ready-to-shoot video script in seconds.
+                  Tell us your topic, audience, and style—then watch AI turn
+                  your ideas into a polished, ready-to-shoot video script in
+                  seconds.
                 </p>
                 <ul className="text-left text-white/80 space-y-2 max-w-xs mx-auto mb-6">
                   <li className="flex items-start">

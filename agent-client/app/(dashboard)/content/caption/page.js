@@ -65,7 +65,7 @@ export default function CaptionGenerator() {
     try {
       const { productDescription, targetAudience, tone, platform, language } =
         captionOptions;
-
+      
       // Call the caption generator API
       const response = await apiClient.ai.captionGenerator({
         productDescription,

@@ -31,13 +31,23 @@ class WordPressService extends BaseIntegrationService {
       let date = undefined;
       if (scheduledTime) {
         const scheduledDate = new Date(scheduledTime);
-        if (!isNaN(scheduledDate.getTime()) && scheduledDate.getTime() > Date.now() + 5000) {
+        if (!isNaN(scheduledDate.getTime()) && scheduledDate.getTime() > Date.now()) {
           status = "future";
           // WordPress expects site timezone or ISO; we pass ISO string
           date = scheduledDate.toISOString();
         }
       }
 
+      // Extract the first <h1> heading from the content to use as slug
+      let slug = undefined;
+      const h1Match = postContent.match(/<h1[^>]*>(.*?)<\/h1>/i);
+      if (h1Match && h1Match[1]) {
+        slug = h1Match[1]
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+      }
+      
       const response = await fetch(`${this.baseURL}/posts`, {
         method: "POST",
         headers: {
@@ -45,6 +55,7 @@ class WordPressService extends BaseIntegrationService {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          slug: slug,
           content: postContent,
           status,
           ...(date ? { date } : {}),

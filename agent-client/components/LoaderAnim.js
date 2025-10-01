@@ -19,7 +19,7 @@ const LoaderAnim = ({ children }) => {
     return () => clearInterval(interval);
   }, []);
   return (
-    <div className="rounded-lg">
+    <div className="rounded-lg w-full">
       <div className="text-center">
         <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
           <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

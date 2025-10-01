@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sparkles, Copy, Hash, Target, BarChart } from "lucide-react";
 import apiClient from "@/lib/api";
+import LoaderAnim from "@/components/LoaderAnim";
 
 export default function HashtagGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -23,6 +24,8 @@ export default function HashtagGenerator() {
     numKeywords: "15",
   });
   const [errors, setErrors] = useState({});
+  const [isHashtagsCopied, setIsHashtagsCopied] = useState(false);
+  const [isKeywordsCopied, setIsKeywordsCopied] = useState(false);
 
   // Validate required fields
   const validateInputs = () => {
@@ -60,8 +63,12 @@ export default function HashtagGenerator() {
         numKeywords: hashtagOptions.numKeywords,
         platform: hashtagOptions.platform,
       });
-      console.log(response);
       setGeneratedContent(response);
+      setHashtagOptions({
+        industry: "",
+        platform: "instagram",
+        numKeywords: "15",
+      });
       setIsGenerating(false);
     } catch (error) {
       console.error("Error generating content:", error);
@@ -81,6 +88,10 @@ export default function HashtagGenerator() {
     ].join(" ");
 
     navigator.clipboard.writeText(allHashtags);
+    setIsHashtagsCopied(true);
+    setTimeout(() => {
+      setIsHashtagsCopied(false);
+    }, 2000); // Reset after 2 seconds
   };
 
   const handleCopyKeywords = () => {
@@ -94,6 +105,10 @@ export default function HashtagGenerator() {
     ].join(", ");
 
     navigator.clipboard.writeText(allKeywords);
+    setIsKeywordsCopied(true);
+    setTimeout(() => {
+      setIsKeywordsCopied(false);
+    }, 2000); // Reset after 2 seconds
   };
 
   return (
@@ -254,15 +269,20 @@ export default function HashtagGenerator() {
                 <div className="flex space-x-2">
                   <Button variant="outline" onClick={handleCopyContent}>
                     <Copy className="mr-2 h-4 w-4" />
-                    Copy All Hashtags
+                    {isHashtagsCopied ? "Copied ✔" : "Copy All Hashtags"}
                   </Button>
                   <Button variant="outline" onClick={handleCopyKeywords}>
                     <Copy className="mr-2 h-4 w-4" />
-                    Copy All Keywords
+                    {isKeywordsCopied ? "Copied ✔" : "Copy All Keywords"}
                   </Button>
                 </div>
               </div>
-            ) : (
+            ) :
+            isGenerating
+            ?
+            <LoaderAnim/>
+            :
+            (
               <div className="flex items-center justify-center rounded-md">
                 <div className="flex flex-col items-center justify-center rounded-md p-6 text-center">
                   <Hash className="h-12 w-12 text-white mb-4" />

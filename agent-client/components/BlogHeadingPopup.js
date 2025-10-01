@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,21 +15,30 @@ import {
   RotateCcw,
 } from "lucide-react";
 
-const BlogHeadingPopup = ({ 
-  isOpen, 
-  onClose, 
-  headings, 
-  onSave, 
-  onCancel 
+const BlogHeadingPopup = ({
+  isOpen,
+  onClose,
+  headings,
+  onSave,
+  onCancel
 }) => {
+  // Store the original headings in a ref so it doesn't trigger re-renders
+  const originalHeadingsRef = useRef(null);
+  const originalSelectedImagesRef = useRef({});
+
   const [editableHeadings, setEditableHeadings] = useState([]);
   const [selectedImages, setSelectedImages] = useState({});
   const [editingIndex, setEditingIndex] = useState(null);
   const [tempTitle, setTempTitle] = useState("");
 
-  useEffect(() => {    
+  useEffect(() => {
     if (headings && headings.length > 0) {
-      setEditableHeadings(headings);
+      // Store original headings in ref for reset functionality
+      originalHeadingsRef.current = JSON.parse(JSON.stringify(headings));
+
+      // Set the editable headings state
+      setEditableHeadings(JSON.parse(JSON.stringify(headings)));
+
       // Initialize selected images with first image of each heading
       const initialSelectedImages = {};
       headings.forEach((heading, index) => {
@@ -37,7 +46,10 @@ const BlogHeadingPopup = ({
           initialSelectedImages[index] = heading.images[0];
         }
       });
-      setSelectedImages(initialSelectedImages);
+
+      // Store original selected images in ref for reset functionality
+      originalSelectedImagesRef.current = { ...initialSelectedImages };
+      setSelectedImages({ ...initialSelectedImages });
     }
   }, [headings]);
 
@@ -75,17 +87,13 @@ const BlogHeadingPopup = ({
   };
 
   const handleReset = () => {
-    console.log(headings);
-    
-    if (headings && headings.length > 0) {
-      setEditableHeadings(headings);
-      const initialSelectedImages = {};
-      headings.forEach((heading, index) => {
-        if (heading.images && heading.images.length > 0) {
-          initialSelectedImages[index] = heading.images[0];
-        }
-      });
-      setSelectedImages(initialSelectedImages);
+    // Reset to original headings using the refs
+    if (originalHeadingsRef.current) {
+      setEditableHeadings(JSON.parse(JSON.stringify(originalHeadingsRef.current)));
+      setSelectedImages(JSON.parse(JSON.stringify(originalSelectedImagesRef.current)));
+      // Clear any editing state
+      setEditingIndex(null);
+      setTempTitle("");
     }
   };
 
@@ -105,19 +113,7 @@ const BlogHeadingPopup = ({
               <p className="text-gray-400">Edit headings and select images for your blog post</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleReset}
-              className="text-gray-300 border-gray-600 hover:bg-gray-700"
-            >
-              <RotateCcw className="h-4 w-4 mr-2" />
-              Reset
-            </Button>
-          </div>
         </div>
-
         {/* Content */}
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
           <div className="space-y-6">
@@ -135,7 +131,7 @@ const BlogHeadingPopup = ({
                             <Input
                               value={tempTitle}
                               onChange={(e) => setTempTitle(e.target.value)}
-                              className="bg-gray-700 border-gray-600 text-white"
+                              className="bg-gray-700 border-gray-600 text-white text-2xl w-fit"
                               autoFocus
                             />
                             <Button
@@ -177,16 +173,14 @@ const BlogHeadingPopup = ({
                       <ImageIcon className="h-4 w-4" />
                       <span className="text-sm">Select an image for this heading:</span>
                     </div>
-                    
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                       {heading.images && heading.images.map((imageUrl, imageIndex) => (
                         <div
                           key={imageIndex}
-                          className={`relative group cursor-pointer rounded-lg overflow-hidden border-2 transition-all duration-200 ${
-                            selectedImages[index] === imageUrl
-                              ? 'border-blue-500 ring-2 ring-blue-500/50'
-                              : 'border-gray-600 hover:border-gray-500'
-                          }`}
+                          className={`relative group cursor-pointer rounded-lg overflow-hidden border-2 transition-all duration-200 ${selectedImages[index] === imageUrl
+                            ? 'border-blue-500 ring-2 ring-blue-500/50'
+                            : 'border-gray-600 hover:border-gray-500'
+                            }`}
                           onClick={() => handleImageSelect(index, imageUrl)}
                         >
                           <div className="aspect-square relative">
@@ -207,7 +201,6 @@ const BlogHeadingPopup = ({
                         </div>
                       ))}
                     </div>
-                    
                     {selectedImages[index] && (
                       <div className="mt-4 p-3 bg-gray-700/50 rounded-lg">
                         <div className="flex items-center gap-2 text-green-400 text-sm">
@@ -222,14 +215,22 @@ const BlogHeadingPopup = ({
             ))}
           </div>
         </div>
-
         {/* Footer */}
         <div className="flex items-center justify-between p-2 border-t border-gray-700 bg-gray-800/50">
           <div className="text-sm text-gray-400">
-            {editableHeadings.length} heading{editableHeadings.length !== 1 ? 's' : ''} • 
+            {editableHeadings.length} heading{editableHeadings.length !== 1 ? 's' : ''} •
             {Object.keys(selectedImages).length} image{Object.keys(selectedImages).length !== 1 ? 's' : ''} selected
           </div>
           <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleReset}
+              className="text-gray-300 border-gray-600 hover:bg-gray-700"
+            >
+              <RotateCcw className="h-4 w-4 mr-2" />
+              Reset
+            </Button>
             <Button
               onClick={handleSave}
               className="bg-blue-600 hover:bg-blue-700 text-white"

@@ -31,8 +31,7 @@ const TiptapEditor = dynamic(() => import("@/components/TiptapEditor"), {
 
 export default function BlogGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedContent, setGeneratedContent] = useState(`
-    <h1>Beauty in Nature</h1>
+  const [generatedContent, setGeneratedContent] = useState(`<h1>Beauty in Nature</h1>
 <p>Nature has an extraordinary way of captivating our senses, offering a timeless source of inspiration and tranquility. From the towering peaks of mountains to the gentle crash of ocean waves, the beauty in nature reminds us of the world's inherent wonders. In this blog, we'll explore various landscapes that showcase this splendor and discuss how connecting with nature can enhance our well-being.</p>
 <p>Whether you're a seasoned adventurer or someone seeking solace in everyday scenery, embracing the beauty of nature can transform your perspective. Let's dive into some of the most mesmerizing aspects of the natural world.</p>
 
@@ -123,6 +122,7 @@ TiptapEditor.js:140 content <h1>Beauty in Nature</h1>
   const [showHeadingPopup, setShowHeadingPopup] = useState(false);
   const [blogHeadings, setBlogHeadings] = useState([]);
   const [finalHeadings, setFinalHeadings] = useState([]);
+  const [isCopied, setIsCopied] = useState(false);
   const [blogOptions, setBlogOptions] = useState({
     blogTopic: "",
     blogLength: "",
@@ -208,6 +208,10 @@ TiptapEditor.js:140 content <h1>Beauty in Nature</h1>
 
   const handleCopyContent = () => {
     navigator.clipboard.writeText(editorContent);
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 2000); // Reset after 2 seconds
   };
 
   const handleSaveHeadings = (customizedHeadings) => {
@@ -478,10 +482,10 @@ TiptapEditor.js:140 content <h1>Beauty in Nature</h1>
                   />
                 </div>
                 <div className="flex space-x-2">
-                  <Button variant="outline" onClick={handleCopyContent} className="text-white">
+                  <Button variant="glass" onClick={handleCopyContent} className="text-white">
                     <Copy className="mr-2 h-4 w-4" />
-                    Copy Blog
-                  </Button>
+                    {isCopied ? "Copied ✔" : "Copy Blog"}
+                </Button>
                 </div>
               </div>
             ) : (

@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Sparkles, Copy, ShoppingBag, Star, Tag } from "lucide-react";
 import apiClient from "@/lib/api";
 import dynamic from "next/dynamic";
+import LoaderAnim from "@/components/LoaderAnim";
 
 export default function ProductDescriptionGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -34,7 +35,8 @@ export default function ProductDescriptionGenerator() {
     const newErrors = {};
     if (!productOptions.productName.trim()) newErrors.productName = true;
     if (!productOptions.keyFeatures.trim()) newErrors.keyFeatures = true;
-    if (!productOptions.includeKeywords.trim()) newErrors.includeKeywords = true;
+    if (!productOptions.includeKeywords.trim())
+      newErrors.includeKeywords = true;
     if (!productOptions.outputLanguage.trim()) newErrors.outputLanguage = true;
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -44,20 +46,43 @@ export default function ProductDescriptionGenerator() {
     const { id, value } = e.target;
     setProductOptions((prev) => ({
       ...prev,
-      [id === 'product-name' ? 'productName' : 
-        id === 'key-features' ? 'keyFeatures' : 
-        id === 'description-length' ? 'descriptionLength' : 
-        id === 'include-keywords' ? 'includeKeywords' : 
-        id === 'output-language' ? 'outputLanguage' : id]: value
+      [id === "product-name"
+        ? "productName"
+        : id === "key-features"
+        ? "keyFeatures"
+        : id === "description-length"
+        ? "descriptionLength"
+        : id === "include-keywords"
+        ? "includeKeywords"
+        : id === "output-language"
+        ? "outputLanguage"
+        : id]: value,
     }));
-    if (errors[id === 'product-name' ? 'productName' : 
-        id === 'key-features' ? 'keyFeatures' : 
-        id === 'include-keywords' ? 'includeKeywords' : 
-        id === 'output-language' ? 'outputLanguage' : id]) {
-      setErrors((prev) => ({ ...prev, [id === 'product-name' ? 'productName' : 
-        id === 'key-features' ? 'keyFeatures' : 
-        id === 'include-keywords' ? 'includeKeywords' : 
-        id === 'output-language' ? 'outputLanguage' : id]: false }));
+    if (
+      errors[
+        id === "product-name"
+          ? "productName"
+          : id === "key-features"
+          ? "keyFeatures"
+          : id === "include-keywords"
+          ? "includeKeywords"
+          : id === "output-language"
+          ? "outputLanguage"
+          : id
+      ]
+    ) {
+      setErrors((prev) => ({
+        ...prev,
+        [id === "product-name"
+          ? "productName"
+          : id === "key-features"
+          ? "keyFeatures"
+          : id === "include-keywords"
+          ? "includeKeywords"
+          : id === "output-language"
+          ? "outputLanguage"
+          : id]: false,
+      }));
     }
   };
 
@@ -79,11 +104,22 @@ export default function ProductDescriptionGenerator() {
         outputLanguage: productOptions.outputLanguage,
       });
       console.log(response.description);
-      
-      setGeneratedContent(response.description || "No content generated. Please try again.");
+
+      setGeneratedContent(
+        response.description || "No content generated. Please try again."
+      );
+      setProductOptions({
+        productName: "",
+        keyFeatures: "",
+        descriptionLength: "100-200 words",
+        includeKeywords: "",
+        outputLanguage: "English",
+      });
     } catch (error) {
       console.error("Error generating product description:", error);
-      setApiError(error.message || "Failed to generate content. Please try again.");
+      setApiError(
+        error.message || "Failed to generate content. Please try again."
+      );
     } finally {
       setIsGenerating(false);
     }
@@ -100,7 +136,9 @@ export default function ProductDescriptionGenerator() {
         <Card>
           <CardHeader>
             <CardTitle>Product Description Generator</CardTitle>
-            <CardDescription>Create compelling product descriptions for your e-commerce store</CardDescription>
+            <CardDescription>
+              Create compelling product descriptions for your e-commerce store
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -112,11 +150,17 @@ export default function ProductDescriptionGenerator() {
                 onChange={handleInputChange}
                 className={errors.productName ? "border-red-500" : ""}
               />
-              {errors.productName && <p className="text-red-500 text-sm mt-1">This field is required</p>}
+              {errors.productName && (
+                <p className="text-red-500 text-sm mt-1">
+                  This field is required
+                </p>
+              )}
             </div>
-            
+
             <div>
-              <Label htmlFor="key-features">Key Features (comma separated) *</Label>
+              <Label htmlFor="key-features">
+                Key Features (comma separated) *
+              </Label>
               <Input
                 id="key-features"
                 placeholder="e.g., Bluetooth 5.0, 30-hour battery life, water-resistant"
@@ -124,9 +168,13 @@ export default function ProductDescriptionGenerator() {
                 onChange={handleInputChange}
                 className={errors.keyFeatures ? "border-red-500" : ""}
               />
-              {errors.keyFeatures && <p className="text-red-500 text-sm mt-1">This field is required</p>}
+              {errors.keyFeatures && (
+                <p className="text-red-500 text-sm mt-1">
+                  This field is required
+                </p>
+              )}
             </div>
-           
+
             <div>
               <Label htmlFor="description-length">Description Length</Label>
               <select
@@ -141,7 +189,9 @@ export default function ProductDescriptionGenerator() {
               </select>
             </div>
             <div>
-              <Label htmlFor="include-keywords">SEO Keywords (comma separated) *</Label>
+              <Label htmlFor="include-keywords">
+                SEO Keywords (comma separated) *
+              </Label>
               <Input
                 id="include-keywords"
                 placeholder="e.g., wireless headphones, noise-cancelling, premium audio"
@@ -149,7 +199,11 @@ export default function ProductDescriptionGenerator() {
                 onChange={handleInputChange}
                 className={errors.includeKeywords ? "border-red-500" : ""}
               />
-              {errors.includeKeywords && <p className="text-red-500 text-sm mt-1">This field is required</p>}
+              {errors.includeKeywords && (
+                <p className="text-red-500 text-sm mt-1">
+                  This field is required
+                </p>
+              )}
             </div>
             <div>
               <Label htmlFor="output-language">Output Language *</Label>
@@ -160,7 +214,11 @@ export default function ProductDescriptionGenerator() {
                 onChange={handleInputChange}
                 className={errors.outputLanguage ? "border-red-500" : ""}
               />
-              {errors.outputLanguage && <p className="text-red-500 text-sm mt-1">This field is required</p>}
+              {errors.outputLanguage && (
+                <p className="text-red-500 text-sm mt-1">
+                  This field is required
+                </p>
+              )}
             </div>
             <div>
               <div className="flex gap-1 items-center">
@@ -181,9 +239,7 @@ export default function ProductDescriptionGenerator() {
               </p>
             </div>
             {apiError && (
-              <div className="text-red-500 text-sm mt-2">
-                {apiError}
-              </div>
+              <div className="text-red-500 text-sm mt-2">{apiError}</div>
             )}
             <Button
               onClick={handleGenerateContent}
@@ -232,16 +288,21 @@ export default function ProductDescriptionGenerator() {
                   </Button>
                 </div>
               </div>
+            ) : isGenerating ? (
+              <LoaderAnim />
             ) : (
               <div className="flex flex-col items-center justify-center h-[400px] rounded-md p-6 text-center">
                 <ShoppingBag className="h-12 w-12 mb-4" />
                 <p className="text-white mb-2">
-                  Fill in the form and click Generate to create a product description
+                  Fill in the form and click Generate to create a product
+                  description
                 </p>
                 <div className="flex flex-col gap-2 mt-4 w-full max-w-xs">
                   <div className="flex items-center gap-2">
                     <Tag className="h-4 w-4 text-white" />
-                    <p className="text-sm text-white">Compelling product features</p>
+                    <p className="text-sm text-white">
+                      Compelling product features
+                    </p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Star className="h-4 w-4 text-white" />
