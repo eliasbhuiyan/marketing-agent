@@ -204,7 +204,7 @@ class ApiClient {
     /**
      * Get all integrations for the current brand
      */
-    getAll: (date) => this.get(`/integrations${date ? "?t=" + date :""}`),
+    getAll: (date) => this.get(`/integrations${date ? "?t=" + date : ""}`),
 
     /**
      * Get details for a specific platform integration
@@ -214,7 +214,8 @@ class ApiClient {
     /**
      * Initiate OAuth flow for a platform
      */
-    connect: (platform, data) => this.post(`/integrations/${platform}/connect`, data || {}),
+    connect: (platform, data) =>
+      this.post(`/integrations/${platform}/connect`, data || {}),
 
     /**
      * Disconnect an integration
@@ -225,7 +226,10 @@ class ApiClient {
      * Publish content to a platform
      */
     publish: (platform, content, scheduledTime) =>
-      this.post(`/integrations/${platform}/publish`, { content, scheduledTime }),
+      this.post(`/integrations/${platform}/publish`, {
+        content,
+        scheduledTime,
+      }),
 
     /**
      * Test connection for a platform
@@ -284,14 +288,14 @@ class ApiClient {
       targetAudience,
       tone,
       platform,
-      language
+      language,
     }) =>
       this.post(`/ai/captiongenerator`, {
         productDescription,
         targetAudience,
         tone,
         platform,
-        language
+        language,
       }),
 
     blogheadings: ({
@@ -365,6 +369,9 @@ class ApiClient {
         tone,
         outputLanguage,
       }),
+    thumbnailGenerator: (formDataToSend) => {
+     return this.post(`/ai/thumbnail`, formDataToSend);
+    },
   };
 }
 

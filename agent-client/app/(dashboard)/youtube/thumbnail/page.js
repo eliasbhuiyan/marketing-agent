@@ -9,7 +9,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import apiClient from "@/lib/api";
 import {
+  Download,
   DownloadIcon,
   Eye,
   ImageIcon,
@@ -22,13 +24,13 @@ import React, { useRef, useState } from "react";
 const ThumbnailDesign = () => {
   const imageInputRef = useRef(null);
   const [uploadedImage, setUploadedImage] = useState(null);
-  const [generatedThumbnails, setGeneratedThumbnails] = useState([]);
+  const [generatedThumbnails, setGeneratedThumbnails] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [formData, setFormData] = useState({
-    videoTitle: "",
+    headlineText: "",
     videoDescription: "",
     thumbnailStyle: "professional",
-    brandColor: "#3B82F6"
+    brandColor: "#3B82F6",
   });
   const [errors, setErrors] = useState({});
   const [apiError, setApiError] = useState(null);
@@ -50,21 +52,27 @@ const ThumbnailDesign = () => {
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
-    const fieldName = id === 'video-title' ? 'videoTitle' :
-      id === 'video-description' ? 'videoDescription' :
-        id === 'thumbnail-style' ? 'thumbnailStyle' :
-          id === 'brand-colors' ? 'brandColor' : id;
+    const fieldName =
+      id === "video-title"
+        ? "headlineText"
+        : id === "video-description"
+        ? "videoDescription"
+        : id === "thumbnail-style"
+        ? "thumbnailStyle"
+        : id === "brand-colors"
+        ? "brandColor"
+        : id;
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [fieldName]: value
+      [fieldName]: value,
     }));
 
     // Clear error when user types
     if (errors[fieldName]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [fieldName]: false
+        [fieldName]: false,
       }));
     }
   };
@@ -73,19 +81,19 @@ const ThumbnailDesign = () => {
     const file = event.target.files[0];
     if (file) {
       // Validate file type
-      if (!file.type.startsWith('image/')) {
-        setErrors(prev => ({
+      if (!file.type.startsWith("image/")) {
+        setErrors((prev) => ({
           ...prev,
-          image: 'Please upload a valid image file'
+          image: "Please upload a valid image file",
         }));
         return;
       }
 
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        setErrors(prev => ({
+        setErrors((prev) => ({
           ...prev,
-          image: 'Image size should be less than 5MB'
+          image: "Image size should be less than 5MB",
         }));
         return;
       }
@@ -95,9 +103,9 @@ const ThumbnailDesign = () => {
 
       // Clear image error if exists
       if (errors.image) {
-        setErrors(prev => ({
+        setErrors((prev) => ({
           ...prev,
-          image: false
+          image: false,
         }));
       }
     }
@@ -106,19 +114,19 @@ const ThumbnailDesign = () => {
   const validateForm = () => {
     const newErrors = {};
     if (!uploadedImage) {
-      newErrors.image = 'Please upload an image';
+      newErrors.image = "Please upload an image";
     }
-    if (!formData.videoTitle.trim()) {
-      newErrors.videoTitle = 'Video title is required';
+    if (!formData.headlineText.trim()) {
+      newErrors.headlineText = "Thumbnail Headline is required";
     }
     if (!formData.videoDescription.trim()) {
-      newErrors.videoDescription = 'Video description is required';
+      newErrors.videoDescription = "Video description is required";
     }
     if (!formData.thumbnailStyle) {
-      newErrors.thumbnailStyle = 'Please select a thumbnail style';
+      newErrors.thumbnailStyle = "Please select a thumbnail style";
     }
     if (!formData.brandColor) {
-      newErrors.brandColor = 'Brand color is required';
+      newErrors.brandColor = "Brand color is required";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -126,29 +134,36 @@ const ThumbnailDesign = () => {
 
   const handleGenerateThumbnails = async () => {
     if (!validateForm()) {
-      setApiError('Please fill in all required fields');
+      setApiError("Please fill in all required fields");
       return;
     }
-    console.log(formData, uploadedImage);
-    
+
     setApiError(null);
     setIsGenerating(true);
 
-    // Simulate AI generation
-    setTimeout(() => {
-      setGeneratedThumbnails([
-        {
-          id: 1,
-          url: "/api/placeholder/400/225",
-          style: "Professional",
-          score: 95,
-        },
-        { id: 2, url: "/api/placeholder/400/225", style: "Bold", score: 88 },
-        { id: 3, url: "/api/placeholder/400/225", style: "Fun", score: 92 },
-        { id: 4, url: "/api/placeholder/400/225", style: "Minimal", score: 85 },
-      ]);
+    try {
+      // Create FormData for file upload
+      const formDataToSend = new FormData();
+      formDataToSend.append("headlineText", formData.headlineText);
+      formDataToSend.append("videoDescription", formData.videoDescription);
+      formDataToSend.append("style", formData.thumbnailStyle);
+      formDataToSend.append("colorScheme", formData.brandColor); // Using video title as text overlay
+
+      // Append the image file
+      if (uploadedImage && uploadedImage.file) {
+        formDataToSend.append("image", uploadedImage.file);
+      }
+
+      // Call the API
+      const response = await apiClient.ai.thumbnailGenerator(formDataToSend);
+
+      setGeneratedThumbnails(response.thumbnail);
+    } catch (error) {
+      console.error("Error generating thumbnails:", error);
+      setApiError(error.message || "Failed to generate thumbnails");
+    } finally {
       setIsGenerating(false);
-    }, 3000);
+    }
   };
   return (
     <div className="grid lg:grid-cols-2 gap-8">
@@ -167,7 +182,9 @@ const ThumbnailDesign = () => {
           <CardContent className="space-y-4">
             <div
               onClick={() => imageInputRef.current?.click()}
-              className={`border-2 border-dashed cursor-pointer hover:bg-white/10 ${errors.image ? 'border-red-500' : 'border-gray-300'} rounded-lg p-6 text-center`}
+              className={`border-2 border-dashed cursor-pointer hover:bg-white/10 ${
+                errors.image ? "border-red-500" : "border-gray-300"
+              } rounded-lg p-6 text-center`}
             >
               <input
                 ref={imageInputRef}
@@ -198,7 +215,9 @@ const ThumbnailDesign = () => {
                   </Button>
                 </>
               )}
-              {errors.image && <p className="text-red-500 text-sm mt-2">{errors.image}</p>}
+              {errors.image && (
+                <p className="text-red-500 text-sm mt-2">{errors.image}</p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -221,34 +240,28 @@ const ThumbnailDesign = () => {
             )}
 
             <div>
-              <Label htmlFor="video-title">Video Title/Topic</Label>
+              <Label htmlFor="video-title">Thumbnail Headline</Label>
               <Input
                 id="video-title"
                 placeholder="e.g., AI Marketing Tools Tutorial"
-                value={formData.videoTitle}
+                value={formData.headlineText}
                 onChange={handleInputChange}
-                className={errors.videoTitle ? "border-red-500" : ""}
+                className={errors.headlineText ? "border-red-500" : ""}
               />
-              {errors.videoTitle && <p className="text-red-500 text-sm mt-1">{errors.videoTitle}</p>}
-            </div>
-
-            <div>
-              <Label htmlFor="video-description">Video Description</Label>
-              <textarea
-                id="video-description"
-                className={`w-full p-3 border ${errors.videoDescription ? "border-red-500" : "border-gray-300"} rounded-md h-20 resize-none`}
-                placeholder="Brief description of your video content..."
-                value={formData.videoDescription}
-                onChange={handleInputChange}
-              />
-              {errors.videoDescription && <p className="text-red-500 text-sm mt-1">{errors.videoDescription}</p>}
+              {errors.headlineText && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.headlineText}
+                </p>
+              )}
             </div>
 
             <div>
               <Label htmlFor="thumbnail-style">Thumbnail Style</Label>
               <select
                 id="thumbnail-style"
-                className={`w-full mt-1 p-2 border ${errors.thumbnailStyle ? "border-red-500" : "border-gray-300"} rounded-md`}
+                className={`w-full mt-1 p-2 border ${
+                  errors.thumbnailStyle ? "border-red-500" : "border-gray-300"
+                } rounded-md`}
                 value={formData.thumbnailStyle}
                 onChange={handleInputChange}
               >
@@ -258,7 +271,11 @@ const ThumbnailDesign = () => {
                   </option>
                 ))}
               </select>
-              {errors.thumbnailStyle && <p className="text-red-500 text-sm mt-1">{errors.thumbnailStyle}</p>}
+              {errors.thumbnailStyle && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.thumbnailStyle}
+                </p>
+              )}
             </div>
 
             <div>
@@ -269,7 +286,9 @@ const ThumbnailDesign = () => {
                   id="brand-colors"
                   value={formData.brandColor}
                   onChange={handleInputChange}
-                  className={`w-10 h-10 rounded border ${errors.brandColor ? "border-red-500" : ""}`}
+                  className={`w-10 h-10 rounded border ${
+                    errors.brandColor ? "border-red-500" : ""
+                  }`}
                 />
                 <Input
                   value={formData.brandColor}
@@ -277,9 +296,27 @@ const ThumbnailDesign = () => {
                   className={errors.brandColor ? "border-red-500" : ""}
                 />
               </div>
-              {errors.brandColor && <p className="text-red-500 text-sm mt-1">{errors.brandColor}</p>}
+              {errors.brandColor && (
+                <p className="text-red-500 text-sm mt-1">{errors.brandColor}</p>
+              )}
             </div>
-
+            <div>
+              <Label htmlFor="video-description">Custom instructions</Label>
+              <textarea
+                id="video-description"
+                className={`w-full p-3 border ${
+                  errors.videoDescription ? "border-red-500" : "border-gray-300"
+                } rounded-md h-20 resize-none`}
+                placeholder="Brief instructions of your video content..."
+                value={formData.videoDescription}
+                onChange={handleInputChange}
+              />
+              {errors.videoDescription && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.videoDescription}
+                </p>
+              )}
+            </div>
             <Button
               onClick={handleGenerateThumbnails}
               disabled={isGenerating}
@@ -304,60 +341,79 @@ const ThumbnailDesign = () => {
 
       {/* Right Panel - Generated Thumbnails */}
       <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <ImageIcon className="h-5 w-5 mr-2" />
-              Generated Thumbnails
-            </CardTitle>
-            <CardDescription>AI-generated thumbnail variations</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {generatedThumbnails.length > 0 ? (
-              <div className="grid grid-cols-1 gap-4">
-                {generatedThumbnails.map((thumbnail) => (
-                  <div
-                    key={thumbnail.id}
-                    className="border border-gray-200 rounded-lg p-4"
-                  >
-                    <div className="aspect-video bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
-                      <ImageIcon className="h-12 w-12 text-gray-400" />
-                    </div>
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-medium text-gray-900">
-                        {thumbnail.style} Style
-                      </h3>
-                      <span className="text-sm text-green-600 font-medium">
-                        {thumbnail.score}% Score
-                      </span>
-                    </div>
-                    <div className="flex space-x-2">
-                      <Button size="sm" variant="outline">
-                        <DownloadIcon className="h-4 w-4 mr-2" />
-                        Download
-                      </Button>
-                      <Button size="sm" variant="outline">
-                        <Eye className="h-4 w-4 mr-2" />
-                        Preview
-                      </Button>
-                    </div>
+        {generatedThumbnails ? (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Eye className="h-5 w-5 mr-2" />
+                  Generated Thumbnail
+                </div>
+                <div className="flex space-x-2">
+                  <div className="flex space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const link = document.createElement("a");
+                        link.href = generatedThumbnails;
+                        link.download = `thubmnail-${Date.now()}.jpg`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      }}
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Download JPG
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const link = document.createElement("a");
+                        link.href = generatedThumbnails;
+                        link.download = `thubmnail-${Date.now()}.png`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      }}
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Download PNG
+                    </Button>
                   </div>
-                ))}
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="bg-gray-100 rounded-lg text-center w-fit max-w-sm m-auto">
+                <img
+                  src={generatedThumbnails}
+                  alt="Generated Thumbnail"
+                  className="max-w-full h-auto mx-auto rounded-lg shadow-lg"
+                />
               </div>
-            ) : (
-              <div className="text-center py-12">
-                <ImageIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  No Thumbnails Generated Yet
+            </CardContent>
+          </Card>
+        ) : (
+          <Card>
+            <CardContent className="p-12 text-center flex flex-col items-center justify-center">
+              <div className="border-4 border-dashed border-gray-200 rounded-xl p-8 w-full max-w-sm">
+                <ImageIcon className="h-20 w-20 text-gray-300 mx-auto mb-6" />
+                <h3 className="text-xl font-semibold text-white mb-3">
+                  Ready to Create Your Thumbnail?
                 </h3>
-                <p className="text-gray-600">
-                  Upload an image and click &quot;Generate Thumbnails&quot; to create your
-                  designs
+                <p className="text-white/90 text-sm leading-relaxed">
+                  Upload your product or model images, then click &quot;Generate
+                  Thumbnail&quot; to create your custom design with AI
                 </p>
+                <div className="mt-6 text-xs text-white/90">
+                  Supported formats: JPG, PNG, WEBP
+                </div>
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

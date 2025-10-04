@@ -52,7 +52,7 @@ const {
   getTrends,
   refreshTrends,
 } = require("../controllers/trendAnalyzerController");
-const { scriptWriterController } = require("../controllers/youtubeMarketingController");
+const { scriptWriterController, thumbnailGeneratorController } = require("../controllers/youtubeMarketingController");
 
 const upload = multer();
 const router = express.Router();
@@ -122,7 +122,7 @@ router.get("/trends", authMiddleware, getTrends);
 
 // Youtube routes
 router.post("/generatescript", authMiddleware, scriptWriterController);
-
+router.post("/thumbnail", authMiddleware, upload.single("image"), thumbnailGeneratorController);
 
 // Integration routes
 router.get("/integrations", authMiddleware, getIntegrations);

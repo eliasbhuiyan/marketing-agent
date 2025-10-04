@@ -24,7 +24,13 @@ Requirements:
    - Emphasize the product as premium and desirable.
 `;
 };
-const posterCaptionPromptTemplate = ({productDescription, tone, platform, keywords, language})=>{
+const posterCaptionPromptTemplate = ({
+  productDescription,
+  tone,
+  platform,
+  keywords,
+  language,
+}) => {
   return `You are a professional social media copywriter. 
 Write a creative, engaging, and persuasive caption for a post based on the following information:
 Product/Service Description: ${productDescription},
@@ -40,14 +46,14 @@ Requirements:
 - Avoid using overly generic phrases; make it unique and relatable to the customers.
 - If a discount/offer is provided, highlight it naturally.  
 - End with a soft call-to-action.
-Output ONLY the caption text.`
-}
+Output ONLY the caption text.`;
+};
 const captionGeneratorPromptTemplate = ({
   productDescription,
   targetAudience,
   tone,
   platform,
-  language
+  language,
 }) => {
   return `
    You are a professional social media copywriter. 
@@ -240,11 +246,11 @@ Output only the JSON array.`;
 
 const scriptWriterPromptTemplate = ({
   videoTopic,
-      videoLength,
-      targetAudience,
-      videoGoal,
-      tone,
-      outputLanguage,
+  videoLength,
+  targetAudience,
+  videoGoal,
+  tone,
+  outputLanguage,
 }) => {
   return `You are an expert video scriptwriter. Your job is to create engaging scripts that match the user’s requirements.  
 Details:  
@@ -270,7 +276,34 @@ Final Output:
 Return only the script in clear formatting, with sections/scenes labeled if appropriate.  
 `;
 };
-
+const thumbnailGeneratorPromptTemplate = ({
+  headlineText,
+  videoDescription,
+  style,
+  colorScheme,
+}) => {
+  return `You are a professional thumbnail designer.
+Create a high-quality, visually dynamic thumbnail image using the following information:
+- Brand color palette: ${colorScheme}
+- Thumbnail style: ${style}
+- Headline text: ${headlineText}
+Design Intent:
+- Make the **subject or model visually interact with the design**
+presenting the product naturally.
+- Blending partially into the design with dynamic lighting and color matching.
+- Create **depth** with layered composition — foreground subject, middle text, and glowing background.
+- Emphasize **emotion and action** — expressions like excitement, surprise, or focus.
+- Use **cinematic lighting** with brand-color accents.
+- Use necessary icons related to the thumbnail topic
+- Add **3D shadow, reflection, and light flares** for realism.
+- Headline text should be **bold, 3D, with shadow and color contrast**.
+- Background should be **clean, slightly blurred**, and **color-matched** to brand or content theme.
+- Include **motion or dynamic energy lines** subtly for visual flow.
+- For product-based thumbnails, show **interaction** (hand holding, gaze direction, spotlight on product).
+- ${videoDescription}
+Final Output:
+A click-worthy, cinematic thumbnail (16:9 or Youtube aspect ratio) with realistic interaction between the subject and thumbnail elements, designed to grab attention instantly.`;
+};
 module.exports = {
   posterDesignPromptTemplate,
   posterCaptionPromptTemplate,
@@ -280,5 +313,6 @@ module.exports = {
   keywordHashtagGeneratorPromptTemplate,
   productDescriptionPromptTemplate,
   trendAnalyzerPromptTemplate,
-  scriptWriterPromptTemplate
+  scriptWriterPromptTemplate,
+  thumbnailGeneratorPromptTemplate,
 };
