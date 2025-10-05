@@ -278,6 +278,7 @@ Return only the script in clear formatting, with sections/scenes labeled if appr
 };
 const thumbnailGeneratorPromptTemplate = ({
   headlineText,
+  subheadingText,
   videoDescription,
   style,
   colorScheme,
@@ -287,6 +288,10 @@ Create a high-quality, visually dynamic thumbnail image using the following info
 - Brand color palette: ${colorScheme}
 - Thumbnail style: ${style}
 - Headline text: ${headlineText}
+${
+  subheadingText &&
+  `- Subheading text: ${subheadingText}`
+}
 Design Intent:
 - Make the **subject or model visually interact with the design**
 presenting the product naturally.

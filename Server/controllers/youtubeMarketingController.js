@@ -1,5 +1,8 @@
 const sharp = require("sharp");
-const { scriptWriterPromptTemplate, thumbnailGeneratorPromptTemplate } = require("../utils/promptTemplates");
+const {
+  scriptWriterPromptTemplate,
+  thumbnailGeneratorPromptTemplate,
+} = require("../utils/promptTemplates");
 
 const scriptWriterController = async (req, res) => {
   try {
@@ -61,16 +64,22 @@ const scriptWriterController = async (req, res) => {
 const fileAccept = ["image/png", "image/jpg", "image/webp", "image/jpeg"];
 const thumbnailGeneratorController = async (req, res) => {
   try {
-    const { headlineText, videoDescription, style, colorScheme } =
-      req.body;
+    const {
+      headlineText,
+      subheadingText,
+      videoDescription,
+      style,
+      colorScheme,
+    } = req.body;
     const uploadedFile = req.file;
     const prompt = thumbnailGeneratorPromptTemplate({
       headlineText,
+      subheadingText,
       videoDescription,
       style,
       colorScheme,
     });
-    
+
     if (!fileAccept.includes(uploadedFile.mimetype)) {
       return res.status(400).json({
         message:
@@ -84,10 +93,48 @@ const thumbnailGeneratorController = async (req, res) => {
     const base64ModelImg = `data:${
       uploadedFile.mimetype
     };base64,${resizedModelBuffer.toString("base64")}`;
-    
-    // For now, return a success response with file info
-    res.status(200).json({
+     res.status(200).json({
       thumbnail: base64ModelImg,
+    });
+
+    // Call AI API    
+    const response = await fetch(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.AI_IMG_API_KEY}`,
+          "HTTP-Referer": "http://localhost:3000/youtube/thumbnail",
+          "X-Title": "Thumbnail",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash-image-preview",
+          messages: [
+            {
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text: prompt,
+                },
+                {
+                  type: "image_url",
+                  image_url: {
+                    url: base64ModelImg,
+                  },
+                },
+              ],
+            },
+          ],
+        }),
+      }
+    );
+    const result = await response.json();
+    
+    res.status(200).json({
+      thumbnail: result.choices[0].message.images[0].image_url.url,
+      description: result.choices[0].message.content,
     });
   } catch (error) {
     console.error("Thumbnail Generator Error:", error);

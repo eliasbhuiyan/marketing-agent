@@ -28,6 +28,7 @@ const ThumbnailDesign = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [formData, setFormData] = useState({
     headlineText: "",
+    subheadingText: "",
     videoDescription: "",
     thumbnailStyle: "professional",
     brandColor: "#3B82F6",
@@ -37,17 +38,17 @@ const ThumbnailDesign = () => {
 
   const thumbnailStyles = [
     {
-      id: "professional",
+      id: "professional - Clean and business-focused",
       name: "Professional",
       description: "Clean and business-focused",
     },
     {
-      id: "bold",
+      id: "bold - Eye-catching and attention-grabbing",
       name: "Bold",
       description: "Eye-catching and attention-grabbing",
     },
-    { id: "fun", name: "Fun", description: "Playful and engaging" },
-    { id: "minimal", name: "Minimal", description: "Simple and elegant" },
+    { id: "fun - Playful and engaging", name: "Fun", description: "Playful and engaging" },
+    { id: "minimal - Simple and elegant", name: "Minimal", description: "Simple and elegant" },
   ];
 
   const handleInputChange = (e) => {
@@ -55,6 +56,8 @@ const ThumbnailDesign = () => {
     const fieldName =
       id === "video-title"
         ? "headlineText"
+        : id === "video-subheading"
+        ? "subheadingText"
         : id === "video-description"
         ? "videoDescription"
         : id === "thumbnail-style"
@@ -119,9 +122,7 @@ const ThumbnailDesign = () => {
     if (!formData.headlineText.trim()) {
       newErrors.headlineText = "Thumbnail Headline is required";
     }
-    if (!formData.videoDescription.trim()) {
-      newErrors.videoDescription = "Video description is required";
-    }
+
     if (!formData.thumbnailStyle) {
       newErrors.thumbnailStyle = "Please select a thumbnail style";
     }
@@ -145,9 +146,10 @@ const ThumbnailDesign = () => {
       // Create FormData for file upload
       const formDataToSend = new FormData();
       formDataToSend.append("headlineText", formData.headlineText);
+      formDataToSend.append("subheadingText", formData.subheadingText);
       formDataToSend.append("videoDescription", formData.videoDescription);
       formDataToSend.append("style", formData.thumbnailStyle);
-      formDataToSend.append("colorScheme", formData.brandColor); // Using video title as text overlay
+      formDataToSend.append("colorScheme", formData.brandColor);
 
       // Append the image file
       if (uploadedImage && uploadedImage.file) {
@@ -156,6 +158,7 @@ const ThumbnailDesign = () => {
 
       // Call the API
       const response = await apiClient.ai.thumbnailGenerator(formDataToSend);
+      console.log("API Response:", response);
 
       setGeneratedThumbnails(response.thumbnail);
     } catch (error) {
@@ -240,7 +243,9 @@ const ThumbnailDesign = () => {
             )}
 
             <div>
-              <Label htmlFor="video-title">Thumbnail Headline</Label>
+              <Label htmlFor="video-title">
+                Thumbnail Headline <span className="text-xl">*</span>
+              </Label>
               <Input
                 id="video-title"
                 placeholder="e.g., AI Marketing Tools Tutorial"
@@ -256,7 +261,25 @@ const ThumbnailDesign = () => {
             </div>
 
             <div>
-              <Label htmlFor="thumbnail-style">Thumbnail Style</Label>
+              <Label htmlFor="video-subheading">Thumbnail Subheading</Label>
+              <Input
+                id="video-subheading"
+                placeholder="e.g., Boost Your Marketing Strategy"
+                value={formData.subheadingText}
+                onChange={handleInputChange}
+                className={errors.subheadingText ? "border-red-500" : ""}
+              />
+              {errors.subheadingText && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.subheadingText}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="thumbnail-style">
+                Thumbnail Style <span className="text-xl">*</span>
+              </Label>
               <select
                 id="thumbnail-style"
                 className={`w-full mt-1 p-2 border ${
@@ -279,7 +302,9 @@ const ThumbnailDesign = () => {
             </div>
 
             <div>
-              <Label htmlFor="brand-colors">Brand Colors</Label>
+              <Label htmlFor="brand-colors">
+                Brand Colors <span className="text-xl">*</span>
+              </Label>
               <div className="flex items-center space-x-2 mt-1">
                 <input
                   type="color"
