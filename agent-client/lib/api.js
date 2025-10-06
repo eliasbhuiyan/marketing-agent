@@ -372,6 +372,9 @@ class ApiClient {
     thumbnailGenerator: (formDataToSend) => {
      return this.post(`/ai/thumbnail`, formDataToSend);
     },
+    virtualTryOn: (formDataToSend) => {
+     return this.post(`/ai/virtualtryon`, formDataToSend);
+    },
   };
 }
 

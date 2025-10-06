@@ -53,6 +53,7 @@ const {
   refreshTrends,
 } = require("../controllers/trendAnalyzerController");
 const { scriptWriterController, thumbnailGeneratorController } = require("../controllers/youtubeMarketingController");
+const virtualTryOnController = require("../controllers/virtualTryOnController");
 
 const upload = multer();
 const router = express.Router();
@@ -101,7 +102,11 @@ router.post(
 );
 // Poster Caption
 router.post("/postercaption", authMiddleware, posterCaptionGenerator);
-
+// Virtual Try-On
+router.post("/virtualtryon", authMiddleware, upload.fields([
+  { name: "model", maxCount: 1 },
+  { name: "assets", maxCount: 5 },
+]), virtualTryOnController);
 // Normal Caption Generator
 router.post("/captiongenerator", authMiddleware, captionGenerator);
 router.post("/blogheadings", authMiddleware, BlogHeadingImages);

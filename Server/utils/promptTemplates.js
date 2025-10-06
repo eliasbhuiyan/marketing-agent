@@ -309,6 +309,26 @@ presenting the product naturally.
 Final Output:
 A click-worthy, cinematic thumbnail (16:9 or Youtube aspect ratio) with realistic interaction between the subject and thumbnail elements, designed to grab attention instantly.`;
 };
+const vertualTryOnPromptTemplate = (customPrompt) => {
+  return `You are a professional fashion image editor and virtual try-on designer.
+Generate a realistic, high-quality image of the person wearing the provided fashion assets.
+
+Design Intent:
+1. Preserve the model’s **face, skin tone, hairstyle, pose, and body proportions** exactly.
+2. Dress the model naturally with the uploaded clothing and accessories.
+3. Ensure **realistic fabric fitting** — shirts follow body contours, pants align with legs, shoes fit properly.
+4. Maintain **correct lighting and shadows** on all items to match the model’s photo.
+5. Blend edges smoothly — no floating clothes or cutout look.
+6. Align accessories (cap, sunglasses) precisely with the head orientation.
+7. Add **depth and realism** with soft shadows, reflections, and slight color tone matching.
+8. Keep the overall image **photo-realistic and professional** — no cartoon or 3D look.
+9. Match the model’s original background naturally.
+10. Final image should look like a **real photo of the model wearing the outfit**, suitable for e-commerce or fashion marketing use.
+${customPrompt ? `Additional Instructions: ${customPrompt}` : ""}
+Output:
+Return one **high-resolution, photo-realistic full-body image** of the model 
+naturally wearing all provided assets, with seamless blending and correct proportions.`;
+}
 module.exports = {
   posterDesignPromptTemplate,
   posterCaptionPromptTemplate,
@@ -320,4 +340,5 @@ module.exports = {
   trendAnalyzerPromptTemplate,
   scriptWriterPromptTemplate,
   thumbnailGeneratorPromptTemplate,
+  vertualTryOnPromptTemplate
 };

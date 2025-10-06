@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Posters & Designs", href: "/posters", icon: Image },
-  { name: "Self Modeling", href: "/self-modeling", icon: SquareUser },
+  { name: "Virtual try-on", href: "/virtual-try-on", icon: SquareUser },
   {
     name: "Content & Copywriting",
     href: "/content",

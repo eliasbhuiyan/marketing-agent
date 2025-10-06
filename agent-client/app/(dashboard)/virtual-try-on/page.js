@@ -23,6 +23,7 @@ import {
   Plus,
   X,
 } from "lucide-react";
+import apiClient from "@/lib/api";
 
 export default function SelfModelingPage() {
   const [personImage, setPersonImage] = useState(null);
@@ -31,8 +32,19 @@ export default function SelfModelingPage() {
   const personInputRef = useRef(null);
   const assetInputRef = useRef(null);
   const [generatedImage, setGeneratedImage] = useState(null);
+  const [errors, setErrors] = useState({
+    personImage: false,
+    assets: false,
+  });
   const [isGenerating, setIsGenerating] = useState(false);
-  // No asset type categorization as per user request
+
+  const validateInputs = () => {
+    const newErrors = {};
+    if (!personImage) newErrors.personImage = true;
+    if (assets.length === 0) newErrors.assets = true;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handlePersonUpload = (event) => {
     const file = event.target.files?.[0];
@@ -43,18 +55,33 @@ export default function SelfModelingPage() {
       url: URL.createObjectURL(file),
       type: "person",
     });
+    if (errors.personImage) {
+      setErrors(prev => ({...prev, personImage: false}));
+    }
   };
 
   const handleAssetUpload = (event) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    const newAsset = {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+    
+    // Check if adding new files would exceed the limit of 5
+    if (assets.length + files.length > 5) {
+      alert("You can only upload a maximum of 5 assets");
+      return;
+    }
+    
+    const newAssets = Array.from(files).map(file => ({
       id: Date.now() + Math.random(),
       file,
       url: URL.createObjectURL(file),
       type: "asset",
-    };
-    setAssets([...assets, newAsset]);
+    }));
+    
+    setAssets([...assets, ...newAssets]);
+    
+    if (errors.assets) {
+      setErrors(prev => ({...prev, assets: false}));
+    }
   };
 
   const handleRemoveAsset = (id) => {
@@ -62,19 +89,26 @@ export default function SelfModelingPage() {
   };
 
   const handleGenerateModel = async () => {
-    if (!personImage) return;
-    console.log("personImage", personImage);
-    console.log("assets", assets);
+    if (!validateInputs()) return;
+    
     setIsGenerating(true);
-
-    // Simulating generation for UI demo
-    setTimeout(() => {
+    try {
+      const formData = new FormData();
+      formData.append("model", personImage.file);
+      assets.forEach((asset) => formData.append("assets", asset.file));
+      formData.append("customPrompt", customPrompt);
+      
+      const response = await apiClient.ai.virtualTryOn(formData);
+      console.log("response", response);
+      
+      setGeneratedImage(response.image);
+    } catch (error) {
+      console.error("Error in virtual try-on:", error);
+      alert("Failed to generate model. Please try again.");
+    }
+    finally{
       setIsGenerating(false);
-      // For demo purposes only - would be replaced with actual API call
-      if (personImage && assets.length > 0) {
-        setGeneratedImage(personImage.url);
-      }
-    }, 2000);
+    }
   };
 
   const handleDownload = () => {
@@ -144,6 +178,11 @@ export default function SelfModelingPage() {
                 </>
               )}
             </div>
+            {errors.personImage && (
+              <p className="text-red-500 text-sm mt-1">
+                Person image is required
+              </p>
+            )}
           </CardContent>
         </Card>
 
@@ -152,7 +191,7 @@ export default function SelfModelingPage() {
           <CardHeader>
             <CardTitle className="flex items-center">
               <ShoppingBag className="h-5 w-5 mr-2" />
-              Assets (Optional)
+              Assets (Max 5)
             </CardTitle>
             <CardDescription>
               Upload clothing, shoes, accessories you want to try on
@@ -179,7 +218,6 @@ export default function SelfModelingPage() {
                 Choose File
               </Button>
             </div>
-            {/* Display uploaded assets */}
             {assets.length > 0 && (
               <div>
                 <h3 className="text-sm font-medium mb-2">Uploaded Assets:</h3>
@@ -209,6 +247,11 @@ export default function SelfModelingPage() {
                 </div>
               </div>
             )}
+            {errors.assets && (
+              <p className="text-red-500 text-sm mt-1">
+                At least one asset is required
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -230,16 +273,18 @@ export default function SelfModelingPage() {
                 Custom Instructions (Optional)
               </Label>
               <textarea
-                className="w-full mt-1 p-3 border border-gray-300 rounded-md h-24 resize-none text-white"
+                className={`w-full mt-1 p-3 border border-gray-300 rounded-md h-24 resize-none text-white`}
                 id="customPrompt"
                 placeholder="E.g., Maintain natural pose, realistic lighting, etc."
                 value={customPrompt}
-                onChange={(e) => setCustomPrompt(e.target.value)}
+                onChange={(e) => {
+                  setCustomPrompt(e.target.value);
+                }}
               />
             </div>
             <Button
               onClick={handleGenerateModel}
-              disabled={!personImage || isGenerating}
+              disabled={isGenerating}
               className="w-full"
             >
               {isGenerating ? "Generating..." : "Generate Self Model"}
