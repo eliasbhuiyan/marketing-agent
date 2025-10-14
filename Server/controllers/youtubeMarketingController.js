@@ -49,6 +49,8 @@ const scriptWriterController = async (req, res) => {
     });
 
     const aiData = await aiRes.json();
+    console.log(aiData);
+    
     const script = aiData.choices[0].message.content;
 
     res.status(200).json({

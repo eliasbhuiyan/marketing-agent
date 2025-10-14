@@ -125,9 +125,9 @@ export default function SelfModelingPage() {
     <div className="space-y-8 max-w-6xl m-auto">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-white">Self Modeling Creator</h1>
-        <p className="text-white/80 mt-2">
-          Create virtual try-on images with your photo and selected items
+        <h1 className="text-3xl font-bold text-white">Vertual Try-On</h1>
+        <p className="text-white/80 mt-2 m-auto max-w-3xl">
+          Virtual Try-On lets brands and retailers showcase their products on realistic models using AI. Upload a photo and your product images to instantly generate.
         </p>
       </div>
 
