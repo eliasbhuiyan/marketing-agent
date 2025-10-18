@@ -370,12 +370,18 @@ class ApiClient {
         outputLanguage,
       }),
     thumbnailGenerator: (formDataToSend) => {
-     return this.post(`/ai/thumbnail`, formDataToSend);
+      return this.post(`/ai/thumbnail`, formDataToSend);
     },
     virtualTryOn: (formDataToSend) => {
-     return this.post(`/ai/virtualtryon`, formDataToSend);
+      return this.post(`/ai/virtualtryon`, formDataToSend);
     },
   };
+  // Library
+  library = {
+    getLibraryImages: () => this.get("/library"),
+
+    deleteLibraryImage: (imageId) => this.delete(`/library/${imageId}`),
+  }
 }
 
 // Create and export a singleton instance

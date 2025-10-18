@@ -52,8 +52,12 @@ const {
   getTrends,
   refreshTrends,
 } = require("../controllers/trendAnalyzerController");
-const { scriptWriterController, thumbnailGeneratorController } = require("../controllers/youtubeMarketingController");
+const {
+  scriptWriterController,
+  thumbnailGeneratorController,
+} = require("../controllers/youtubeMarketingController");
 const virtualTryOnController = require("../controllers/virtualTryOnController");
+const { getImagesByBrandId } = require("../controllers/libraryController");
 
 const upload = multer();
 const router = express.Router();
@@ -94,6 +98,7 @@ router.post("/removemember", authMiddleware, deleteTeamMember);
 // AI routes ===>
 router.post(
   "/posterdesign",
+  authMiddleware,
   upload.fields([
     { name: "productImg", maxCount: 1 },
     { name: "modelImg", maxCount: 1 },
@@ -103,10 +108,15 @@ router.post(
 // Poster Caption
 router.post("/postercaption", authMiddleware, posterCaptionGenerator);
 // Virtual Try-On
-router.post("/virtualtryon", authMiddleware, upload.fields([
-  { name: "model", maxCount: 1 },
-  { name: "assets", maxCount: 5 },
-]), virtualTryOnController);
+router.post(
+  "/virtualtryon",
+  authMiddleware,
+  upload.fields([
+    { name: "model", maxCount: 1 },
+    { name: "assets", maxCount: 5 },
+  ]),
+  virtualTryOnController
+);
 // Normal Caption Generator
 router.post("/captiongenerator", authMiddleware, captionGenerator);
 router.post("/blogheadings", authMiddleware, BlogHeadingImages);
@@ -117,17 +127,18 @@ router.post(
   authMiddleware,
   KeywordHashtagGenerator
 );
-router.post(
-  "/productdescription",
-  authMiddleware,
-  productDescriptionGenerator
-);
+router.post("/productdescription", authMiddleware, productDescriptionGenerator);
 // Trend analyzer routes
 router.get("/trends", authMiddleware, getTrends);
 
 // Youtube routes
 router.post("/generatescript", authMiddleware, scriptWriterController);
-router.post("/thumbnail", authMiddleware, upload.single("image"), thumbnailGeneratorController);
+router.post(
+  "/thumbnail",
+  authMiddleware,
+  upload.single("image"),
+  thumbnailGeneratorController
+);
 
 // Integration routes
 router.get("/integrations", authMiddleware, getIntegrations);
@@ -151,6 +162,8 @@ router.delete("/posts/:postId/cancel", authMiddleware, cancelScheduledPost);
 
 // Queue management routes
 router.get("/queue/stats", authMiddleware, getQueueStats);
+// Library route
+router.get("/library", authMiddleware, getImagesByBrandId);
 
 router.use((req, res) => {
   res.status(404).send("Page not found!");

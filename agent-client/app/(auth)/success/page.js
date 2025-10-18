@@ -78,7 +78,7 @@ export default function AuthSuccessPage() {
 
   return (
     <div className="w-full max-w-lg mx-auto">
-      <Card className="text-white">
+      <Card className="!bg-white">
         <CardHeader>
           <CardTitle>Select a workspace</CardTitle>
           <CardDescription>

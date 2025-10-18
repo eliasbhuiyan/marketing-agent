@@ -1,10 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -16,80 +13,45 @@ import {
   Eye,
 } from "lucide-react";
 import LoaderAnim from "@/components/LoaderAnim";
-
+import apiClient from "@/lib/api";
 export default function LibraryPage() {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [filterType, setFilterType] = useState("all");
 
-  // Mock data for demonstration
+  // Fetch images from API
   useEffect(() => {
-    // Simulate API call to fetch images
-    setTimeout(() => {
-      const mockImages = [
-        {
-          id: "1",
-          url: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&auto=format&fit=crop",
-          title: "Self Model - Casual Outfit",
-          type: "self-model",
-          createdAt: "2023-06-15T10:30:00Z",
-        },
-        {
-          id: "2",
-          url: "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=800&auto=format&fit=crop",
-          title: "Self Model - Formal Wear",
-          type: "self-model",
-          createdAt: "2023-06-18T14:20:00Z",
-        },
-        {
-          id: "3",
-          url: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=800&auto=format&fit=crop",
-          title: "Poster Design - Summer Sale",
-          type: "poster",
-          createdAt: "2023-06-20T09:15:00Z",
-        },
-        {
-          id: "4",
-          url: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=800&auto=format&fit=crop",
-          title: "Self Model - Accessories",
-          type: "self-model",
-          createdAt: "2023-06-22T16:45:00Z",
-        },
-        {
-          id: "5",
-          url: "https://images.unsplash.com/photo-1560243563-062bfc001d68?w=800&auto=format&fit=crop",
-          title: "Poster Design - New Product",
-          type: "poster",
-          createdAt: "2023-06-25T11:30:00Z",
-        },
-        {
-          id: "6",
-          url: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=800&auto=format&fit=crop",
-          title: "Self Model - Winter Collection",
-          type: "self-model",
-          createdAt: "2023-06-28T13:10:00Z",
-        },
-      ];
-      setImages(mockImages);
-      setLoading(false);
-    }, 1500);
+    const fetchImages = async () => {
+      try {
+        const response = await apiClient.library.getLibraryImages();
+        setImages(response.images);
+      } catch (error) {
+        console.error("Failed to fetch images:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchImages();
   }, []);
-
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-  };
 
   const handleFilterChange = (type) => {
     setFilterType(type);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this image?")) {
-      setImages(images.filter((image) => image.id !== id));
-      if (selectedImage && selectedImage.id === id) {
-        setSelectedImage(null);
+      try {
+        setLoading(true);
+        await api.ai.deleteLibraryImage(id);
+        setImages(images.filter((image) => image.id !== id));
+        if (selectedImage && selectedImage.id === id) {
+          setSelectedImage(null);
+        }
+      } catch (error) {
+        console.error("Failed to delete image:", error);
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -97,8 +59,9 @@ export default function LibraryPage() {
   const handleDownload = (image) => {
     // Create a temporary link element to trigger the download
     const link = document.createElement("a");
-    link.href = image.url;
-    link.download = `${image.title.replace(/\s+/g, "-").toLowerCase()}.jpg`;
+    link.href = image.image;
+    link.target = "_blank";
+    link.download = `${image.type.replace(/\s+/g, "-").toLowerCase()}`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -122,73 +85,82 @@ export default function LibraryPage() {
   };
 
   const filteredImages = images.filter((image) => {
-    const matchesSearch = image.title
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesFilter =
-      filterType === "all" || image.type === filterType;
-    return matchesSearch && matchesFilter;
+    const matchesFilter = filterType === "all" || image.type === filterType;
+    return matchesFilter;
   });
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto px-4">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-white">Image Library</h1>
-        <p className="text-white/80 mt-1">
-          View, download, and manage your generated images
-        </p>
-      </div>
-
-      {/* Search and Filter */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-grow">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <Input
-            placeholder="Search images..."
-            value={searchTerm}
-            onChange={handleSearch}
-            className="pl-10"
-          />
+      <div className="flex justify-between items-end">
+        <div>
+          <h1 className="text-3xl font-bold text-white">Image Library</h1>
+          <p className="text-white/80 mt-1">
+            View, download, and manage your generated images
+          </p>
         </div>
-        <div className="flex gap-2">
-          <Button
-            variant={filterType === "all" ? "default" : "outline"}
-            size="sm"
-            onClick={() => handleFilterChange("all")}
-          >
-            All
-          </Button>
-          <Button
-            variant={filterType === "self-model" ? "default" : "outline"}
-            size="sm"
-            onClick={() => handleFilterChange("self-model")}
-          >
-            Self Models
-          </Button>
-          <Button
-            variant={filterType === "poster" ? "default" : "outline"}
-            size="sm"
-            onClick={() => handleFilterChange("poster")}
-          >
-            Posters
-          </Button>
+
+        {/* Search and Filter */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex gap-2">
+            <Button
+              variant={filterType === "all" ? "default" : "outline"}
+              size="sm"
+              onClick={() => handleFilterChange("all")}
+            >
+              All
+            </Button>
+            <Button
+              variant={filterType === "virtual try-on" ? "default" : "outline"}
+              size="sm"
+              onClick={() => handleFilterChange("virtual try-on")}
+            >
+              Virtual try-on
+            </Button>
+            <Button
+              variant={filterType === "poster design" ? "default" : "outline"}
+              size="sm"
+              onClick={() => handleFilterChange("poster design")}
+            >
+              Posters
+            </Button>
+            <Button
+              variant={filterType === "thumbnails" ? "default" : "outline"}
+              size="sm"
+              onClick={() => handleFilterChange("thumbnails")}
+            >
+              Thumbnails
+            </Button>
+          </div>
         </div>
       </div>
-
       {/* Image Gallery */}
       {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <LoaderAnim />
+        <div className="flex items-center justify-center gap-10">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div className="w-1/3">
+              <div className="max-w-sm rounded overflow-hidden shadow-lg animate-pulse">
+                <div className="h-48 bg-gray-300"></div>
+                <div className="px-6 py-4">
+                  <div className="h-6 bg-gray-300 mb-2"></div>
+                  <div className="h-4 bg-gray-300 w-2/3"></div>
+                </div>
+                <div className="px-6 pt-4 pb-2">
+                  <div className="h-4 bg-gray-300 w-1/4 mb-2"></div>
+                  <div className="h-4 bg-gray-300 w-1/2"></div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       ) : filteredImages.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {filteredImages.map((image) => (
-            <Card key={image.id} className="overflow-hidden group">
+            <Card key={image._id} className="overflow-hidden group">
               <div className="relative h-48 overflow-hidden">
                 <img
-                  src={image.url}
-                  alt={image.title}
+                  src={image.image}
+                  alt={image.type}
                   className="w-full h-full object-cover transition-transform group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
@@ -219,13 +191,12 @@ export default function LibraryPage() {
                 </div>
               </div>
               <CardContent className="p-3">
-                <h3 className="font-medium text-sm truncate">{image.title}</h3>
                 <div className="flex justify-between items-center mt-1">
                   <span className="text-xs text-white/60">
                     {formatDate(image.createdAt)}
                   </span>
-                  <span className="text-xs bg-white/10 px-2 py-0.5 rounded-full">
-                    {image.type === "self-model" ? "Self Model" : "Poster"}
+                  <span className="text-xs capitalize bg-white/10 px-2 py-0.5 rounded-full">
+                    {image.type}
                   </span>
                 </div>
               </CardContent>
@@ -239,7 +210,7 @@ export default function LibraryPage() {
             No images found
           </h3>
           <p className="text-white/70">
-            {searchTerm || filterType !== "all"
+            {filterType !== "all"
               ? "Try adjusting your search or filters"
               : "Your library is empty. Generate some images to see them here."}
           </p>
@@ -262,24 +233,19 @@ export default function LibraryPage() {
             </div>
             <div className="p-2">
               <img
-                src={selectedImage.url}
-                alt={selectedImage.title}
+                src={selectedImage.image}
+                alt={selectedImage.type}
                 className="w-full h-auto max-h-[80vh] object-contain"
               />
             </div>
             <div className="p-4 bg-gray-800">
-              <h2 className="text-xl font-semibold text-white mb-2">
-                {selectedImage.title}
-              </h2>
               <div className="flex justify-between items-center">
                 <div>
                   <p className="text-sm text-white/70">
                     Created on {formatDate(selectedImage.createdAt)}
                   </p>
-                  <span className="inline-block mt-1 text-xs bg-white/20 px-2 py-0.5 rounded-full">
-                    {selectedImage.type === "self-model"
-                      ? "Self Model"
-                      : "Poster"}
+                  <span className="inline-block capitalize mt-1 text-xs bg-white/20 px-2 py-0.5 rounded-full">
+                    {selectedImage.type}
                   </span>
                 </div>
                 <div className="flex gap-2">

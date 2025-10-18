@@ -1,6 +1,6 @@
 "use client";
 import { Card, CardContent } from "@/components/ui/card";
-import { CreditCard, HandCoins, LinkIcon, Palette, User, Users } from "lucide-react";
+import { CreditCard, HandCoins, History, LinkIcon, Palette, User, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 export default function ContentPage({ children }) {
@@ -12,6 +12,7 @@ export default function ContentPage({ children }) {
         { id: "brand", label: "Brand Kit", icon: Palette },
         { id: "integrations", label: "Integrations", icon: LinkIcon },
         { id: "team", label: "Team", icon: Users },
+        { id: "history", label: "Usage History", icon: History },
         { id: "affiliate", label: "Affiliate", icon: HandCoins },
         { id: "billing", label: "Billing", icon: CreditCard },
     ];
@@ -31,6 +32,10 @@ export default function ContentPage({ children }) {
         'team': {
             name: 'Team Management',
             description: 'Invite team members, assign roles, and collaborate effectively to manage your organization.',
+        },
+        'history': {
+            name: 'Usage History',
+            description: 'View your past interactions with the platform, including API calls, content generated, and more.',
         },
         'affiliate': {
             name: 'Affiliate Program',

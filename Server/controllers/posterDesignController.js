@@ -3,7 +3,8 @@ const {
   posterDesignPromptTemplate,
   posterCaptionPromptTemplate,
 } = require("../utils/promptTemplates");
-
+const cloudinary = require("../services/cloudinary");
+const { saveImageToLibrary } = require("../services/libraryService");
 const fileAccept = ["image/png", "image/jpg", "image/webp", "image/jpeg"];
 
 const posterDesignController = async (req, res) => {
@@ -97,13 +98,19 @@ const posterDesignController = async (req, res) => {
     }
   );
   const result = await response.json();
-  //     console.log("full response",result);
-  console.log("content", result.choices[0].message);
 
+  let cloudRes = await cloudinary.uploader.upload(
+    result.choices[0].message.images[0].image_url.url,
+    {
+      folder: `margenai/${req.user.brandId}/posters`,
+    }
+  );
+  saveImageToLibrary(req.user.brandId, cloudRes.secure_url, "poster design");
   //   // Return the result to the client
   res.status(200).json({
-    image: result.choices[0].message.images[0].image_url.url,
-    description: result.choices[0].message.content,
+    // image: result.choices[0].message.images[0].image_url.url,
+    image: base64ProductImg,
+    // description: result.choices[0].message.content,
   });
 
   // res

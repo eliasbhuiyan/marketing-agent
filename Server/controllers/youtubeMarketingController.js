@@ -50,7 +50,7 @@ const scriptWriterController = async (req, res) => {
 
     const aiData = await aiRes.json();
     console.log(aiData);
-    
+
     const script = aiData.choices[0].message.content;
 
     res.status(200).json({
@@ -95,11 +95,11 @@ const thumbnailGeneratorController = async (req, res) => {
     const base64ModelImg = `data:${
       uploadedFile.mimetype
     };base64,${resizedModelBuffer.toString("base64")}`;
-     res.status(200).json({
+    res.status(200).json({
       thumbnail: base64ModelImg,
     });
 
-    // Call AI API    
+    // Call AI API
     const response = await fetch(
       "https://openrouter.ai/api/v1/chat/completions",
       {
@@ -133,7 +133,13 @@ const thumbnailGeneratorController = async (req, res) => {
       }
     );
     const result = await response.json();
-    
+    let cloudRes = await cloudinary.uploader.upload(
+      result.choices[0].message.images[0].image_url.url,
+      {
+        folder: `margenai/${req.user.brandId}/thumbnails`,
+      }
+    );
+    saveImageToLibrary(req.user.brandId, cloudRes.secure_url, "thumbnails");
     res.status(200).json({
       thumbnail: result.choices[0].message.images[0].image_url.url,
       description: result.choices[0].message.content,
