@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useBrandData } from "@/lib/hooks/useBrandData";
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Posters & Designs", href: "/posters", icon: Image },
@@ -53,6 +54,7 @@ const navigation = [
 export default function DashboardLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
+   const { brandData } = useBrandData();
 
   return (
     <div className="min-h-screen">
@@ -273,7 +275,7 @@ export default function DashboardLayout({ children }) {
       {/* Main content */}
       <div className="lg:pl-64">
         {/* Top bar */}
-        <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-[#ffffff3b] card-surface px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+        <div className="sticky top-0 z-40 flex h-16 shrink-0 justify-between lg:justify-end items-center gap-x-4 border-b border-[#ffffff3b] card-surface px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
           <Button
             variant="ghost"
             size="sm"
@@ -282,18 +284,14 @@ export default function DashboardLayout({ children }) {
           >
             <Menu className="h-6 w-6" />
           </Button>
-          <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-            <div className="flex flex-1" />
-            <div className="flex items-center gap-x-4 lg:gap-x-6">
-              <div className="relative">
-                <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center">
-                  <span className="text-sm font-medium text-white">U</span>
-                </div>
-              </div>
+          {/* Coin wallet history */}
+          <Link href="/settings/billing" className="flex items-center space-x-4 bg-yellow-400 px-4 py-1 rounded-md">
+            <div className="flex items-center space-x-2">
+              <span className="text-base font-medium text-white">Credits:</span>
+              <span className="text-base font-bold text-white">{brandData?.credits}.0</span>
             </div>
-          </div>
+          </Link>
         </div>
-
         {/* Page content */}
         <main className="py-6">
           <div className="mx-auto px-4 sm:px-6 lg:px-8 text-white">

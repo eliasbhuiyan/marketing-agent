@@ -8,6 +8,7 @@ const BrandSettingsSchema = new mongoose.Schema({
     },
     companyName: { type: String , required: true},
     details: {type: String, required: true},
+    credits: { type: Number, default: 0 },
     colors: {
         primary: { type: String, default: "#000000" },
         secondary: { type: String, default: "#FFFFFF" },
