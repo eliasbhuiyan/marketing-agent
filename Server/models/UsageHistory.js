@@ -13,8 +13,11 @@ const usageHistory = new mongoose.Schema(
       required: true,
     },
     type: { type: String },
-    content: { type: String },
-    coin: { type: Number },
+    content: {
+      image: String,
+      text: String,
+    },
+    credits: { type: Number },
     status: {
       type: String,
       enum: ["pending", "completed", "failed"],

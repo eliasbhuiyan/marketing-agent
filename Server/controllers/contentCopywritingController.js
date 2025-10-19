@@ -14,7 +14,6 @@ const captionGenerator = async (req, res) => {
 
     // 1️⃣ Check if user has enough credits and deduct
     const check = await checkAndDeductCredits(req.user.brandId, REQUIRED_CREDITS);
-
     if (!check) return res.status(500).json({ message: "Insufficient credits" });
     
     const prompt = captionGeneratorPromptTemplate({
