@@ -1,3 +1,4 @@
+const { checkAndDeductCredits } = require("../utils/checkCredits");
 const {
   captionGeneratorPromptTemplate,
   blogGeneratorPromptTemplate,
@@ -9,7 +10,13 @@ const {
 const captionGenerator = async (req, res) => {  
   try {
     const { productDescription, targetAudience, tone, platform, language } = req.body;
+    const REQUIRED_CREDITS = 10;
 
+    // 1️⃣ Check if user has enough credits and deduct
+    const check = await checkAndDeductCredits(req.user.brandId, REQUIRED_CREDITS);
+
+    if (!check) return res.status(500).json({ message: "Insufficient credits" });
+    
     const prompt = captionGeneratorPromptTemplate({
       productDescription,
       targetAudience,
