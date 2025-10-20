@@ -3,7 +3,7 @@ const CreditsForTask = {
   blogHeadingGenerator: 5,
   blogGenerator: 5,
   keywordHashtagGenerator: 5,
-  productDescriptionGenerator: 2,
+  productDescriptionGenerator: 5,
   contentCopywriting: 2,
   imageGeneration: 5,
   seoAnalysis: 3,

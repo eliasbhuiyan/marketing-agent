@@ -1,6 +1,6 @@
 const UsageHistory = require("../models/UsageHistory");
 
-const CreateUsageHistory = (brand, generatedBy, type, content, credits) => {
+const CreateUsageHistory = (brand, generatedBy, type, content, credits, status) => {
   try {
     const history = new UsageHistory({
       brand,
@@ -8,6 +8,7 @@ const CreateUsageHistory = (brand, generatedBy, type, content, credits) => {
       type,
       content,
       credits,
+      status
     });
     history.save();
     return history._id;

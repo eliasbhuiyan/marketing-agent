@@ -20,13 +20,7 @@ const captionGenerator = async (req, res) => {
     const { productDescription, targetAudience, tone, platform, language } =
       req.body;
     // Validate input
-    if (
-      !productDescription ||
-      !targetAudience ||
-      !tone ||
-      !platform ||
-      !language
-    ) {
+    if (!productDescription || !targetAudience || !tone || !platform) {
       return res.status(400).json({ message: "All fields are required" });
     }
     const REQUIRED_CREDITS = CreditsForTask.captionGenerator;
@@ -39,14 +33,6 @@ const captionGenerator = async (req, res) => {
     if (!check)
       return res.status(500).json({ message: "Insufficient credits" });
 
-    // Create usage history
-    const usageHistoryId = await CreateUsageHistory(
-      req.user.brandId,
-      req.user.id,
-      "caption",
-      { text: productDescription },
-      REQUIRED_CREDITS
-    );
     const prompt = captionGeneratorPromptTemplate({
       productDescription,
       targetAudience,
@@ -77,17 +63,24 @@ const captionGenerator = async (req, res) => {
       }
     );
     const data = await response.json();
+    console.log(data);
 
     if (data.error) {
-      // Update usage history status to failed if AI call fails
-      await updateUsageHistory(usageHistoryId, "failed");
       await returnedCredits(req.user.brandId, REQUIRED_CREDITS);
       return res
         .status(500)
         .json({ message: "So many requests. Please try again." });
     }
-    // Update usage history status to completed if AI call is successful
-    await updateUsageHistory(usageHistoryId, "completed");
+
+    // Create usage history
+    await CreateUsageHistory(
+      req.user.brandId,
+      req.user.id,
+      "caption",
+      { text: data.choices[0].message.content },
+      REQUIRED_CREDITS,
+      "completed"
+    );
     res.status(200).json({ caption: data.choices[0].message.content });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
@@ -122,14 +115,6 @@ const BlogHeadingImages = async (req, res) => {
     if (!check)
       return res.status(500).json({ message: "Insufficient credits" });
 
-    // Create usage history
-    const usageHistoryId = await CreateUsageHistory(
-      req.user.brandId,
-      req.user.id,
-      "blog_headings",
-      { text: `Blog Headings: ${blogTopic}` },
-      REQUIRED_CREDITS
-    );
     // 1️⃣ Build AI prompt
     const prompt = blogHeadingPromptTemplate({
       blogTopic,
@@ -159,8 +144,6 @@ const BlogHeadingImages = async (req, res) => {
     console.log(aiData.error);
 
     if (aiData.error) {
-      // Update usage history status to failed if AI call fails
-      await updateUsageHistory(usageHistoryId, "failed");
       // Return deducted credits
       await returnedCredits(req.user.brandId, REQUIRED_CREDITS);
       return res
@@ -194,8 +177,15 @@ const BlogHeadingImages = async (req, res) => {
       })
     );
 
-    // Update usage history status to completed if AI call is successful
-    await updateUsageHistory(usageHistoryId, "completed");
+    // Create usage history
+    await CreateUsageHistory(
+      req.user.brandId,
+      req.user.id,
+      "blog_headings",
+      { text: `Blog Headings: ${results}` },
+      REQUIRED_CREDITS,
+      "completed"
+    );
     res.status(200).json({ headings: results });
   } catch (error) {
     console.error("Error in generateHeadingsController:", error);
@@ -223,15 +213,6 @@ const BlogGenerator = async (req, res) => {
     );
     if (!check)
       return res.status(500).json({ message: "Insufficient credits" });
-
-    // Create usage history
-    const usageHistoryId = await CreateUsageHistory(
-      req.user.brandId,
-      req.user.id,
-      "blog",
-      { text: `Blog: ${blogTopic}` },
-      REQUIRED_CREDITS
-    );
 
     const prompt = blogGeneratorPromptTemplate({
       blogTopic,
@@ -266,16 +247,22 @@ const BlogGenerator = async (req, res) => {
     const data = await response.json();
 
     if (data.error) {
-      // Update usage history status to failed if AI call fails
-      await updateUsageHistory(usageHistoryId, "failed");
       // Return deducted credits
       await returnedCredits(req.user.brandId, REQUIRED_CREDITS);
       return res
         .status(500)
         .json({ message: "So many requests. Please try again." });
     }
-    // Update usage history status to completed if AI call is successful
-    await updateUsageHistory(usageHistoryId, "completed");
+
+    // Create usage history
+    await CreateUsageHistory(
+      req.user.brandId,
+      req.user.id,
+      "blog",
+      { text: data.choices[0].message.content },
+      REQUIRED_CREDITS,
+      "completed"
+    );
     res.status(200).json({ blog: data.choices[0].message.content });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
@@ -297,15 +284,6 @@ const KeywordHashtagGenerator = async (req, res) => {
     );
     if (!check)
       return res.status(500).json({ message: "Insufficient credits" });
-
-    // Create usage history
-    const usageHistoryId = await CreateUsageHistory(
-      req.user.brandId,
-      req.user.id,
-      "keyword_hashtag",
-      { text: `Hashtag & keyword: ${industry}` },
-      REQUIRED_CREDITS
-    );
 
     const prompt = keywordHashtagGeneratorPromptTemplate({
       industry,
@@ -329,10 +307,12 @@ const KeywordHashtagGenerator = async (req, res) => {
     );
 
     const data = await aiResponse.json();
-    if (data.error)
+    if (data.error) {
+      await returnedCredits(req.user.brandId, REQUIRED_CREDITS);
       return res
         .status(500)
         .json({ message: "So many requests. Please try again." });
+    }
 
     const cleaned = data.choices[0].message.content
       .replace(/```json/g, "")
@@ -340,6 +320,15 @@ const KeywordHashtagGenerator = async (req, res) => {
       .trim();
 
     const result = JSON.parse(cleaned);
+    // Create usage history
+    await CreateUsageHistory(
+      req.user.brandId,
+      req.user.id,
+      "keyword_hashtag",
+      { text: `Hashtag & keyword: ${result}` },
+      REQUIRED_CREDITS,
+      "completed"
+    );
     res.status(200).json(result);
   } catch (error) {
     console.error(error);
@@ -356,6 +345,20 @@ const productDescriptionGenerator = async (req, res) => {
       outputLanguage,
     } = req.body;
 
+    if(!productName || !keyFeatures || !descriptionLength || !outputLanguage){
+      return  res.status(400).json({ message: "All fields are required" });
+    }
+    const REQUIRED_CREDITS = CreditsForTask.productDescriptionGenerator;
+
+    // 1️⃣ Check if user has enough credits and deduct
+    const check = await checkAndDeductCredits(
+      req.user.brandId,
+      REQUIRED_CREDITS
+    );
+    if (!check)
+      return res.status(500).json({ message: "Insufficient credits" });
+
+    
     const prompt = productDescriptionPromptTemplate({
       productName,
       keyFeatures,
@@ -380,10 +383,22 @@ const productDescriptionGenerator = async (req, res) => {
     );
 
     const data = await aiResponse.json();
-    if (data.error)
+    if (data.error){
+      await returnedCredits(req.user.brandId, REQUIRED_CREDITS);
       return res
-        .status(500)
-        .json({ message: "So many requests. Please try again." });
+      .status(500)
+      .json({ message: "So many requests. Please try again." });
+    }
+
+    // Create usage history
+    await CreateUsageHistory(
+      req.user.brandId,
+      req.user.id,
+      "product_des",
+      { text: data.choices[0].message.content },
+      REQUIRED_CREDITS,
+      "completed"
+    );
     res.status(200).json({ description: data.choices[0].message.content });
   } catch (error) {
     console.error(error);
