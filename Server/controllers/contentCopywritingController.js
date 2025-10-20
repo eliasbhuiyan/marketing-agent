@@ -1,4 +1,11 @@
-const { checkAndDeductCredits } = require("../utils/checkCredits");
+const {
+  CreateUsageHistory,
+  updateUsageHistory,
+} = require("../services/createUsageHistory");
+const {
+  checkAndDeductCredits,
+  returnedCredits,
+} = require("../utils/checkCredits");
 const {
   captionGeneratorPromptTemplate,
   blogGeneratorPromptTemplate,
@@ -6,22 +13,46 @@ const {
   productDescriptionPromptTemplate,
   blogHeadingPromptTemplate,
 } = require("../utils/promptTemplates");
+const CreditsForTask = require("../utils/RequiredCredits");
 
-const captionGenerator = async (req, res) => {  
+const captionGenerator = async (req, res) => {
   try {
-    const { productDescription, targetAudience, tone, platform, language } = req.body;
-    const REQUIRED_CREDITS = 10;
+    const { productDescription, targetAudience, tone, platform, language } =
+      req.body;
+    // Validate input
+    if (
+      !productDescription ||
+      !targetAudience ||
+      !tone ||
+      !platform ||
+      !language
+    ) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+    const REQUIRED_CREDITS = CreditsForTask.captionGenerator;
 
     // 1️⃣ Check if user has enough credits and deduct
-    const check = await checkAndDeductCredits(req.user.brandId, REQUIRED_CREDITS);
-    if (!check) return res.status(500).json({ message: "Insufficient credits" });
-    
+    const check = await checkAndDeductCredits(
+      req.user.brandId,
+      REQUIRED_CREDITS
+    );
+    if (!check)
+      return res.status(500).json({ message: "Insufficient credits" });
+
+    // Create usage history
+    const usageHistoryId = await CreateUsageHistory(
+      req.user.brandId,
+      req.user.id,
+      "caption",
+      { text: productDescription },
+      REQUIRED_CREDITS
+    );
     const prompt = captionGeneratorPromptTemplate({
       productDescription,
       targetAudience,
       tone,
       platform,
-      language
+      language,
     });
 
     const response = await fetch(
@@ -46,10 +77,17 @@ const captionGenerator = async (req, res) => {
       }
     );
     const data = await response.json();
-    if (data.error)
+
+    if (data.error) {
+      // Update usage history status to failed if AI call fails
+      await updateUsageHistory(usageHistoryId, "failed");
+      await returnedCredits(req.user.brandId, REQUIRED_CREDITS);
       return res
         .status(500)
         .json({ message: "So many requests. Please try again." });
+    }
+    // Update usage history status to completed if AI call is successful
+    await updateUsageHistory(usageHistoryId, "completed");
     res.status(200).json({ caption: data.choices[0].message.content });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
@@ -65,7 +103,33 @@ const BlogHeadingImages = async (req, res) => {
       numberOfHeadings,
       outputLanguage,
     } = req.body;
+    if (
+      !blogTopic ||
+      !writingStyle ||
+      !seoKeywords ||
+      !numberOfHeadings ||
+      !outputLanguage
+    ) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+    const REQUIRED_CREDITS = CreditsForTask.blogHeadingGenerator;
 
+    // 1️⃣ Check if user has enough credits and deduct
+    const check = await checkAndDeductCredits(
+      req.user.brandId,
+      REQUIRED_CREDITS
+    );
+    if (!check)
+      return res.status(500).json({ message: "Insufficient credits" });
+
+    // Create usage history
+    const usageHistoryId = await CreateUsageHistory(
+      req.user.brandId,
+      req.user.id,
+      "blog_headings",
+      { text: `Blog Headings: ${blogTopic}` },
+      REQUIRED_CREDITS
+    );
     // 1️⃣ Build AI prompt
     const prompt = blogHeadingPromptTemplate({
       blogTopic,
@@ -93,11 +157,16 @@ const BlogHeadingImages = async (req, res) => {
 
     const aiData = await aiResponse.json();
     console.log(aiData.error);
-    
-    if (aiData.error)
+
+    if (aiData.error) {
+      // Update usage history status to failed if AI call fails
+      await updateUsageHistory(usageHistoryId, "failed");
+      // Return deducted credits
+      await returnedCredits(req.user.brandId, REQUIRED_CREDITS);
       return res
         .status(500)
         .json({ message: "So many requests. Please try again." });
+    }
 
     const cleaned = aiData.choices[0].message.content
       .replace(/```json/g, "")
@@ -116,16 +185,17 @@ const BlogHeadingImages = async (req, res) => {
           }&q=${encodeURIComponent(query)}&image_type=photo&per_page=15`
         );
         const pixabayData = await pixabayRes.json();
-        
+
         return {
           title: heading.title,
           images: pixabayData.hits.map((img) => img.previewURL),
           downLoadImageLink: pixabayData.hits.map((img) => img.webformatURL),
         };
       })
-    );    
-    console.log(results);
-    
+    );
+
+    // Update usage history status to completed if AI call is successful
+    await updateUsageHistory(usageHistoryId, "completed");
     res.status(200).json({ headings: results });
   } catch (error) {
     console.error("Error in generateHeadingsController:", error);
@@ -133,7 +203,7 @@ const BlogHeadingImages = async (req, res) => {
   }
 };
 
-const BlogGenerator = async (req, res) => {  
+const BlogGenerator = async (req, res) => {
   try {
     const {
       blogTopic,
@@ -142,7 +212,27 @@ const BlogGenerator = async (req, res) => {
       seoKeywords,
       outputLanguage,
       headings,
-    } = req.body;   
+    } = req.body;
+
+    const REQUIRED_CREDITS = CreditsForTask.blogGenerator;
+
+    // 1️⃣ Check if user has enough credits and deduct
+    const check = await checkAndDeductCredits(
+      req.user.brandId,
+      REQUIRED_CREDITS
+    );
+    if (!check)
+      return res.status(500).json({ message: "Insufficient credits" });
+
+    // Create usage history
+    const usageHistoryId = await CreateUsageHistory(
+      req.user.brandId,
+      req.user.id,
+      "blog",
+      { text: `Blog: ${blogTopic}` },
+      REQUIRED_CREDITS
+    );
+
     const prompt = blogGeneratorPromptTemplate({
       blogTopic,
       blogLength,
@@ -151,6 +241,7 @@ const BlogGenerator = async (req, res) => {
       outputLanguage,
       headings,
     });
+
     const response = await fetch(
       "https://openrouter.ai/api/v1/chat/completions",
       {
@@ -173,13 +264,18 @@ const BlogGenerator = async (req, res) => {
       }
     );
     const data = await response.json();
-    console.log(data.error);
-    
-    if (data.error)
+
+    if (data.error) {
+      // Update usage history status to failed if AI call fails
+      await updateUsageHistory(usageHistoryId, "failed");
+      // Return deducted credits
+      await returnedCredits(req.user.brandId, REQUIRED_CREDITS);
       return res
         .status(500)
         .json({ message: "So many requests. Please try again." });
-        
+    }
+    // Update usage history status to completed if AI call is successful
+    await updateUsageHistory(usageHistoryId, "completed");
     res.status(200).json({ blog: data.choices[0].message.content });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
@@ -188,6 +284,28 @@ const BlogGenerator = async (req, res) => {
 const KeywordHashtagGenerator = async (req, res) => {
   try {
     const { industry, platform, numKeywords } = req.body;
+    if (!industry || !platform || !numKeywords) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const REQUIRED_CREDITS = CreditsForTask.keywordHashtagGenerator;
+
+    // 1️⃣ Check if user has enough credits and deduct
+    const check = await checkAndDeductCredits(
+      req.user.brandId,
+      REQUIRED_CREDITS
+    );
+    if (!check)
+      return res.status(500).json({ message: "Insufficient credits" });
+
+    // Create usage history
+    const usageHistoryId = await CreateUsageHistory(
+      req.user.brandId,
+      req.user.id,
+      "keyword_hashtag",
+      { text: `Hashtag & keyword: ${industry}` },
+      REQUIRED_CREDITS
+    );
 
     const prompt = keywordHashtagGeneratorPromptTemplate({
       industry,
