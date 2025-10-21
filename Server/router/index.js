@@ -58,6 +58,7 @@ const {
 } = require("../controllers/youtubeMarketingController");
 const virtualTryOnController = require("../controllers/virtualTryOnController");
 const { getImagesByBrandId } = require("../controllers/libraryController");
+const { getUsageHistory } = require("../controllers/usageHistoryController");
 
 const upload = multer();
 const router = express.Router();
@@ -162,8 +163,9 @@ router.delete("/posts/:postId/cancel", authMiddleware, cancelScheduledPost);
 
 // Queue management routes
 router.get("/queue/stats", authMiddleware, getQueueStats);
-// Library route
+// Library and usageHistory route
 router.get("/library", authMiddleware, getImagesByBrandId);
+router.get("/usagehistory", authMiddleware, getUsageHistory);
 
 router.use((req, res) => {
   res.status(404).send("Page not found!");

@@ -381,7 +381,11 @@ class ApiClient {
     getLibraryImages: () => this.get("/library"),
 
     deleteLibraryImage: (imageId) => this.delete(`/library/${imageId}`),
-  }
+  };
+  // Usage History
+  usageHistory = {
+    getUsageHistory: () => this.get("/usagehistory"),
+  };
 }
 
 // Create and export a singleton instance

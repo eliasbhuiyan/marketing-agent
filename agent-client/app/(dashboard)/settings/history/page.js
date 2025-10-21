@@ -19,6 +19,7 @@ import {
 import { format } from "date-fns";
 import { CalendarIcon, Search, Download, Filter } from "lucide-react";
 import LoaderAnim from "@/components/LoaderAnim";
+import apiClient from "@/lib/api";
 
 const UsageHistory = () => {
   const [usageData, setUsageData] = useState([]);
@@ -33,102 +34,41 @@ const UsageHistory = () => {
     youtube: 0,
     copywriting: 0,
   });
+  
 
-  // Mock data for demonstration
+  // Fetch real usage history data from API
   useEffect(() => {
-    // Simulate API call to fetch usage history
-    setTimeout(() => {
-      const mockUsageData = [
-        {
-          id: "1",
-          taskType: "Self Model",
-          description: "Generated casual outfit model",
-          coins: 15,
-          date: "2023-06-15T10:30:00Z",
-          user: "John Doe",
-          status: "completed",
-        },
-        {
-          id: "2",
-          taskType: "Poster Design",
-          description: "Summer sale promotional poster",
-          coins: 25,
-          date: "2023-06-18T14:20:00Z",
-          user: "Jane Smith",
-          status: "completed",
-        },
-        {
-          id: "3",
-          taskType: "YouTube Script",
-          description: "Product review script",
-          coins: 30,
-          date: "2023-06-20T09:15:00Z",
-          user: "John Doe",
-          status: "completed",
-        },
-        {
-          id: "4",
-          taskType: "Copywriting",
-          description: "Product description for website",
-          coins: 20,
-          date: "2023-06-22T16:45:00Z",
-          user: "Alex Johnson",
-          status: "completed",
-        },
-        {
-          id: "5",
-          taskType: "Self Model",
-          description: "Business attire model generation",
-          coins: 15,
-          date: "2023-06-25T11:30:00Z",
-          user: "Jane Smith",
-          status: "completed",
-        },
-        {
-          id: "6",
-          taskType: "Poster Design",
-          description: "New product launch poster",
-          coins: 25,
-          date: "2023-06-28T13:10:00Z",
-          user: "Alex Johnson",
-          status: "completed",
-        },
-        {
-          id: "7",
-          taskType: "YouTube Script",
-          description: "How-to tutorial script",
-          coins: 30,
-          date: "2023-07-02T15:20:00Z",
-          user: "John Doe",
-          status: "completed",
-        },
-        {
-          id: "8",
-          taskType: "Copywriting",
-          description: "Email marketing campaign",
-          coins: 20,
-          date: "2023-07-05T09:45:00Z",
-          user: "Jane Smith",
-          status: "completed",
-        },
-      ];
+    const fetchUsageHistory = async () => {
+      try {
+        setLoading(true);
+        const response = await apiClient.usageHistory.getUsageHistory();
+        
+        // Process the API response
+        const historyData = response.data || [];
+        
+        setUsageData(historyData);
 
-      setUsageData(mockUsageData);
+        // Calculate total credits and usage statistics
+        const total = historyData.reduce((sum, item) => sum + (item.credits || 0), 0);
+        setTotalCoins(total);
 
-      // Calculate total coins and usage statistics
-      const total = mockUsageData.reduce((sum, item) => sum + item.coins, 0);
-      setTotalCoins(total);
+        const stats = {
+          selfModel: historyData.filter(item => item.type === "self_model").reduce((sum, item) => sum + (item.credits || 0), 0),
+          poster: historyData.filter(item => item.type === "poster").reduce((sum, item) => sum + (item.credits || 0), 0),
+          youtube: historyData.filter(item => item.type === "youtube").reduce((sum, item) => sum + (item.credits || 0), 0),
+          copywriting: historyData.filter(item => 
+            ["caption", "blog_headings"].includes(item.type)).reduce((sum, item) => sum + (item.credits || 0), 0),
+        };
+        setUsageStats(stats);
+      } catch (error) {
+        console.error("Error fetching usage history:", error);
+        // Handle error state if needed
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      const stats = {
-        selfModel: mockUsageData.filter(item => item.taskType === "Self Model").reduce((sum, item) => sum + item.coins, 0),
-        poster: mockUsageData.filter(item => item.taskType === "Poster Design").reduce((sum, item) => sum + item.coins, 0),
-        youtube: mockUsageData.filter(item => item.taskType === "YouTube Script").reduce((sum, item) => sum + item.coins, 0),
-        copywriting: mockUsageData.filter(item => item.taskType === "Copywriting").reduce((sum, item) => sum + item.coins, 0),
-      };
-      setUsageStats(stats);
-
-      setLoading(false);
-    }, 1500);
+    fetchUsageHistory();
   }, []);
 
   const handleSearch = (e) => {
@@ -149,21 +89,28 @@ const UsageHistory = () => {
   };
 
   const exportCSV = () => {
-    const headers = ["Task Type", "Description", "Coins", "Date", "User", "Status"];
-    const csvData = filteredData.map(item => [
-      item.taskType,
-      item.description,
-      item.coins,
-      formatDate(item.date),
-      item.user,
-      item.status
+    const headers = [
+      "Type",
+      "Content",
+      "Credits",
+      "Date",
+      "Generated By",
+      "Status",
+    ];
+    const csvData = filteredData.map((item) => [
+      item.type,
+      item.content?.text || '',
+      item.credits || 0,
+      formatDate(item.createdAt),
+      item.generatedBy || '',
+      item.status,
     ]);
-    
+
     const csvContent = [
       headers.join(","),
-      ...csvData.map(row => row.join(","))
+      ...csvData.map((row) => row.join(",")),
     ].join("\n");
-    
+
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
@@ -175,20 +122,26 @@ const UsageHistory = () => {
     document.body.removeChild(link);
   };
 
-  // Filter data based on search term, task type, and date range
-  const filteredData = usageData.filter(item => {
-    const matchesSearch = 
-      item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.taskType.toLowerCase().includes(searchTerm.toLowerCase());
+  // Filter data based on search term, content type, and date range
+  const filteredData = usageData.filter((item) => {
+    const contentText = item.content?.text || '';
+    const generatedBy = item.generatedBy || '';
+    const type = item.type || '';
     
-    const matchesType = filterType === "all" || item.taskType.toLowerCase().includes(filterType.toLowerCase());
-    
-    const itemDate = new Date(item.date);
-    const matchesDateRange = 
-      (!dateRange.from || itemDate >= dateRange.from) && 
+    const matchesSearch =
+      contentText.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      generatedBy.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      type.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesType =
+      filterType === "all" ||
+      type.toLowerCase().includes(filterType.toLowerCase());
+
+    const itemDate = new Date(item.createdAt);
+    const matchesDateRange =
+      (!dateRange.from || itemDate >= dateRange.from) &&
       (!dateRange.to || itemDate <= dateRange.to);
-    
+
     return matchesSearch && matchesType && matchesDateRange;
   });
 
@@ -210,7 +163,9 @@ const UsageHistory = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{usageStats.selfModel}</div>
-            <p className="text-xs text-muted-foreground">{Math.round(usageStats.selfModel / totalCoins * 100)}% of total</p>
+            <p className="text-xs text-muted-foreground">
+              {Math.round((usageStats.selfModel / totalCoins) * 100)}% of total
+            </p>
           </CardContent>
         </Card>
         <Card>
@@ -219,7 +174,9 @@ const UsageHistory = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{usageStats.poster}</div>
-            <p className="text-xs text-muted-foreground">{Math.round(usageStats.poster / totalCoins * 100)}% of total</p>
+            <p className="text-xs text-muted-foreground">
+              {Math.round((usageStats.poster / totalCoins) * 100)}% of total
+            </p>
           </CardContent>
         </Card>
         <Card>
@@ -228,7 +185,9 @@ const UsageHistory = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{usageStats.youtube}</div>
-            <p className="text-xs text-muted-foreground">{Math.round(usageStats.youtube / totalCoins * 100)}% of total</p>
+            <p className="text-xs text-muted-foreground">
+              {Math.round((usageStats.youtube / totalCoins) * 100)}% of total
+            </p>
           </CardContent>
         </Card>
         <Card>
@@ -237,7 +196,10 @@ const UsageHistory = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{usageStats.copywriting}</div>
-            <p className="text-xs text-muted-foreground">{Math.round(usageStats.copywriting / totalCoins * 100)}% of total</p>
+            <p className="text-xs text-muted-foreground">
+              {Math.round((usageStats.copywriting / totalCoins) * 100)}% of
+              total
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -247,7 +209,7 @@ const UsageHistory = () => {
         <div className="relative flex-grow">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <Input
-            placeholder="Search by description, user or task type..."
+            placeholder="Search by content, user or type..."
             value={searchTerm}
             onChange={handleSearch}
             className="pl-10"
@@ -258,26 +220,31 @@ const UsageHistory = () => {
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Filter by type" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white">
               <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="self model">Self Model</SelectItem>
+              <SelectItem value="self_model">Self Model</SelectItem>
               <SelectItem value="poster">Poster Design</SelectItem>
-              <SelectItem value="youtube">YouTube Script</SelectItem>
-              <SelectItem value="copywriting">Copywriting</SelectItem>
+              <SelectItem value="youtube">YouTube</SelectItem>
+              <SelectItem value="caption">Caption</SelectItem>
+              <SelectItem value="blog_headings">Blog Headings</SelectItem>
             </SelectContent>
           </Select>
-          
+
           <div className="relative">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="w-[240px] justify-start text-left font-normal"
-              onClick={() => alert("Date picker functionality removed - component not available")}
+              onClick={() =>
+                alert(
+                  "Date picker functionality removed - component not available"
+                )
+              }
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
               <span>Pick a date range</span>
             </Button>
           </div>
-          
+
           <Button variant="outline" onClick={exportCSV}>
             <Download className="h-4 w-4 mr-2" />
             Export
@@ -297,30 +264,42 @@ const UsageHistory = () => {
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left py-3 px-4">Task Type</th>
-                    <th className="text-left py-3 px-4 hidden md:table-cell">Description</th>
-                    <th className="text-left py-3 px-4">Coins</th>
+                    <th className="text-left py-3 px-4">Type</th>
+                    <th className="text-left py-3 px-4 hidden md:table-cell">
+                      Content
+                    </th>
+                    <th className="text-left py-3 px-4">Credits</th>
                     <th className="text-left py-3 px-4">Date</th>
-                    <th className="text-left py-3 px-4">User</th>
+                    <th className="text-left py-3 px-4">Generated By</th>
                     <th className="text-right py-3 px-4">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredData.map((item) => (
-                    <tr key={item.id} className="border-b">
+                    <tr key={item._id} className="border-b">
                       <td className="py-3 px-4">
-                        <span className={`inline-block px-2 py-1 rounded-full text-xs ${getTaskTypeClass(item.taskType)}`}>
-                          {item.taskType}
+                        <span
+                          className={`inline-block capitalize px-2 py-1 rounded-full text-xs ${getTaskTypeClass(
+                            item.type
+                          )}`}
+                        >
+                          {item.type.split("_").join(" ")}
                         </span>
                       </td>
                       <td className="py-3 px-4 hidden md:table-cell max-w-[300px] truncate">
-                        {item.description}
+                        {item.content?.text || ''}
                       </td>
-                      <td className="py-3 px-4 font-medium">{item.coins}</td>
-                      <td className="py-3 px-4">{formatDate(item.date)}</td>
-                      <td className="py-3 px-4">{item.user}</td>
+                      <td className="py-3 px-4 font-medium">{item.credits || 0}</td>
+                      <td className="py-3 px-4">{formatDate(item.createdAt)}</td>
+                      <td className="py-3 px-4">{item.generatedBy.fullName || ''}</td>
                       <td className="py-3 px-4 text-right">
-                        <span className={`inline-block px-2 py-1 rounded-full text-xs ${item.status === "completed" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}>
+                        <span
+                          className={`inline-block px-2 py-1 rounded-full text-xs capitalize ${
+                            item.status === "completed"
+                              ? "bg-green-700"
+                              : "bg-red-700"
+                          }`}
+                        >
                           {item.status}
                         </span>
                       </td>
@@ -338,7 +317,10 @@ const UsageHistory = () => {
             No usage history found
           </h3>
           <p className="text-white/70">
-            {searchTerm || filterType !== "all" || dateRange.from || dateRange.to
+            {searchTerm ||
+            filterType !== "all" ||
+            dateRange.from ||
+            dateRange.to
               ? "Try adjusting your search or filters"
               : "No usage history available yet."}
           </p>
@@ -349,19 +331,23 @@ const UsageHistory = () => {
 };
 
 // Helper function for task type styling
-const getTaskTypeClass = (taskType) => {
-  switch (taskType) {
-    case "Self Model":
+const getTaskTypeClass = (type) => {
+  switch (type) {
+    case "self_model":
       return "bg-blue-100 text-blue-800";
-    case "Poster Design":
+    case "poster":
       return "bg-purple-100 text-purple-800";
-    case "YouTube Script":
+    case "youtube":
       return "bg-red-100 text-red-800";
-    case "Copywriting":
-      return "bg-gray-100 text-gray-800";
+    case "caption":
+      return "bg-green-100 text-green-800";
+    case "blog_headings":
+      return "bg-yellow-100 text-yellow-800";
     default:
       return "bg-gray-100 text-gray-800";
   }
 };
+
+
 
 export default UsageHistory;
