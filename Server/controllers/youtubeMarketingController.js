@@ -3,6 +3,12 @@ const {
   scriptWriterPromptTemplate,
   thumbnailGeneratorPromptTemplate,
 } = require("../utils/promptTemplates");
+const CreditsForTask = require("../utils/RequiredCredits");
+const {
+  checkAndDeductCredits,
+  returnedCredits,
+} = require("../utils/checkCredits");
+const { CreateUsageHistory } = require("../services/createUsageHistory");
 
 const scriptWriterController = async (req, res) => {
   try {
@@ -25,6 +31,14 @@ const scriptWriterController = async (req, res) => {
       return res.status(400).json({ message: "All fields are required." });
     }
 
+    const REQUIRED_CREDITS = CreditsForTask.scriptWriter;
+    // 1️⃣ Check if user has enough credits and deduct
+    const check = await checkAndDeductCredits(
+      req.user.brandId,
+      REQUIRED_CREDITS
+    );
+    if (!check)
+      return res.status(500).json({ message: "Insufficient credits" });
     // Build AI prompt
     const prompt = scriptWriterPromptTemplate({
       videoTopic,
@@ -49,10 +63,24 @@ const scriptWriterController = async (req, res) => {
     });
 
     const aiData = await aiRes.json();
-    console.log(aiData);
+    if (aiData.error) {
+      await returnedCredits(req.user.brandId, REQUIRED_CREDITS);
+      return res
+        .status(500)
+        .json({ message: "So many requests. Please try again." });
+    }
 
     const script = aiData.choices[0].message.content;
 
+    // Create usage history
+    await CreateUsageHistory(
+      req.user.brandId,
+      req.user.id,
+      "script_writer",
+      { text: script },
+      REQUIRED_CREDITS,
+      "completed"
+    );
     res.status(200).json({
       success: true,
       script,
@@ -74,13 +102,6 @@ const thumbnailGeneratorController = async (req, res) => {
       colorScheme,
     } = req.body;
     const uploadedFile = req.file;
-    const prompt = thumbnailGeneratorPromptTemplate({
-      headlineText,
-      subheadingText,
-      videoDescription,
-      style,
-      colorScheme,
-    });
 
     if (!fileAccept.includes(uploadedFile.mimetype)) {
       return res.status(400).json({
@@ -99,6 +120,22 @@ const thumbnailGeneratorController = async (req, res) => {
       thumbnail: base64ModelImg,
     });
 
+    const REQUIRED_CREDITS = CreditsForTask.thumbnailGenerator;
+    // 1️⃣ Check if user has enough credits and deduct
+    const check = await checkAndDeductCredits(
+      req.user.brandId,
+      REQUIRED_CREDITS
+    );
+    if (!check)
+      return res.status(500).json({ message: "Insufficient credits" });
+
+    const prompt = thumbnailGeneratorPromptTemplate({
+      headlineText,
+      subheadingText,
+      videoDescription,
+      style,
+      colorScheme,
+    });
     // Call AI API
     const response = await fetch(
       "https://openrouter.ai/api/v1/chat/completions",
@@ -133,6 +170,14 @@ const thumbnailGeneratorController = async (req, res) => {
       }
     );
     const result = await response.json();
+
+    if (result.error) {
+      await returnedCredits(req.user.brandId, REQUIRED_CREDITS);
+      return res
+        .status(500)
+        .json({ message: "So many requests. Please try again." });
+    }
+
     let cloudRes = await cloudinary.uploader.upload(
       result.choices[0].message.images[0].image_url.url,
       {
@@ -140,6 +185,19 @@ const thumbnailGeneratorController = async (req, res) => {
       }
     );
     saveImageToLibrary(req.user.brandId, cloudRes.secure_url, "thumbnails");
+
+    // Create usage history
+    await CreateUsageHistory(
+      req.user.brandId,
+      req.user.id,
+      "thumbnail_generator",
+      {
+        image: cloudRes.secure_url,
+        text: result.choices[0].message.content,
+      },
+      REQUIRED_CREDITS,
+      "completed"
+    );
     res.status(200).json({
       thumbnail: result.choices[0].message.images[0].image_url.url,
       description: result.choices[0].message.content,

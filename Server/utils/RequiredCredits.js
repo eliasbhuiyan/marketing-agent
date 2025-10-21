@@ -4,10 +4,11 @@ const CreditsForTask = {
   blogGenerator: 5,
   keywordHashtagGenerator: 5,
   productDescriptionGenerator: 5,
-  contentCopywriting: 2,
-  imageGeneration: 5,
-  seoAnalysis: 3,
-  socialMediaPosts: 4,
+  posterDesign: 10,
+  posterCaption: 2,
+  virtualTryOn: 10,
+  scriptWriter: 3,
+  thumbnailGenerator: 10,
 };
 
 module.exports = CreditsForTask;

@@ -1,6 +1,12 @@
 const sharp = require("sharp");
 const { vertualTryOnPromptTemplate } = require("../utils/promptTemplates");
 const cloudinary = require("../services/cloudinary");
+const CreditsForTask = require("../utils/RequiredCredits");
+const {
+  checkAndDeductCredits,
+  returnedCredits,
+} = require("../utils/checkCredits");
+const { CreateUsageHistory } = require("../services/createUsageHistory");
 const fileAccept = ["image/png", "image/jpg", "image/webp", "image/jpeg"];
 const virtualTryOnController = async (req, res) => {
   try {
@@ -8,12 +14,6 @@ const virtualTryOnController = async (req, res) => {
     const files = req.files || {};
     const assetsArr = files.assets || [];
     const modelArr = files.model || [];
-
-    if (assetsArr.length === 0 || modelArr.length === 0) {
-      return res
-        .status(400)
-        .json({ message: "Assets and model image are required." });
-    }
 
     // Using multer memory storage buffers
     const modelFile = modelArr[0];
@@ -39,11 +39,11 @@ const virtualTryOnController = async (req, res) => {
       assetsArr.map(async (assetFile) => {
         // Validate asset file type
         if (!fileAccept.includes(assetFile.mimetype)) {
-          throw new Error(
-            `Invalid asset file type: ${
+          res.status(400).json({
+            message: `Invalid asset file type: ${
               assetFile.mimetype
-            }. Accepted types are: ${fileAccept.join(", ")}`
-          );
+            }. Accepted types are: ${fileAccept.join(", ")}`,
+          });
         }
 
         // Resize asset image
@@ -63,6 +63,15 @@ const virtualTryOnController = async (req, res) => {
         url: asset,
       },
     }));
+
+    const REQUIRED_CREDITS = CreditsForTask.virtualTryOn;
+    // 1️⃣ Check if user has enough credits and deduct
+    const check = await checkAndDeductCredits(
+      req.user.brandId,
+      REQUIRED_CREDITS
+    );
+    if (!check)
+      return res.status(500).json({ message: "Insufficient credits" });
 
     const prompt = vertualTryOnPromptTemplate(customPrompt);
 
@@ -103,6 +112,13 @@ const virtualTryOnController = async (req, res) => {
     );
     const result = await response.json();
 
+    if (result.error) {
+      await returnedCredits(req.user.brandId, REQUIRED_CREDITS);
+      return res
+        .status(500)
+        .json({ message: "So many requests. Please try again." });
+    }
+
     let cloudRes = await cloudinary.uploader.upload(
       result.choices[0].message.images[0].image_url.url,
       {
@@ -110,6 +126,19 @@ const virtualTryOnController = async (req, res) => {
       }
     );
     saveImageToLibrary(req.user.brandId, cloudRes.secure_url, "virtual try-on");
+
+    // Create usage history
+    await CreateUsageHistory(
+      req.user.brandId,
+      req.user.id,
+      "virtual_try-on",
+      {
+        image: result.choices[0].message.images[0].image_url.url,
+        text: result.choices[0].message.content,
+      },
+      REQUIRED_CREDITS,
+      "completed"
+    );
     //   // Return the result to the client
     res.status(200).json({
       image: result.choices[0].message.images[0].image_url.url,
