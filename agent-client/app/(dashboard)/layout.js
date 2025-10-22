@@ -23,6 +23,7 @@ import { useBrandData } from "@/lib/hooks/useBrandData";
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Posters & Designs", href: "/posters", icon: Image },
+  { name: "Intelligent Poster Studio", href: "/poster-studio", icon: Image },
   { name: "Virtual Try-On", href: "/virtual-try-on", icon: SquareUser },
   {
     name: "Content & Copywriting",
