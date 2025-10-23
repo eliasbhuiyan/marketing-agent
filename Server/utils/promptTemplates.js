@@ -48,6 +48,57 @@ Requirements:
 - End with a soft call-to-action.
 Output ONLY the caption text.`;
 };
+const IntelligentPosterDesignPromptTemplate = ({
+  title,
+  subtitle,
+  infoBlocks,
+  dateInfo,
+  ctaText,
+  contactInfo,
+  colors,
+}) => {
+  return `
+  You are a professional AI poster designer.
+Your task is to design a visually stunning and balanced poster using the provided text and assets.
+User Inputs:
+{
+"title": "${title}",
+"subtitle": "${subtitle}",
+"infoBlocks": "${infoBlocks}",
+"dateInfo": "${dateInfo}",
+"ctaText": "${ctaText}",
+"contactInfo": "${contactInfo}",
+"colorScheme": "${colors}",
+"logo": "Provided as image below",
+}
+Design Logic:
+Auto Layout Selection:
+If the text is short (title + 1–2 lines), use a center-focused layout with bold typography.
+If medium text (3–5 blocks), use a two-section layout with icons or shapes.
+If detailed text (more than 5 blocks), use a grid or card-style layout for clarity.
+Typography & Hierarchy:
+Make the main title visually dominant.
+Use subtle font contrast for subtitles and info.
+Maintain consistent spacing and alignment.
+Composition Rules:
+Apply smart text placement ensuring no overlaps or crowding.
+Keep visual balance between top, middle, and bottom.
+Auto-position the logo at a clean corner (top-left or bottom-right).
+**Do NOT redraw, regenerate, or alter the logo**.
+Highlight the CTA using color or button effect.
+Visual Style:
+Follow the theme and color scheme naturally.
+Use 3D illustrations, geometric shapes, gradients, and lighting when relevant.
+Use cartoon-style or 3D character illustrations that match the theme.
+Blend character illustration naturally into the layout.
+Blend colors with harmony; avoid clashing hues.
+Output Specs:
+Ready-to-use poster design suitable for social media, campaigns, or events.
+Text and layout must remain fully readable, well-balanced, and aesthetic.
+After generating the image describe about the poster **in few words**, (e.g., poster design for your "MERN Stack dev"), **Do not include greetings, extra commentary, or phrases.
+Goal:
+Generate a professionally designed marketing poster that visually matches the provided text, follows brand consistency, and auto-adjusts layout and typography smartly — like a human designer would.`;
+};
 const captionGeneratorPromptTemplate = ({
   productDescription,
   targetAudience,
@@ -288,10 +339,7 @@ Create a high-quality, visually dynamic thumbnail image using the following info
 - Brand color palette: ${colorScheme}
 - Thumbnail style: ${style}
 - Headline text: ${headlineText}
-${
-  subheadingText &&
-  `- Subheading text: ${subheadingText}`
-}
+${subheadingText && `- Subheading text: ${subheadingText}`}
 Design Intent:
 - Make the **subject or model visually interact with the design**
 presenting the product naturally.
@@ -328,10 +376,11 @@ ${customPrompt ? `Additional Instructions: ${customPrompt}` : ""}
 Output:
 Return one **high-resolution, photo-realistic full-body image** of the model 
 naturally wearing all provided assets, with seamless blending and correct proportions.`;
-}
+};
 module.exports = {
   posterDesignPromptTemplate,
   posterCaptionPromptTemplate,
+  IntelligentPosterDesignPromptTemplate,
   captionGeneratorPromptTemplate,
   blogHeadingPromptTemplate,
   blogGeneratorPromptTemplate,
@@ -340,5 +389,5 @@ module.exports = {
   trendAnalyzerPromptTemplate,
   scriptWriterPromptTemplate,
   thumbnailGeneratorPromptTemplate,
-  vertualTryOnPromptTemplate
+  vertualTryOnPromptTemplate,
 };

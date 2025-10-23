@@ -2,6 +2,7 @@ const sharp = require("sharp");
 const {
   posterDesignPromptTemplate,
   posterCaptionPromptTemplate,
+  IntelligentPosterDesignPromptTemplate,
 } = require("../utils/promptTemplates");
 const cloudinary = require("../services/cloudinary");
 const { saveImageToLibrary } = require("../services/libraryService");
@@ -221,4 +222,120 @@ const posterCaptionGenerator = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-module.exports = { posterDesignController, posterCaptionGenerator };
+
+const IntelligentPosterDesign = async (req, res) => {
+  const {
+    title,
+    subtitle,
+    infoBlocks,
+    dateInfo,
+    ctaText,
+    contactInfo,
+    theme,
+    colors,
+  } = req.body;
+
+  const brandLogo = req.file;
+
+  if (!brandLogo) {
+    return res.status(400).json({ message: "Brand logo is required." });
+  }
+
+  // const resizedLogoBuffer = await sharp(brandLogo.buffer)
+  //   .resize(240)
+  //   .toBuffer();
+
+  const base64BrandLogo = `data:${
+    brandLogo.mimetype
+  };base64,${brandLogo.buffer.toString("base64")}`;
+
+  const REQUIRED_CREDITS = CreditsForTask.posterDesign;
+  // 1️⃣ Check if user has enough credits and deduct
+  const check = await checkAndDeductCredits(req.user.brandId, REQUIRED_CREDITS);
+  if (!check) return res.status(500).json({ message: "Insufficient credits" });
+
+  const prompt = IntelligentPosterDesignPromptTemplate({
+    title,
+    subtitle,
+    infoBlocks,
+    dateInfo,
+    ctaText,
+    contactInfo,
+    theme,
+    colors,
+  });
+
+  const response = await fetch(
+    "https://openrouter.ai/api/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.AI_IMG_API_KEY}`,
+        "HTTP-Referer": "localhost:8000/intelligent_poster",
+        "X-Title": "MerkGenAi",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash-image-preview",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: prompt,
+              },
+              {
+                type: "image_url",
+                image_url: {
+                  url: base64BrandLogo,
+                },
+              },
+            ],
+          },
+        ],
+      }),
+    }
+  );
+  const data = await response.json();
+  console.log(data);
+
+  if (data.error) {
+    await returnedCredits(req.user.brandId, REQUIRED_CREDITS);
+    return res
+      .status(500)
+      .json({ message: "So many requests. Please try again." });
+  }
+  let cloudRes = await cloudinary.uploader.upload(
+    data.choices[0].message.images[0].image_url.url,
+    {
+      folder: `margenai/${req.user.brandId}/intelligent_posters`,
+    }
+  );
+  saveImageToLibrary(
+    req.user.brandId,
+    cloudRes.secure_url,
+    "intelligent_posters"
+  );
+
+  // Create usage history
+  await CreateUsageHistory(
+    req.user.brandId,
+    req.user.id,
+    "intelligent_posters",
+    { image: cloudRes.secure_url, text: data.choices[0].message.content },
+    REQUIRED_CREDITS,
+    "completed"
+  );
+  // Return the result to the client
+  res.status(200).json({
+    image: data.choices[0].message.images[0].image_url.url,
+    description: data.choices[0].message.content,
+  });
+};
+
+module.exports = {
+  posterDesignController,
+  posterCaptionGenerator,
+  IntelligentPosterDesign,
+};

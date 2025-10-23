@@ -18,11 +18,13 @@ import {
   Upload,
 } from "lucide-react";
 import React, { useRef, useState } from "react";
+import apiClient from "@/lib/api";
 
 const PosterStudio = () => {
   const logoInputRef = useRef(null);
   const [uploadedLogo, setUploadedLogo] = useState(null);
   const [generatedPoster, setGeneratedPoster] = useState("");
+  const [posterDescription, setPosterDescription] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -32,7 +34,7 @@ const PosterStudio = () => {
     ctaText: "",
     contactInfo: "",
     theme: "modern",
-    colorScheme: "#3B82F6",
+    colorSchemes: ["#3B82F6"],
   });
   const [errors, setErrors] = useState({});
   const [apiError, setApiError] = useState(null);
@@ -40,17 +42,37 @@ const PosterStudio = () => {
   const posterThemes = [
     { id: "modern", name: "Modern", description: "Clean and contemporary" },
     { id: "minimal", name: "Minimal", description: "Simple and elegant" },
-    { id: "corporate", name: "Corporate", description: "Professional and business-focused" },
-    { id: "festival", name: "Festival", description: "Vibrant and celebratory" },
-    { id: "creative", name: "Creative", description: "Artistic and expressive" },
+    {
+      id: "corporate",
+      name: "Corporate",
+      description: "Professional and business-focused",
+    },
+    {
+      id: "festival",
+      name: "Festival",
+      description: "Vibrant and celebratory",
+    },
+    {
+      id: "creative",
+      name: "Creative",
+      description: "Artistic and expressive",
+    },
     { id: "tech", name: "Tech", description: "Digital and innovative" },
-    { id: "educational", name: "Educational", description: "Informative and structured" },
-    { id: "elegant", name: "Elegant", description: "Sophisticated and refined" },
+    {
+      id: "educational",
+      name: "Educational",
+      description: "Informative and structured",
+    },
+    {
+      id: "elegant",
+      name: "Elegant",
+      description: "Sophisticated and refined",
+    },
     { id: "luxury", name: "Luxury", description: "Premium and high-end" },
   ];
 
   const handleInputChange = (e) => {
-    const { id, value } = e.target;
+    const { id, value } = e.target;    
     const fieldName =
       id === "poster-title"
         ? "title"
@@ -126,8 +148,8 @@ const PosterStudio = () => {
     if (!formData.theme) {
       newErrors.theme = "Please select a theme";
     }
-    if (!formData.colorScheme) {
-      newErrors.colorScheme = "Color scheme is required";
+    if (!formData.colorSchemes || formData.colorSchemes.length === 0) {
+      newErrors.colorSchemes = "At least one color is required in the color scheme";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -139,24 +161,42 @@ const PosterStudio = () => {
       return;
     }
 
+    if (!uploadedLogo) {
+      setErrors((prev) => ({
+        ...prev,
+        logo: "Brand logo is required",
+      }));
+      setApiError("Please upload a brand logo");
+      return;
+    }
+
     setApiError(null);
     setIsGenerating(true);
 
     try {
-      // Simulate API call with a timeout
-      setTimeout(() => {
-        // For demo purposes, we'll just set a placeholder image
-        setGeneratedPoster("https://placehold.co/1200x1800/3B82F6/FFFFFF/png?text=Generated+Poster");
-        setIsGenerating(false);
-      }, 2000);
+      const formDataToSend = new FormData();
+      formDataToSend.append("title", formData.title);
+      formDataToSend.append("subtitle", formData.subtitle);
+      formDataToSend.append("infoBlocks", formData.infoBlocks);
+      formDataToSend.append("dateInfo", formData.dateInfo);
+      formDataToSend.append("ctaText", formData.ctaText);
+      formDataToSend.append("contactInfo", formData.contactInfo);
+      formDataToSend.append("theme", formData.theme);
       
-      // In a real implementation, you would call your API here
-      // const formDataToSend = new FormData();
-      // formDataToSend.append("title", formData.title);
-      // formDataToSend.append("subtitle", formData.subtitle);
-      // ...
-      // const response = await apiClient.ai.posterGenerator(formDataToSend);
-      // setGeneratedPoster(response.poster);
+      // Append each color individually
+      formData.colorSchemes.forEach((color, index) => {
+        formDataToSend.append(`colors[${index}]`, color);
+      });
+      
+      // Append the logo file
+      formDataToSend.append("brandLogo", uploadedLogo.file);
+            
+      const response = await apiClient.ai.intelligentPosterDesign(formDataToSend);
+      console.log(response);
+      
+      setGeneratedPoster(response.image);
+      setPosterDescription(response.description);
+      setIsGenerating(false);
     } catch (error) {
       console.error("Error generating poster:", error);
       setApiError(error.message || "Failed to generate poster");
@@ -171,19 +211,23 @@ const PosterStudio = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Upload className="h-5 w-5 mr-2" />
-              Upload Logo
+              <Settings className="h-5 w-5 mr-2" />
+              Poster Content
             </CardTitle>
-            <CardDescription>
-              Upload your brand logo for the poster
-            </CardDescription>
+            <CardDescription>Enter the content for your poster</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {apiError && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-4">
+                {apiError}
+              </div>
+            )}
+            <Label htmlFor="poster-title">Brand Logo</Label>
             <div
               onClick={() => logoInputRef.current?.click()}
               className={`border-2 border-dashed cursor-pointer hover:bg-white/10 ${
                 errors.logo ? "border-red-500" : "border-gray-300"
-              } rounded-lg p-6 text-center`}
+              } rounded-lg py-1 text-center mt-2`}
             >
               <input
                 ref={logoInputRef}
@@ -197,20 +241,17 @@ const PosterStudio = () => {
                   <img
                     src={uploadedLogo.url}
                     alt="Uploaded Logo"
-                    className="max-w-xs max-h-32 object-contain rounded-lg"
+                    className="max-w-xs max-h-16 object-contain rounded-lg"
                   />
-                  <Button variant="glass" className="cursor-pointer">
+                  <Button size="sm" variant="glass" className="cursor-pointer">
                     Replace Logo
                   </Button>
                 </div>
               ) : (
                 <>
-                  <ImageIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-sm text-white mb-4">
-                    Drop logo here or click to upload
-                  </p>
+                  <ImageIcon className="h-8 w-8 text-gray-400 mx-auto mb-1" />
                   <Button variant="outline" className="cursor-pointer">
-                    Choose Logo
+                    Click to upload
                   </Button>
                 </>
               )}
@@ -218,26 +259,6 @@ const PosterStudio = () => {
                 <p className="text-red-500 text-sm mt-2">{errors.logo}</p>
               )}
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Settings className="h-5 w-5 mr-2" />
-              Poster Content
-            </CardTitle>
-            <CardDescription>
-              Enter the content for your poster
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {apiError && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-4">
-                {apiError}
-              </div>
-            )}
-
             <div>
               <Label htmlFor="poster-title">
                 Title <span className="text-red-500">*</span>
@@ -250,9 +271,7 @@ const PosterStudio = () => {
                 className={errors.title ? "border-red-500" : ""}
               />
               {errors.title && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.title}
-                </p>
+                <p className="text-red-500 text-sm mt-1">{errors.title}</p>
               )}
             </div>
 
@@ -320,41 +339,86 @@ const PosterStudio = () => {
                 onChange={handleInputChange}
               >
                 {posterThemes.map((theme) => (
-                  <option key={theme.id} value={theme.id}>
+                  <option key={theme.id} value={theme.description}>
                     {theme.name} - {theme.description}
                   </option>
                 ))}
               </select>
               {errors.theme && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.theme}
-                </p>
+                <p className="text-red-500 text-sm mt-1">{errors.theme}</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="poster-color">
+              <Label htmlFor="color-schemes">
                 Color Scheme <span className="text-red-500">*</span>
               </Label>
-              <div className="flex items-center space-x-2 mt-1">
-                <input
-                  type="color"
-                  id="poster-color"
-                  value={formData.colorScheme}
-                  onChange={handleInputChange}
-                  className={`w-10 h-10 rounded border ${
-                    errors.colorScheme ? "border-red-500" : ""
-                  }`}
-                />
-                <Input
-                  value={formData.colorScheme}
-                  onChange={handleInputChange}
-                  className={errors.colorScheme ? "border-red-500" : ""}
-                />
+              <div className="space-y-3 mt-2">
+                {formData.colorSchemes.map((color, index) => (
+                  <div key={index} className="flex items-center space-x-2">
+                    <input
+                      type="color"
+                      value={color}
+                      onChange={(e) => {
+                        const newColors = [...formData.colorSchemes];
+                        newColors[index] = e.target.value;
+                        setFormData(prev => ({
+                          ...prev,
+                          colorSchemes: newColors
+                        }));
+                      }}
+                      className="w-8 h-8 rounded border"
+                    />
+                    <Input
+                      value={color}
+                      onChange={(e) => {
+                        const newColors = [...formData.colorSchemes];
+                        newColors[index] = e.target.value;
+                        setFormData(prev => ({
+                          ...prev,
+                          colorSchemes: newColors
+                        }));
+                      }}
+                      className="flex-1"
+                    />
+                    {formData.colorSchemes.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        onClick={() => {
+                          const newColors = [...formData.colorSchemes];
+                          newColors.splice(index, 1);
+                          setFormData(prev => ({
+                            ...prev,
+                            colorSchemes: newColors
+                          }));
+                        }}
+                        className="h-8 w-8"
+                      >
+                        ×
+                      </Button>
+                    )}
+                  </div>
+                ))}
+                
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    // Add a new color input
+                    const newColors = [...formData.colorSchemes, "#000000"];
+                    setFormData(prev => ({
+                      ...prev,
+                      colorSchemes: newColors
+                    }));
+                  }}
+                  className="mt-2"
+                >
+                  + Add Color
+                </Button>
               </div>
-              {errors.colorScheme && (
-                <p className="text-red-500 text-sm mt-1">{errors.colorScheme}</p>
-              )}
             </div>
 
             <Button
@@ -431,6 +495,12 @@ const PosterStudio = () => {
                   className="max-w-full h-auto mx-auto rounded-lg shadow-lg"
                 />
               </div>
+              {posterDescription && (
+                <div className="mt-4 p-4 bg-gray-800 rounded-lg">
+                  <h4 className="text-white font-medium mb-2">Poster Description</h4>
+                  <p className="text-gray-300 text-sm">{posterDescription}</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         ) : (
@@ -442,7 +512,8 @@ const PosterStudio = () => {
                   Ready to Create Your Poster?
                 </h3>
                 <p className="text-white/90 text-sm leading-relaxed">
-                  Fill in the poster details and click &quot;Generate Poster&quot; to create your custom design with AI
+                  Fill in the poster details and click &quot;Generate
+                  Poster&quot; to create your custom design with AI
                 </p>
                 <div className="mt-6 text-xs text-white/90">
                   Required fields: Title, Theme, and Color Scheme

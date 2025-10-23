@@ -40,6 +40,7 @@ const {
 const {
   posterDesignController,
   posterCaptionGenerator,
+  IntelligentPosterDesign,
 } = require("../controllers/posterDesignController");
 const {
   captionGenerator,
@@ -108,6 +109,13 @@ router.post(
 );
 // Poster Caption
 router.post("/postercaption", authMiddleware, posterCaptionGenerator);
+// Intelligent Poster Design
+router.post(
+  "/intelligentposterdesign",
+  authMiddleware,
+  upload.single("brandLogo"),
+  IntelligentPosterDesign
+);
 // Virtual Try-On
 router.post(
   "/virtualtryon",

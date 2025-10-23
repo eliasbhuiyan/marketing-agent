@@ -1,12 +1,7 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -34,7 +29,6 @@ const UsageHistory = () => {
     youtube: 0,
     copywriting: 0,
   });
-  
 
   // Fetch real usage history data from API
   useEffect(() => {
@@ -42,22 +36,32 @@ const UsageHistory = () => {
       try {
         setLoading(true);
         const response = await apiClient.usageHistory.getUsageHistory();
-        
+
         // Process the API response
         const historyData = response.data || [];
-        
+
         setUsageData(historyData);
 
         // Calculate total credits and usage statistics
-        const total = historyData.reduce((sum, item) => sum + (item.credits || 0), 0);
+        const total = historyData.reduce(
+          (sum, item) => sum + (item.credits || 0),
+          0
+        );
         setTotalCoins(total);
 
         const stats = {
-          selfModel: historyData.filter(item => item.type === "self_model").reduce((sum, item) => sum + (item.credits || 0), 0),
-          poster: historyData.filter(item => item.type === "poster").reduce((sum, item) => sum + (item.credits || 0), 0),
-          youtube: historyData.filter(item => item.type === "youtube").reduce((sum, item) => sum + (item.credits || 0), 0),
-          copywriting: historyData.filter(item => 
-            ["caption", "blog_headings"].includes(item.type)).reduce((sum, item) => sum + (item.credits || 0), 0),
+          selfModel: historyData
+            .filter((item) => item.type === "self_model")
+            .reduce((sum, item) => sum + (item.credits || 0), 0),
+          poster: historyData
+            .filter((item) => item.type === "poster")
+            .reduce((sum, item) => sum + (item.credits || 0), 0),
+          youtube: historyData
+            .filter((item) => item.type === "youtube")
+            .reduce((sum, item) => sum + (item.credits || 0), 0),
+          copywriting: historyData
+            .filter((item) => ["caption", "blog_headings"].includes(item.type))
+            .reduce((sum, item) => sum + (item.credits || 0), 0),
         };
         setUsageStats(stats);
       } catch (error) {
@@ -99,10 +103,10 @@ const UsageHistory = () => {
     ];
     const csvData = filteredData.map((item) => [
       item.type,
-      item.content?.text || '',
+      item.content?.text || "",
       item.credits || 0,
       formatDate(item.createdAt),
-      item.generatedBy || '',
+      item.generatedBy || "",
       item.status,
     ]);
 
@@ -124,10 +128,10 @@ const UsageHistory = () => {
 
   // Filter data based on search term, content type, and date range
   const filteredData = usageData.filter((item) => {
-    const contentText = item.content?.text || '';
-    const generatedBy = item.generatedBy || '';
-    const type = item.type || '';
-    
+    const contentText = item.content?.text || "";
+    const generatedBy = item.generatedBy || "";
+    const type = item.type || "";
+
     const matchesSearch =
       contentText.toLowerCase().includes(searchTerm.toLowerCase()) ||
       generatedBy.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -279,7 +283,7 @@ const UsageHistory = () => {
                     <tr key={item._id} className="border-b">
                       <td className="py-3 px-4">
                         <span
-                          className={`inline-block capitalize px-2 py-1 rounded-full text-xs ${getTaskTypeClass(
+                          className={`inline-block text-center capitalize px-2 py-1 rounded-full text-xs ${getTaskTypeClass(
                             item.type
                           )}`}
                         >
@@ -287,11 +291,22 @@ const UsageHistory = () => {
                         </span>
                       </td>
                       <td className="py-3 px-4 hidden md:table-cell max-w-[300px] truncate">
-                        {item.content?.text || ''}
+                        {item.content?.text || ""}{" "}
+                        {item.content.image ? (
+                          <img src={item.content.image} className="max-w-14"/>
+                        ) : (
+                          ""
+                        )}
                       </td>
-                      <td className="py-3 px-4 font-medium">{item.credits || 0}</td>
-                      <td className="py-3 px-4">{formatDate(item.createdAt)}</td>
-                      <td className="py-3 px-4">{item.generatedBy.fullName || ''}</td>
+                      <td className="py-3 px-4 font-medium">
+                        {item.credits || 0}
+                      </td>
+                      <td className="py-3 px-4">
+                        {formatDate(item.createdAt)}
+                      </td>
+                      <td className="py-3 px-4">
+                        {item.generatedBy.fullName || ""}
+                      </td>
                       <td className="py-3 px-4 text-right">
                         <span
                           className={`inline-block px-2 py-1 rounded-full text-xs capitalize ${
@@ -347,7 +362,5 @@ const getTaskTypeClass = (type) => {
       return "bg-gray-100 text-gray-800";
   }
 };
-
-
 
 export default UsageHistory;

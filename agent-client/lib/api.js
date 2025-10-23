@@ -253,6 +253,9 @@ class ApiClient {
   };
 
   ai = {
+    intelligentPosterDesign: (formData) => {
+      return this.post(`/ai/intelligentposterdesign`, formData);
+    },
     posterDesign: (productImg, modelImg, customPrompt) => {
       const formData = new FormData();
       // Expecting File/Blob instances
