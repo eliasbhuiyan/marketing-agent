@@ -9,6 +9,7 @@ const {
   returnedCredits,
 } = require("../utils/checkCredits");
 const { CreateUsageHistory } = require("../services/createUsageHistory");
+const { saveImageToLibrary } = require("../services/libraryService");
 
 const scriptWriterController = async (req, res) => {
   try {
@@ -184,7 +185,7 @@ const thumbnailGeneratorController = async (req, res) => {
         folder: `margenai/${req.user.brandId}/thumbnails`,
       }
     );
-    saveImageToLibrary(req.user.brandId, cloudRes.secure_url, "thumbnails");
+    saveImageToLibrary(req.user.brandId, cloudRes.secure_url, "thumbnail_generator");
 
     // Create usage history
     await CreateUsageHistory(

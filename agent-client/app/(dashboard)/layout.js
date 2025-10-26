@@ -48,7 +48,7 @@ const navigation = [
   // { name: "Modify Image", href: "/modify-image", icon: TrendingUp },
   { name: "Social Media Scheduler", href: "/scheduler", icon: Calendar },
   { name: "Library", href: "/library", icon: Images },
-  { name: "Templates", href: "/templates", icon: Palette },
+  // { name: "Templates", href: "/templates", icon: Palette },
   { name: "Settings", href: "/settings/profile", icon: Settings },
 ];
 

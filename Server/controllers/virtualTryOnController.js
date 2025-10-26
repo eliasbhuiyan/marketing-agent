@@ -7,6 +7,7 @@ const {
   returnedCredits,
 } = require("../utils/checkCredits");
 const { CreateUsageHistory } = require("../services/createUsageHistory");
+const { saveImageToLibrary } = require("../services/libraryService");
 const fileAccept = ["image/png", "image/jpg", "image/webp", "image/jpeg"];
 const virtualTryOnController = async (req, res) => {
   try {
@@ -125,7 +126,7 @@ const virtualTryOnController = async (req, res) => {
         folder: `margenai/${req.user.brandId}/virtualtryon`,
       }
     );
-    saveImageToLibrary(req.user.brandId, cloudRes.secure_url, "virtual try-on");
+    saveImageToLibrary(req.user.brandId, cloudRes.secure_url, "virtual_try-on");
 
     // Create usage history
     await CreateUsageHistory(

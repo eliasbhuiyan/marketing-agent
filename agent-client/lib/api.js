@@ -387,7 +387,7 @@ class ApiClient {
   };
   // Usage History
   usageHistory = {
-    getUsageHistory: () => this.get("/usagehistory"),
+    getUsageHistory: (page = 1, limit = 10, type = '') => this.get(`/usagehistory?page=${page}&limit=${limit}${type ? `&type=${type}` : ''}`),
   };
 }
 

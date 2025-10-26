@@ -52,7 +52,7 @@ const captionGenerator = async (req, res) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "x-ai/grok-4-fast:free",
+          model: "nvidia/nemotron-nano-9b-v2:free",
           messages: [
             {
               role: "user",
@@ -63,7 +63,7 @@ const captionGenerator = async (req, res) => {
       }
     );
     const data = await response.json();
-    console.log(data);
+    // console.log(data);
 
     if (data.error) {
       await returnedCredits(req.user.brandId, REQUIRED_CREDITS);

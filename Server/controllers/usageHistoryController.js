@@ -1,17 +1,5 @@
 const UsageHistory = require("../models/UsageHistory");
-function getStartDate(period) {
-  const now = new Date();
-  switch (period) {
-    case "1d":
-      return new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000);
-    case "7d":
-      return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    case "30d":
-      return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-    default:
-      return new Date(0); // Return all history if period is unrecognized
-  }
-}
+
 const getUsageHistory = async (req, res) => {
   const brandId = req.user.brandId;
 
@@ -19,16 +7,50 @@ const getUsageHistory = async (req, res) => {
     return res.status(400).json({ message: "Brand ID is required." });
   }
 
-  const period = req.query.period || "7d";
+  // Pagination parameters
+  const type = req.query.type || "";
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 25;
+  const skip = (page - 1) * limit;
 
-  // Logic to fetch usage history based on brandId and period would go here
+  try {
+    // Get total count for pagination metadata
 
-  const historyData = await UsageHistory.find({ brand: brandId }).populate('generatedBy', 'fullName')
-    .where("createdAt")
-    .gte(getStartDate(period))
-    .exec();
+    const totalCount = await UsageHistory.countDocuments({ brand: brandId });
 
-  res.status(200).json({ data: historyData });
+    // Get paginated data
+    const historyData = await UsageHistory.find({
+      brand: brandId,
+      ...(type !== "all" && { type }),
+    })
+      .populate("generatedBy", "fullName")
+      .select("content createdAt credits generatedBy status type")
+      .sort({ createdAt: -1 }) // Sort by most recent first
+      .skip(skip)
+      .limit(limit)
+      .exec();
+
+    // Calculate pagination metadata
+    const totalPages = Math.ceil(totalCount / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
+    res.status(200).json({
+      data: historyData,
+      pagination: {
+        totalCount,
+        totalPages,
+        currentPage: page,
+        limit,
+        hasNextPage,
+        hasPrevPage,
+      },
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching usage history", error: error.message });
+  }
 };
 
 module.exports = {

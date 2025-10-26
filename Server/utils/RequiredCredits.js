@@ -1,5 +1,5 @@
 const CreditsForTask = {
-  captionGenerator: 5,
+  captionGenerator: 0,
   blogHeadingGenerator: 5,
   blogGenerator: 5,
   keywordHashtagGenerator: 5,

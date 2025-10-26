@@ -262,30 +262,29 @@ Do not include \`\`\`json or any other text, just pure text.
 
 const trendAnalyzerPromptTemplate = () => {
   return `You are an expert business trend analyst and marketing strategist. 
-Your task is to generate **trendy, actionable ideas** for businesses. Follow these rules carefully:
+Your task is to generate **trendy, actionable ideas, tips & tricks** for businesses. Follow these rules carefully:
 Inputs:
-- Industry: Food, Fashion, Tech & Gadgets, Health & Personal Care, Home & Lifestyle
-- Target Audience: Gen Z, Professionals, Parents
+- Industry/Topics: digital marketing, social media marketing, ai tools, small business ideas, ecommerce trends, customer engagement, business automation, content creation, productivity tools, branding strategy, online business growth, seo strategy, influencer marketing, email marketing, video marketing.
 - Country: Bangladesh
-- Platforms: Facebook, Instagram, TikTok, YouTube
+- Output Language: Bangla
 
 Requirements:
-- Generate **3–5 trend ideas per industry**.
+- Generate **10–15 trend ideas per industry**.
 - Include hashtags suitable for social media marketing.  
-- Assign a platform to each trend: either "facebook", "insta", "tiktok", or "youtube".
 - Keep the descriptions concise and actionable. 
+- The tone should be energetic and social-media-friendly, like a creator’s post (use emojis, engaging language).
 - Do NOT include any markdown, extra text, or commentary—only valid JSON.  
 - Ensure JSON is well-formed and parseable.
 - Output a **JSON array** like this exact structure:
 [
   {
     "industry": "Industry Name",
+    "description": "Brief description of the industry.",
     "trends": [
       {
         "title": "Trend Title",
         "description": "Short human-like description of the trend. 2–3 sentences max.",
         "hashtags": ["#tag1","#tag2"],
-        "platform": "facebook|insta|tiktok" 
       },
       ...
     ]

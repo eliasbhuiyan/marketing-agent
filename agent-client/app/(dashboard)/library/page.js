@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import LoaderAnim from "@/components/LoaderAnim";
 import apiClient from "@/lib/api";
+import Image from "next/image";
 export default function LibraryPage() {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,7 +35,7 @@ export default function LibraryPage() {
     };
     fetchImages();
   }, []);
-
+ 
   const handleFilterChange = (type) => {
     setFilterType(type);
   };
@@ -111,23 +112,30 @@ export default function LibraryPage() {
               All
             </Button>
             <Button
-              variant={filterType === "virtual try-on" ? "default" : "outline"}
+              variant={filterType === "poster_design" ? "default" : "outline"}
               size="sm"
-              onClick={() => handleFilterChange("virtual try-on")}
+              onClick={() => handleFilterChange("poster_design")}
+            >
+              Poster Design
+            </Button>
+            <Button
+              variant={filterType === "intelligent_posters" ? "default" : "outline"}
+              size="sm"
+              onClick={() => handleFilterChange("intelligent_posters")}
+            >
+              Intelligent Posters
+            </Button>
+            <Button
+              variant={filterType === "virtual_try-on" ? "default" : "outline"}
+              size="sm"
+              onClick={() => handleFilterChange("virtual_try-on")}
             >
               Virtual try-on
             </Button>
             <Button
-              variant={filterType === "poster design" ? "default" : "outline"}
+              variant={filterType === "thumbnail_generator" ? "default" : "outline"}
               size="sm"
-              onClick={() => handleFilterChange("poster design")}
-            >
-              Posters
-            </Button>
-            <Button
-              variant={filterType === "thumbnails" ? "default" : "outline"}
-              size="sm"
-              onClick={() => handleFilterChange("thumbnails")}
+              onClick={() => handleFilterChange("thumbnail_generator")}
             >
               Thumbnails
             </Button>
@@ -136,19 +144,11 @@ export default function LibraryPage() {
       </div>
       {/* Image Gallery */}
       {loading ? (
-        <div className="flex items-center justify-center gap-10">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <div className="w-1/3">
+        <div className="grid grid-cols-4 gap-10">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <div key={index}>
               <div className="max-w-sm rounded overflow-hidden shadow-lg animate-pulse">
                 <div className="h-48 bg-gray-300"></div>
-                <div className="px-6 py-4">
-                  <div className="h-6 bg-gray-300 mb-2"></div>
-                  <div className="h-4 bg-gray-300 w-2/3"></div>
-                </div>
-                <div className="px-6 pt-4 pb-2">
-                  <div className="h-4 bg-gray-300 w-1/4 mb-2"></div>
-                  <div className="h-4 bg-gray-300 w-1/2"></div>
-                </div>
               </div>
             </div>
           ))}
@@ -158,9 +158,12 @@ export default function LibraryPage() {
           {filteredImages.map((image) => (
             <Card key={image._id} className="overflow-hidden group">
               <div className="relative h-48 overflow-hidden">
-                <img
+                <Image
                   src={image.image}
                   alt={image.type}
+                  width={500}
+                  height={300}
+                  blurDataURL={image.image}
                   className="w-full h-full object-cover transition-transform group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
@@ -196,7 +199,7 @@ export default function LibraryPage() {
                     {formatDate(image.createdAt)}
                   </span>
                   <span className="text-xs capitalize bg-white/10 px-2 py-0.5 rounded-full">
-                    {image.type}
+                    {image.type.split("_").join(" ")}
                   </span>
                 </div>
               </CardContent>
@@ -245,7 +248,7 @@ export default function LibraryPage() {
                     Created on {formatDate(selectedImage.createdAt)}
                   </p>
                   <span className="inline-block capitalize mt-1 text-xs bg-white/20 px-2 py-0.5 rounded-full">
-                    {selectedImage.type}
+                    {selectedImage.type.split("_").join(" ")}
                   </span>
                 </div>
                 <div className="flex gap-2">

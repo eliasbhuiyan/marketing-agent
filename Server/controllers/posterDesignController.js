@@ -126,7 +126,7 @@ const posterDesignController = async (req, res) => {
         folder: `margenai/${req.user.brandId}/posters`,
       }
     );
-    saveImageToLibrary(req.user.brandId, cloudRes.secure_url, "poster design");
+    saveImageToLibrary(req.user.brandId, cloudRes.secure_url, "poster_design");
 
     // Create usage history
     await CreateUsageHistory(
