@@ -14,10 +14,12 @@ import { Label } from "@/components/ui/label";
 import { Sparkles, Copy, Hash, Target, BarChart } from "lucide-react";
 import apiClient from "@/lib/api";
 import LoaderAnim from "@/components/LoaderAnim";
+import ApiError from "@/components/ui/ApiError";
 
 export default function HashtagGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState(null);
+  const [apiError, setApiError] = useState("");
   const [hashtagOptions, setHashtagOptions] = useState({
     industry: "",
     platform: "instagram",
@@ -54,6 +56,7 @@ export default function HashtagGenerator() {
     }
 
     setIsGenerating(true);
+    setApiError(""); // Clear any previous errors
     console.log(hashtagOptions);
 
     try {
@@ -69,10 +72,10 @@ export default function HashtagGenerator() {
         platform: "instagram",
         numKeywords: "15",
       });
-      setIsGenerating(false);
     } catch (error) {
       console.error("Error generating content:", error);
-      alert("Failed to generate content. Please try again.");
+      setApiError(error.message || "Failed to generate content. Please try again.");
+    } finally {
       setIsGenerating(false);
     }
   };
@@ -165,6 +168,9 @@ export default function HashtagGenerator() {
                 </select>
               </div>
             </div>
+            {apiError && (
+              <ApiError>{apiError}</ApiError>
+            )}
             <Button
               onClick={handleGenerateContent}
               className="w-full"

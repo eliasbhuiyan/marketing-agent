@@ -25,6 +25,7 @@ import {
   Settings,
 } from "lucide-react";
 import apiClient from "@/lib/api";
+import ApiError from "@/components/ui/ApiError";
 
 export default function PostersPage() {
   const [productImage, setProductImage] = useState(null);
@@ -32,11 +33,14 @@ export default function PostersPage() {
   const [customPrompt, setCustomPrompt] = useState("");
   const productInputRef = useRef(null);
   const modelInputRef = useRef(null);
-  const [generatedPoster, setGeneratedPoster] = useState(null);
+  const [generatedPoster, setGeneratedPoster] = useState("");
   const [captionPrompt, setCaptionPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedCaption, setGeneratedCaption] = useState("");
   const [isGeneratingCaption, setIsGeneratingCaption] = useState(false);
+  const [apiError, setApiError] = useState(null);
+  const [captionApiError, setCaptionApiError] = useState(null);
+  const [captionErrors, setCaptionErrors] = useState({});
   const [captionOptions, setCaptionOptions] = useState({
     tone: "professional",
     platform: "instagram",
@@ -68,6 +72,7 @@ export default function PostersPage() {
   const handleGeneratePoster = async () => {
     if (!productImage || !modelImage) return;
     setIsGenerating(true);
+    setApiError(null);
     try {
       const res = await apiClient.ai.posterDesign(
         productImage.file,
@@ -80,6 +85,7 @@ export default function PostersPage() {
       setCaptionPrompt(res.description);
     } catch (error) {
       console.log("error:", error.message);
+      setApiError(error.message || "Failed to generate poster. Please try again.");
     }
     finally{
       setIsGenerating(false);
@@ -91,11 +97,39 @@ export default function PostersPage() {
     console.log("Scheduling post...");
   };
 
+  // Validate caption fields
+  const validateCaptionFields = () => {
+    const newErrors = {};
+    if (!captionPrompt.trim()) newErrors.captionPrompt = true;
+    if (!captionOptions.language.trim()) newErrors.language = true;
+    
+    setCaptionErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Handle input change for caption fields
+  const handleCaptionInputChange = (field, value) => {
+    if (field === 'captionPrompt') {
+      setCaptionPrompt(value);
+      if (captionErrors.captionPrompt) {
+        setCaptionErrors(prev => ({ ...prev, captionPrompt: false }));
+      }
+    } else {
+      setCaptionOptions(prev => ({ ...prev, [field]: value }));
+      if (captionErrors[field]) {
+        setCaptionErrors(prev => ({ ...prev, [field]: false }));
+      }
+    }
+  };
+
   const handleGenerateCaption = () => {
+    // Validate fields before proceeding
+    if (!validateCaptionFields()) return;
+    
     setIsGeneratingCaption(true);
+    setCaptionApiError(null);
     try {
       const { tone, platform, keywords, language } = captionOptions;
-      if (!captionPrompt) return;
       apiClient.ai.posterCaption({
         productDescription: captionPrompt,
         tone,
@@ -107,11 +141,14 @@ export default function PostersPage() {
         setGeneratedCaption(res.caption);
       }).catch((error) => {
         console.log("error:", error.message);
+        setCaptionApiError(error.message || "Failed to generate caption. Please try again.");
       }).finally(() => {
         setIsGeneratingCaption(false);
       })
     } catch (error) {
       console.log("error:", error.message);
+      setCaptionApiError(error.message || "Failed to generate caption. Please try again.");
+      setIsGeneratingCaption(false);
     }
   };
 
@@ -333,6 +370,10 @@ export default function PostersPage() {
           </Card>
         )}
       </div>
+      {/* API Error Display */}
+      {apiError && (
+        <ApiError>{apiError}</ApiError>
+      )}
       {/* Generate Button */}
       <Button
         onClick={handleGeneratePoster}
@@ -352,6 +393,8 @@ export default function PostersPage() {
           </>
         )}
       </Button>
+      
+      
       {/* Caption Generator */}
       {generatedPoster && (
         <Card>
@@ -440,31 +483,34 @@ export default function PostersPage() {
                 />
               </div>
               <div>
-                <Label htmlFor="cap-lang">Language</Label>
+                <Label htmlFor="cap-lang">Language *</Label>
                 <Input
                   id="cap-lang"
-                  className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                  className={`w-full mt-1 p-2 border ${captionErrors.language ? "border-red-500" : "border-gray-300"} rounded-md`}
                   value={captionOptions.language}
                   placeholder="e.g., English, Bangla"
                   onChange={(e) =>
-                    setCaptionOptions({
-                      ...captionOptions,
-                      language: e.target.value,
-                    })
+                    handleCaptionInputChange('language', e.target.value)
                   }
                 />
+                {captionErrors.language && (
+                  <p className="text-red-500 text-sm mt-1">Language is required</p>
+                )}
               </div>
               <div>
-                <Label htmlFor="cap-keywords">Describe about the product</Label>
+                <Label htmlFor="cap-prompt">Describe about the product *</Label>
                 <textarea
                   id="cap-prompt"
-                  className="w-full min-h-10 mt-1 p-3 border border-gray-300 rounded-md resize-none field-sizing-content"
+                  className={`w-full min-h-10 mt-1 p-3 border ${captionErrors.captionPrompt ? "border-red-500" : "border-gray-300"} rounded-md resize-none field-sizing-content`}
                   placeholder="e.g., newarrival, summer, limited, unique"
                   value={captionPrompt}
                   onChange={(e) =>
-                    setCaptionPrompt(e.target.value)
+                    handleCaptionInputChange('captionPrompt', e.target.value)
                   }
                 />
+                {captionErrors.captionPrompt && (
+                  <p className="text-red-500 text-sm mt-1">Product description is required</p>
+                )}
               </div>
             </div>
             {generatedCaption && (
@@ -481,6 +527,11 @@ export default function PostersPage() {
                 </div>
               </div>
             )}
+            {/* Caption API Error Display */}
+            {captionApiError && (
+              <ApiError>{captionApiError}</ApiError>
+            )}
+            
             <div className="flex space-x-2">
               <Button
                 variant=""

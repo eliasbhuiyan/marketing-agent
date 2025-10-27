@@ -13,12 +13,14 @@ import {
   Download,
   Eye,
   ImageIcon,
+  RotateCcw,
   Settings,
   Sparkles,
   Upload,
 } from "lucide-react";
 import React, { useRef, useState } from "react";
 import apiClient from "@/lib/api";
+import ApiError from "@/components/ui/ApiError";
 
 const PosterStudio = () => {
   const logoInputRef = useRef(null);
@@ -72,25 +74,25 @@ const PosterStudio = () => {
   ];
 
   const handleInputChange = (e) => {
-    const { id, value } = e.target;    
+    const { id, value } = e.target;
     const fieldName =
       id === "poster-title"
         ? "title"
         : id === "poster-subtitle"
-        ? "subtitle"
-        : id === "poster-info"
-        ? "infoBlocks"
-        : id === "poster-date"
-        ? "dateInfo"
-        : id === "poster-cta"
-        ? "ctaText"
-        : id === "poster-contact"
-        ? "contactInfo"
-        : id === "poster-theme"
-        ? "theme"
-        : id === "poster-color"
-        ? "colorScheme"
-        : id;
+          ? "subtitle"
+          : id === "poster-info"
+            ? "infoBlocks"
+            : id === "poster-date"
+              ? "dateInfo"
+              : id === "poster-cta"
+                ? "ctaText"
+                : id === "poster-contact"
+                  ? "contactInfo"
+                  : id === "poster-theme"
+                    ? "theme"
+                    : id === "poster-color"
+                      ? "colorScheme"
+                      : id;
 
     setFormData((prev) => ({
       ...prev,
@@ -182,18 +184,18 @@ const PosterStudio = () => {
       formDataToSend.append("ctaText", formData.ctaText);
       formDataToSend.append("contactInfo", formData.contactInfo);
       formDataToSend.append("theme", formData.theme);
-      
+
       // Append each color individually
       formData.colorSchemes.forEach((color, index) => {
         formDataToSend.append(`colors[${index}]`, color);
       });
-      
+
       // Append the logo file
       formDataToSend.append("brandLogo", uploadedLogo.file);
-            
+
       const response = await apiClient.ai.intelligentPosterDesign(formDataToSend);
       console.log(response);
-      
+
       setGeneratedPoster(response.image);
       setPosterDescription(response.description);
       setIsGenerating(false);
@@ -217,17 +219,11 @@ const PosterStudio = () => {
             <CardDescription>Enter the content for your poster</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {apiError && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-4">
-                {apiError}
-              </div>
-            )}
             <Label htmlFor="poster-title">Brand Logo</Label>
             <div
               onClick={() => logoInputRef.current?.click()}
-              className={`border-2 border-dashed cursor-pointer hover:bg-white/10 ${
-                errors.logo ? "border-red-500" : "border-gray-300"
-              } rounded-lg py-1 text-center mt-2`}
+              className={`border-2 border-dashed cursor-pointer hover:bg-white/10 ${errors.logo ? "border-red-500" : "border-gray-300"
+                } rounded-lg py-1 text-center mt-2`}
             >
               <input
                 ref={logoInputRef}
@@ -332,9 +328,8 @@ const PosterStudio = () => {
               </Label>
               <select
                 id="poster-theme"
-                className={`w-full mt-1 p-2 border ${
-                  errors.theme ? "border-red-500" : "border-gray-300"
-                } rounded-md`}
+                className={`w-full mt-1 p-2 border ${errors.theme ? "border-red-500" : "border-gray-300"
+                  } rounded-md`}
                 value={formData.theme}
                 onChange={handleInputChange}
               >
@@ -401,7 +396,7 @@ const PosterStudio = () => {
                     )}
                   </div>
                 ))}
-                
+
                 <Button
                   type="button"
                   variant="outline"
@@ -520,6 +515,9 @@ const PosterStudio = () => {
                 </div>
               </div>
             </CardContent>
+            {apiError && (
+              <ApiError>{apiError}</ApiError>
+            )}
           </Card>
         )}
       </div>

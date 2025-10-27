@@ -1,4 +1,5 @@
 "use client";
+import ApiError from "@/components/ui/ApiError";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -57,14 +58,14 @@ const ThumbnailDesign = () => {
       id === "video-title"
         ? "headlineText"
         : id === "video-subheading"
-        ? "subheadingText"
-        : id === "video-description"
-        ? "videoDescription"
-        : id === "thumbnail-style"
-        ? "thumbnailStyle"
-        : id === "brand-colors"
-        ? "brandColor"
-        : id;
+          ? "subheadingText"
+          : id === "video-description"
+            ? "videoDescription"
+            : id === "thumbnail-style"
+              ? "thumbnailStyle"
+              : id === "brand-colors"
+                ? "brandColor"
+                : id;
 
     setFormData((prev) => ({
       ...prev,
@@ -185,9 +186,8 @@ const ThumbnailDesign = () => {
           <CardContent className="space-y-4">
             <div
               onClick={() => imageInputRef.current?.click()}
-              className={`border-2 border-dashed cursor-pointer hover:bg-white/10 ${
-                errors.image ? "border-red-500" : "border-gray-300"
-              } rounded-lg p-6 text-center`}
+              className={`border-2 border-dashed cursor-pointer hover:bg-white/10 ${errors.image ? "border-red-500" : "border-gray-300"
+                } rounded-lg p-6 text-center`}
             >
               <input
                 ref={imageInputRef}
@@ -236,12 +236,6 @@ const ThumbnailDesign = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {apiError && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-4">
-                {apiError}
-              </div>
-            )}
-
             <div>
               <Label htmlFor="video-title">
                 Thumbnail Headline <span className="text-xl">*</span>
@@ -282,9 +276,8 @@ const ThumbnailDesign = () => {
               </Label>
               <select
                 id="thumbnail-style"
-                className={`w-full mt-1 p-2 border ${
-                  errors.thumbnailStyle ? "border-red-500" : "border-gray-300"
-                } rounded-md`}
+                className={`w-full mt-1 p-2 border ${errors.thumbnailStyle ? "border-red-500" : "border-gray-300"
+                  } rounded-md`}
                 value={formData.thumbnailStyle}
                 onChange={handleInputChange}
               >
@@ -311,9 +304,8 @@ const ThumbnailDesign = () => {
                   id="brand-colors"
                   value={formData.brandColor}
                   onChange={handleInputChange}
-                  className={`w-10 h-10 rounded border ${
-                    errors.brandColor ? "border-red-500" : ""
-                  }`}
+                  className={`w-10 h-10 rounded border ${errors.brandColor ? "border-red-500" : ""
+                    }`}
                 />
                 <Input
                   value={formData.brandColor}
@@ -329,9 +321,8 @@ const ThumbnailDesign = () => {
               <Label htmlFor="video-description">Custom instructions</Label>
               <textarea
                 id="video-description"
-                className={`w-full p-3 border ${
-                  errors.videoDescription ? "border-red-500" : "border-gray-300"
-                } rounded-md h-20 resize-none`}
+                className={`w-full p-3 border ${errors.videoDescription ? "border-red-500" : "border-gray-300"
+                  } rounded-md h-20 resize-none`}
                 placeholder="Brief instructions of your video content..."
                 value={formData.videoDescription}
                 onChange={handleInputChange}
@@ -437,6 +428,9 @@ const ThumbnailDesign = () => {
                 </div>
               </div>
             </CardContent>
+            {apiError && (
+              <ApiError>{apiError}</ApiError>
+            )}
           </Card>
         )}
       </div>

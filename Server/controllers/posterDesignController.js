@@ -240,11 +240,12 @@ const IntelligentPosterDesign = async (req, res) => {
   if (!brandLogo) {
     return res.status(400).json({ message: "Brand logo is required." });
   }
-
-  // const resizedLogoBuffer = await sharp(brandLogo.buffer)
-  //   .resize(240)
-  //   .toBuffer();
-
+  if (!fileAccept.includes(brandLogo.mimetype)) {
+    return res.status(400).json({
+      message:
+        "Accept only png, jpg, jpeg and webp only. Upload a valid brand logo.",
+    });
+  }
   const base64BrandLogo = `data:${
     brandLogo.mimetype
   };base64,${brandLogo.buffer.toString("base64")}`;

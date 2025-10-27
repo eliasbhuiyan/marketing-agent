@@ -22,6 +22,7 @@ import apiClient from "@/lib/api";
 import dynamic from "next/dynamic";
 import BlogHeadingPopup from "@/components/BlogHeadingPopup";
 import ContentPublisher from "@/components/ContentPublisher";
+import ApiError from "@/components/ui/ApiError";
 
 // Dynamically import TiptapEditor to avoid SSR issues
 const TiptapEditor = dynamic(() => import("@/components/TiptapEditor"), {
@@ -321,7 +322,7 @@ return (
             </div>
             <div className="col-span-3 flex flex-col items-center">
               {apiError && (
-                <div className="text-red-500 text-sm mb-2">{apiError}</div>
+                <ApiError>{apiError}</ApiError>
               )}
               <Button
                 onClick={handleGenerateContent}

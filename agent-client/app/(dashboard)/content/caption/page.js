@@ -14,10 +14,12 @@ import { Label } from "@/components/ui/label";
 import { Sparkles, MessageSquare, Heart, Zap } from "lucide-react";
 import apiClient from "@/lib/api";
 import LoaderAnim from "../../../../components/LoaderAnim";
+import ApiError from "@/components/ui/ApiError";
 
 export default function CaptionGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState("");
+  const [apiError, setApiError] = useState("");
   const [captionOptions, setCaptionOptions] = useState({
     productDescription: "",
     targetAudience: "",
@@ -61,6 +63,7 @@ export default function CaptionGenerator() {
     if (!validateInputs()) return; // Guard against incomplete form
 
     setIsGenerating(true);
+    setApiError(""); // Clear any previous errors
 
     try {
       const { productDescription, targetAudience, tone, platform, language } =
@@ -79,8 +82,7 @@ export default function CaptionGenerator() {
       setGeneratedContent(response.caption);
     } catch (error) {
       console.log(error);
-
-      // alert("Failed to generate content. Please try again.");
+      setApiError(error.message || "Failed to generate content. Please try again.");
     } finally {
       setIsGenerating(false);
     }
@@ -207,6 +209,9 @@ export default function CaptionGenerator() {
                 />
                 {errors.language && <p className="text-red-500 text-sm mt-1">This field is required</p>}
               </div>
+              {apiError && (
+                <ApiError>{apiError}</ApiError>
+              )}
               <Button
                 className="w-full text-white"
                 disabled={isGenerating}

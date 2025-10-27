@@ -345,8 +345,8 @@ const productDescriptionGenerator = async (req, res) => {
       outputLanguage,
     } = req.body;
 
-    if(!productName || !keyFeatures || !descriptionLength || !outputLanguage){
-      return  res.status(400).json({ message: "All fields are required" });
+    if (!productName || !keyFeatures || !descriptionLength || !outputLanguage) {
+      return res.status(400).json({ message: "All fields are required" });
     }
     const REQUIRED_CREDITS = CreditsForTask.productDescriptionGenerator;
 
@@ -358,7 +358,6 @@ const productDescriptionGenerator = async (req, res) => {
     if (!check)
       return res.status(500).json({ message: "Insufficient credits" });
 
-    
     const prompt = productDescriptionPromptTemplate({
       productName,
       keyFeatures,
@@ -383,11 +382,11 @@ const productDescriptionGenerator = async (req, res) => {
     );
 
     const data = await aiResponse.json();
-    if (data.error){
+    if (data.error) {
       await returnedCredits(req.user.brandId, REQUIRED_CREDITS);
       return res
-      .status(500)
-      .json({ message: "So many requests. Please try again." });
+        .status(500)
+        .json({ message: "So many requests. Please try again." });
     }
 
     // Create usage history

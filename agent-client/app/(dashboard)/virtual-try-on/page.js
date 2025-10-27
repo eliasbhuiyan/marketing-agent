@@ -24,6 +24,7 @@ import {
   X,
 } from "lucide-react";
 import apiClient from "@/lib/api";
+import ApiError from "@/components/ui/ApiError";
 
 export default function SelfModelingPage() {
   const [personImage, setPersonImage] = useState(null);
@@ -36,6 +37,7 @@ export default function SelfModelingPage() {
     personImage: false,
     assets: false,
   });
+  const [apiError, setApiError] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
   const validateInputs = () => {
@@ -92,6 +94,7 @@ export default function SelfModelingPage() {
     if (!validateInputs()) return;
     
     setIsGenerating(true);
+    setApiError(""); // Clear any previous errors
     try {
       const formData = new FormData();
       formData.append("model", personImage.file);
@@ -104,7 +107,7 @@ export default function SelfModelingPage() {
       setGeneratedImage(response.image);
     } catch (error) {
       console.error("Error in virtual try-on:", error);
-      alert("Failed to generate model. Please try again.");
+      setApiError(error.message || "Failed to generate model. Please try again.");
     }
     finally{
       setIsGenerating(false);
@@ -282,6 +285,9 @@ export default function SelfModelingPage() {
                 }}
               />
             </div>
+            {apiError && (
+             <ApiError>{apiError}</ApiError>
+            )}
             <Button
               onClick={handleGenerateModel}
               disabled={isGenerating}

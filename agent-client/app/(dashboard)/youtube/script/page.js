@@ -94,8 +94,7 @@ const ScriptWriter = () => {
 
       setGeneratedScript(response.script);
     } catch (error) {
-      console.error("Error generating script:", error);
-      setGeneratedScript("Error generating script. Please try again.");
+      setGeneratedScript(`Error generating script: ${error.message}`);
     } finally {
       setIsGenerating(false);
     }

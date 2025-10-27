@@ -15,6 +15,7 @@ import { Sparkles, Copy, ShoppingBag, Star, Tag, Download } from "lucide-react";
 import apiClient from "@/lib/api";
 import dynamic from "next/dynamic";
 import LoaderAnim from "@/components/LoaderAnim";
+import ApiError from "@/components/ui/ApiError";
 
 export default function ProductDescriptionGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -254,7 +255,7 @@ export default function ProductDescriptionGenerator() {
               </p>
             </div>
             {apiError && (
-              <div className="text-red-500 text-sm mt-2">{apiError}</div>
+              <ApiError>{apiError}</ApiError>
             )}
             <Button
               onClick={handleGenerateContent}
