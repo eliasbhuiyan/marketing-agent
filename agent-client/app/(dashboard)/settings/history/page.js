@@ -16,10 +16,18 @@ import { CalendarIcon, Search, Download, Filter } from "lucide-react";
 import apiClient from "@/lib/api";
 import LineLoading from "@/components/LineLoading";
 import Link from "next/link";
-// const redirectUrlWithType = (type) => {
-//   if(type === "caption" || type === "") {}
-//   return `/${type}?${item._id}`;
-// };
+const redirectUrlWithType = (type) => {
+  if(type == "poster_design") return "/posters";
+  if(type == "intelligent_posters") return "/poster-studio";
+  if(type == "virtual_try-on") return "/virtual-try-on";
+  if(type == "script_writer") return "/youtube/script";
+  if(type == "thumbnail_generator") return "/youtube/thumbnail";
+  if(type == "caption") return "/content/caption";
+  if(type == "blog_headings") return "/content/blog";
+  if(type == "blog") return "/content/blog";
+  if(type == "keyword_hashtag") return "/content/hashtag";
+  if(type == "product_des") return "/content/product";
+};
 const UsageHistory = () => {
   const [usageData, setUsageData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -110,11 +118,7 @@ const UsageHistory = () => {
 
     fetchUsageHistory();
   }, [pagination.currentPage, pagination.limit, filterType]);
-
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-  };
-
+  
   const handleFilterChange = (value) => {
     setFilterType(value);
   };
@@ -299,7 +303,7 @@ const UsageHistory = () => {
                       </td>
                       <td className="py-3 px-4 hidden md:table-cell max-w-[300px] truncate">
                         <Link
-                          href={`/${item.type}?${item._id}`}
+                          href={`${redirectUrlWithType(item.type)}?${item._id}`}
                           className="hover:text-green-300"
                         >
                           {item.content?.text || ""}{" "}

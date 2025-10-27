@@ -59,7 +59,7 @@ const {
 } = require("../controllers/youtubeMarketingController");
 const virtualTryOnController = require("../controllers/virtualTryOnController");
 const { getImagesByBrandId } = require("../controllers/libraryController");
-const { getUsageHistory } = require("../controllers/usageHistoryController");
+const { getUsageHistory, getSingleHistory } = require("../controllers/usageHistoryController");
 
 const upload = multer();
 const router = express.Router();
@@ -174,6 +174,7 @@ router.get("/queue/stats", authMiddleware, getQueueStats);
 // Library and usageHistory route
 router.get("/library", authMiddleware, getImagesByBrandId);
 router.get("/usagehistory", authMiddleware, getUsageHistory);
+router.get("/usagehistory/single", authMiddleware, getSingleHistory);
 
 router.use((req, res) => {
   res.status(404).send("Page not found!");

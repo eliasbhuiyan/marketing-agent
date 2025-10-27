@@ -15,16 +15,16 @@ import {
   Users,
   Eye,
   Heart,
-  MessageCircle
+  SquareUser
 } from 'lucide-react';
 
 export default function DashboardPage() {
   const [quickCreateType, setQuickCreateType] = useState('');
 
   const quickCreateOptions = [
-    { type: 'poster', label: 'Create Poster', icon: Image, color: 'bg-blue-500' },
-    { type: 'blog', label: 'Write Blog', icon: FileText, color: 'bg-green-500' },
-    { type: 'caption', label: 'Generate Caption', icon: MessageCircle, color: 'bg-purple-500' }
+    { type: 'posters', label: 'Create Poster', icon: Image, color: 'bg-blue-500' },
+    { type: 'content/blog', label: 'Write Blog', icon: FileText, color: 'bg-green-500' },
+    { type: 'virtual-try-on', label: 'Virtual Try-on', icon: SquareUser, color: 'bg-purple-500' }
   ];
 
   const scheduledPosts = [
@@ -66,7 +66,7 @@ export default function DashboardPage() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {quickCreateOptions.map((option) => (
-              <Link key={option.type} href={`/${option.type === 'poster' ? 'posters' : option.type === 'blog' ? 'content' : 'content'}`}>
+              <Link key={option.type} href={`/${option.type}`}>
                 <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                   <CardContent className="p-6 text-center">
                     <div className={`w-12 h-12 ${option.color} rounded-lg flex items-center justify-center mx-auto mb-4`}>
@@ -80,26 +80,6 @@ export default function DashboardPage() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Analytics Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {analytics.map((stat, index) => (
-          <Card key={index}>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-white">{stat.label}</p>
-                  <p className="text-2xl font-bold text-white">{stat.value}</p>
-                  <p className="text-sm text-white">{stat.change}</p>
-                </div>
-                <div className="p-3 bg-white/10 rounded-lg">
-                  <stat.icon className="h-6 w-6 text-white" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
 
       <div className="grid lg:grid-cols-2 gap-8">
         {/* Scheduled Posts */}
@@ -169,53 +149,6 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Recent Activity */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center text-white">
-            <Clock className="h-5 w-5 mr-2" />
-            Recent Activity
-          </CardTitle>
-          <CardDescription className="text-white">Your latest marketing activities</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center space-x-4 p-4 bg-white/10 rounded-lg">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Image className="h-5 w-5 text-white" />
-              </div>
-              <div className="flex-1">
-                <p className="font-medium text-white">Created new product poster</p>
-                <p className="text-sm text-white">2 hours ago</p>
-              </div>
-              <Button variant="outline" size="sm" className="text-white">View</Button>
-            </div>
-            
-            <div className="flex items-center space-x-4 p-4 bg-white/10 rounded-lg">
-              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                <FileText className="h-5 w-5 text-white" />
-              </div>
-              <div className="flex-1">
-                <p className="font-medium text-white">Published blog post</p>
-                <p className="text-sm text-white">5 hours ago</p>
-              </div>
-              <Button variant="outline" size="sm" className="text-white">View</Button>
-            </div>
-            
-            <div className="flex items-center space-x-4 p-4 bg-white/10 rounded-lg">
-              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                <Calendar className="h-5 w-5 text-white" />
-              </div>
-              <div className="flex-1">
-                <p className="font-medium text-white">Scheduled 3 posts</p>
-                <p className="text-sm text-white">1 day ago</p>
-              </div>
-              <Button variant="outline" size="sm" className="text-white">View</Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

@@ -15,9 +15,7 @@ const getUsageHistory = async (req, res) => {
 
   try {
     // Get total count for pagination metadata
-
     const totalCount = await UsageHistory.countDocuments({ brand: brandId });
-
     // Get paginated data
     const historyData = await UsageHistory.find({
       brand: brandId,
@@ -53,6 +51,34 @@ const getUsageHistory = async (req, res) => {
   }
 };
 
+const getSingleHistory = async (req, res) => {
+  const historyId = req.query.id;
+  if (!historyId) return res.status(400).json({ message: "History ID is required." });
+  const brandId = req.user.brandId;
+  if (!brandId) {
+    return res.status(400).json({ message: "Brand ID is required." });
+  }
+  try {
+    const historyData = await UsageHistory.findOne({
+      _id: historyId,
+      brand: brandId,
+    })
+      .select("content")
+      .exec();
+    if (!historyData) {
+      return res.status(404).json({ message: "Usage history not found." });
+    }
+    res.status(200).json(
+      historyData.content,
+    );
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching usage history", error: error.message });
+  }
+}
+
 module.exports = {
   getUsageHistory,
+  getSingleHistory,
 };

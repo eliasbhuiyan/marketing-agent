@@ -388,9 +388,9 @@ class ApiClient {
   // Usage History
   usageHistory = {
     getUsageHistory: (page = 1, limit = 10, type = '') => this.get(`/usagehistory?page=${page}&limit=${limit}${type ? `&type=${type}` : ''}`),
+    getSingleHistory: (historyId) => this.get(`/usagehistory-single?id=${historyId}`),
   };
 }
-
 // Create and export a singleton instance
 const apiClient = new ApiClient();
 export default apiClient;
