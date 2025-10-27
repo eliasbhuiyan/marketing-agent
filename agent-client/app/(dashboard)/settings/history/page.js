@@ -303,7 +303,7 @@ const UsageHistory = () => {
                       </td>
                       <td className="py-3 px-4 hidden md:table-cell max-w-[300px] truncate">
                         <Link
-                          href={`${redirectUrlWithType(item.type)}?${item._id}`}
+                          href={`${redirectUrlWithType(item.type)}?single-h-id=${item._id}`}
                           className="hover:text-green-300"
                         >
                           {item.content?.text || ""}{" "}

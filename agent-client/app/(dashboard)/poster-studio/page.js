@@ -18,11 +18,13 @@ import {
   Sparkles,
   Upload,
 } from "lucide-react";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import apiClient from "@/lib/api";
 import ApiError from "@/components/ui/ApiError";
+import useSingleHistory from "@/lib/hooks/useSingleHistory";
 
 const PosterStudio = () => {
+  const { historyData, loading, error } = useSingleHistory();
   const logoInputRef = useRef(null);
   const [uploadedLogo, setUploadedLogo] = useState(null);
   const [generatedPoster, setGeneratedPoster] = useState("");
@@ -40,7 +42,12 @@ const PosterStudio = () => {
   });
   const [errors, setErrors] = useState({});
   const [apiError, setApiError] = useState(null);
-
+  useEffect(() => {
+    if (historyData && historyData?.image) {
+      setGeneratedPoster(historyData.image);
+      setPosterDescription(historyData?.text || "");
+    }
+  }, [historyData]);
   const posterThemes = [
     { id: "modern", name: "Modern", description: "Clean and contemporary" },
     { id: "minimal", name: "Minimal", description: "Simple and elegant" },

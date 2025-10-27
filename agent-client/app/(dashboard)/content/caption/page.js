@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -15,11 +15,20 @@ import { Sparkles, MessageSquare, Heart, Zap } from "lucide-react";
 import apiClient from "@/lib/api";
 import LoaderAnim from "../../../../components/LoaderAnim";
 import ApiError from "@/components/ui/ApiError";
+import useSingleHistory from "@/lib/hooks/useSingleHistory";
 
 export default function CaptionGenerator() {
+  const { historyData, loading, error } = useSingleHistory();
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState("");
   const [apiError, setApiError] = useState("");
+
+  // Set generatedContent from historyData when available
+  useEffect(() => {
+    if (historyData && historyData?.text) {
+      setGeneratedContent(historyData.text);
+    }
+  }, [historyData]);
   const [captionOptions, setCaptionOptions] = useState({
     productDescription: "",
     targetAudience: "",
@@ -43,18 +52,20 @@ export default function CaptionGenerator() {
     const { id, value } = e.target;
     setCaptionOptions((prev) => ({
       ...prev,
-      [id === 'product-description' ? 'productDescription' : 
-        id === 'target-audience' ? 'targetAudience' : 
-        id === 'tone' ? 'tone' : 
-        id === 'platform' ? 'platform' : 
-        id === 'language' ? 'language' : id]: value
+      [id === 'product-description' ? 'productDescription' :
+        id === 'target-audience' ? 'targetAudience' :
+          id === 'tone' ? 'tone' :
+            id === 'platform' ? 'platform' :
+              id === 'language' ? 'language' : id]: value
     }));
-    if (errors[id === 'product-description' ? 'productDescription' : 
-        id === 'target-audience' ? 'targetAudience' : 
+    if (errors[id === 'product-description' ? 'productDescription' :
+      id === 'target-audience' ? 'targetAudience' :
         id === 'language' ? 'language' : id]) {
-      setErrors((prev) => ({ ...prev, [id === 'product-description' ? 'productDescription' : 
-        id === 'target-audience' ? 'targetAudience' : 
-        id === 'language' ? 'language' : id]: false }));
+      setErrors((prev) => ({
+        ...prev, [id === 'product-description' ? 'productDescription' :
+          id === 'target-audience' ? 'targetAudience' :
+            id === 'language' ? 'language' : id]: false
+      }));
     }
   };
 
@@ -68,7 +79,7 @@ export default function CaptionGenerator() {
     try {
       const { productDescription, targetAudience, tone, platform, language } =
         captionOptions;
-      
+
       // Call the caption generator API
       const response = await apiClient.ai.captionGenerator({
         productDescription,
