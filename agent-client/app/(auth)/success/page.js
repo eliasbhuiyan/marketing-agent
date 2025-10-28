@@ -77,21 +77,21 @@ export default function AuthSuccessPage() {
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto">
-      <Card className="!bg-white">
+    <div className="h-screen dark-veil flex items-center justify-center">
+      <Card className="w-full max-w-2xl !bg-transparent text-center">
         <CardHeader>
-          <CardTitle>Select a workspace</CardTitle>
+          <CardTitle className="text-4xl">Select a workspace</CardTitle>
           <CardDescription>
             Choose one of your brands or continue without one.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2 mb-4">
+          <div className="flex flex-col items-center space-y-2 mb-4">
             {brands.map((b) => (
               <Button
                 key={String(b.brandId)}
-                variant="secondary"
-                className="w-full h-14 justify-start items-start gap-4"
+                variant="glass"
+                className="w-fit h-16 py-3 px-10 justify-start items-start gap-4 text-gray-800 border-white/60"
                 onClick={() => proceed(b.brandId)}
                 disabled={selectLoading}
               >

@@ -58,7 +58,7 @@ export default function DashboardLayout({ children }) {
    const { brandData } = useBrandData();
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen site-bg">
       {/* Mobile sidebar */}
       <div
         className={cn(
