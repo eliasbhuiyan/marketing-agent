@@ -75,6 +75,8 @@ const createOrUpdateBrandSettings = async (req, res) => {
 };
 
 const getBrandSettings = async (req, res) => {
+  console.log("getting brand");
+  
   try {
     // Prefer active brandId from token; fallback to query; else find owner's/first brand
     // const { brandId: brandIdQuery } = req.query;
@@ -125,7 +127,7 @@ const inviteTeamMember = async (req, res) => {
         .status(404)
         .json({ message: "Member email address is required." });
     const brand = await BrandSettingsSchema.findOne({ owner: req.user.id });
-
+     
     if (!brand)
       return res.status(404).json({ message: "Unauthorized request." });
 
@@ -156,8 +158,14 @@ const inviteTeamMember = async (req, res) => {
 
     // Send invite email
     const inviteLink = `http://localhost:3000/acceptinvite?token=${token}`;
-
-    sendInvite(req.user.email, user.email, inviteLink);
+    const mailData = {
+      ownerEmail: req.user.email,
+      memberEmail: user.email,
+      memberName: user.fullName,
+      link: inviteLink,
+      brandName: brand.companyName,
+    }
+    sendInvite(mailData);
 
     brand.teamMembers.push({
       user: user._id,

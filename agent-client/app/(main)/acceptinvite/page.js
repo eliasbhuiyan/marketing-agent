@@ -50,8 +50,8 @@ export default function AcceptInvitePage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen py-10">
-      <Card className="w-full max-w-md shadow-lg">
+    <div className="h-screen dark-veil flex items-center justify-center">
+      <Card className="w-full max-w-2xl !bg-transparent text-center">
         <CardHeader>
           <CardTitle className="text-center text-2xl">
             Invitation{" "}

@@ -185,7 +185,7 @@ class ApiClient {
     /**
      * Get brand settings
      */
-    get: () => this.get("/brand"),
+    get: () => this.get(`/brand`),
 
     /**
      * Create or update brand settings

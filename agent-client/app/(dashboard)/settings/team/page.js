@@ -1,6 +1,6 @@
 "use client";
 
-import {useState } from "react";
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -13,11 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import apiClient from "@/lib/api";
 import { useBrandData } from "@/lib/hooks/useBrandData";
-import {
-  Trash2,
-  Plus,
-  Users,
-} from "lucide-react";
+import { Trash2, Plus, Users } from "lucide-react";
 import Image from "next/image";
 
 export default function SettingsPage() {
@@ -27,16 +23,15 @@ export default function SettingsPage() {
   const [inviteBusy, setInviteBusy] = useState(false);
   const [inviteError, setInviteError] = useState("");
   const [inviteSuccess, setInviteSuccess] = useState("");
-  
+
   // Use cached brand data hook
   const {
     brandData,
     loading: brandLoading,
     error: brandError,
+    refreshBrandData,
   } = useBrandData();
 
-  
- 
   const handelInviteMember = async () => {
     try {
       setInviteBusy(true);
@@ -44,6 +39,14 @@ export default function SettingsPage() {
       setInviteSuccess("");
       if (!inviteEmail) {
         setInviteError("Please enter an email address");
+        return;
+      }
+      const validateEmail = (email) => {
+        const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return re.test(email);
+      };
+      if (!validateEmail(inviteEmail)) {
+        setInviteError("Please enter a valid email address");
         return;
       }
       await apiClient.brand.inviteMember(inviteEmail);
@@ -65,20 +68,33 @@ export default function SettingsPage() {
       }
       // Call the API to remove the team member
       await apiClient.removemember.remove(brandData._id, memberId);
+      refreshBrandData()
       // Show success message
       console.log("Team member removed successfully");
     } catch (error) {
       console.error("Failed to remove team member:", error);
       console.log(error?.message || "Failed to remove team member");
     }
-  }
+  };
   return (
     <div className="lg:col-span-3 space-y-6">
       <>
         <Card className="pt-4">
           <CardContent>
             <div className="space-y-4">
-              <h2 className="text-2xl font-bold text-white">Team Members</h2>
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-white">Team Members</h2>
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="ml-4"
+                  onClick={() => setInviteOpen(true)}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Invite Member
+                </Button>
+                <button onClick={()=>refreshBrandData()}>Refresh</button>
+              </div>
               <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-blue-600 rounded-full overflow-hidden flex items-center justify-center">
@@ -133,14 +149,19 @@ export default function SettingsPage() {
                         {member.role}
                       </span>
                       <span
-                        className={`px-2 py-1 capitalize ${member.status === "invited"
-                          ? "bg-yellow-200"
-                          : "bg-blue-100"
-                          } bg-blue-100 text-blue-700 text-xs rounded-full`}
+                        className={`px-2 py-1 capitalize ${
+                          member.status === "invited"
+                            ? "bg-yellow-200"
+                            : "bg-blue-100"
+                        } bg-blue-100 text-blue-700 text-xs rounded-full`}
                       >
                         {member.status}
                       </span>
-                      <Button onClick={() => handelRemoveMember(member.user._id)} size="sm" variant="">
+                      <Button
+                        onClick={() => handelRemoveMember(member.user._id)}
+                        size="sm"
+                        variant=""
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -153,9 +174,7 @@ export default function SettingsPage() {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
             <div className="w-full max-w-md rounded-lg card-surface shadow-lg">
               <div className="px-6 py-4 border-b">
-                <h3 className="text-lg font-semibold">
-                  Invite a team member
-                </h3>
+                <h3 className="text-lg font-semibold">Invite a team member</h3>
               </div>
               <div className="px-6 py-4 space-y-4">
                 {inviteError && (
