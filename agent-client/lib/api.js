@@ -185,7 +185,7 @@ class ApiClient {
     /**
      * Get brand settings
      */
-    get: () => this.get(`/brand`),
+    get: (params) => this.get(`/brand${params ? "?refresh=" + params : ""}`),
 
     /**
      * Create or update brand settings

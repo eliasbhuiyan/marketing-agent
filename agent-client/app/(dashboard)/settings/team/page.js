@@ -29,7 +29,7 @@ export default function SettingsPage() {
     brandData,
     loading: brandLoading,
     error: brandError,
-    refreshBrandData,
+    refrashBrand,
   } = useBrandData();
 
   const handelInviteMember = async () => {
@@ -68,7 +68,7 @@ export default function SettingsPage() {
       }
       // Call the API to remove the team member
       await apiClient.removemember.remove(brandData._id, memberId);
-      refreshBrandData()
+      refrashBrand()
       // Show success message
       console.log("Team member removed successfully");
     } catch (error) {
@@ -93,7 +93,7 @@ export default function SettingsPage() {
                   <Plus className="mr-2 h-4 w-4" />
                   Invite Member
                 </Button>
-                <button onClick={()=>refreshBrandData()}>Refresh</button>
+                <button onClick={()=>refrashBrand()}>Refresh</button>
               </div>
               <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                 <div className="flex items-center space-x-3">
