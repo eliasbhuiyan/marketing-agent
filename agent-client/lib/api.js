@@ -15,10 +15,10 @@ class ApiClient {
   async request(endpoint, options = {}) {
     const url = `${this.baseUrl}${endpoint}`;
     const isFormDataBody =
-      options &&
-      options.body &&
-      typeof FormData !== "undefined" &&
-      options.body instanceof FormData;
+      options ||
+      (options.body &&
+        typeof FormData !== "undefined" &&
+        options.body instanceof FormData);
 
     const headers = {
       ...options.headers,
@@ -33,6 +33,8 @@ class ApiClient {
       ...options,
       headers,
     };
+
+    console.log("config", config);
 
     try {
       const response = await fetch(url, config);
@@ -185,7 +187,7 @@ class ApiClient {
     /**
      * Get brand settings
      */
-    get: (params) => this.get(`/brand${params ? "?refresh=" + params : ""}`),
+    get: () => this.get(`/brand`),
 
     /**
      * Create or update brand settings
@@ -387,8 +389,17 @@ class ApiClient {
   };
   // Usage History
   usageHistory = {
-    getUsageHistory: (page = 1, limit = 10, type = '') => this.get(`/usagehistory?page=${page}&limit=${limit}${type ? `&type=${type}` : ''}`),
-    getSingleHistory: (historyId) => this.get(`/usagehistory-single?id=${historyId}`),
+    getUsageHistory: (page = 1, limit = 10, type = "") =>
+      this.get(
+        `/usagehistory?page=${page}&limit=${limit}${
+          type ? `&type=${type}` : ""
+        }`
+      ),
+    getSingleHistory: (historyId) =>
+      this.get(`/usagehistory-single?id=${historyId}`),
+  };
+  revalidate = {
+    revalidatePath: (path) => this.get(`/revalidate?path=${path}`),
   };
 }
 // Create and export a singleton instance

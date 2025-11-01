@@ -29,9 +29,10 @@ export const useBrandData = () => {
     setBrandData(newData);
   }, []);
 
- const refrashBrand = async () => {
-    const data = await apiClient.brand.get('true');
-    setBrandData(data.brand);
+  const refrashBrand = async () => {
+    const data = await apiClient.revalidate.revalidatePath("/brand");
+    // await fetchBrandData();
+    console.log("Revalidation response:", data);
   };
 
   // Initial load

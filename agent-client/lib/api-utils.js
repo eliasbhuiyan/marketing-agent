@@ -36,8 +36,10 @@ export async function makeBackendRequest(endpoint, options = {}) {
 
   const isAuthProfileGet = endpoint === '/auth/profile' && (options.method || 'GET') === 'GET';
   const isIntegrationsGet = endpoint === '/integrations' && (options.method || 'GET') === 'GET';
-
+  
   // Determine caching strategy based on endpoint
+  // If options.next is provided (e.g., for brand with tags), use it directly
+  // Otherwise, set defaults for specific endpoints
   let nextConfig = options.next;
   if (!nextConfig) {
     if (isAuthProfileGet) {
@@ -46,15 +48,28 @@ export async function makeBackendRequest(endpoint, options = {}) {
       // Always fetch fresh integrations to reflect immediate changes after connect/disconnect
       nextConfig = { revalidate: 0 };
     }
+    // For brand endpoint, if tags are provided in options.next, they will be used above
   }
 
+  // Ensure tags are preserved when nextConfig is provided
+  // This is especially important for brand endpoint which uses tags: ['brand-data']
+  if (nextConfig && nextConfig.tags) {
+    console.log(`Cache tags applied for ${endpoint}:`, nextConfig.tags);
+  }
+
+  // Destructure to exclude next from options to avoid duplication, then explicitly set it
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { next: _unused, ...optionsWithoutNext } = options;
+  
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    ...options,
+    ...optionsWithoutNext,
     headers: {
       'Cookie': cookieHeader,
       ...options.headers,
     },
-    // Apply caching configuration
+    // Explicitly set next config to ensure tags are properly applied
+    // If options.next was provided (e.g., { tags: ['brand-data'], revalidate: 300 }), use it
+    // Otherwise, use the computed nextConfig for default endpoints
     next: nextConfig,
     cache: isIntegrationsGet ? 'no-store' : options.cache,
   });
@@ -66,6 +81,7 @@ export async function makeBackendRequest(endpoint, options = {}) {
  * Handle API route with automatic cookie forwarding
  */
 export async function handleApiRoute(endpoint, options = {}) {
+    console.log("=================endpointhandelapi",endpoint, options);
   try {
     const response = await makeBackendRequest(endpoint, options);
     

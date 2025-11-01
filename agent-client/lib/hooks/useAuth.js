@@ -15,7 +15,7 @@ export function useAuth() {
       try {
         setLoading(true);
         setError(null);
-        
+
         // Check if user appears to be authenticated
         if (!isAuthenticated()) {
           setUser(null);

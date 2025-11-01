@@ -85,7 +85,7 @@ router.get(
 );
 
 // Authentication routes with appropriate rate limiting
-router.get("/auth/profile", authLimiter, authMiddleware, userProfile);
+router.get("/auth/profile", authMiddleware, userProfile);
 router.post("/auth/logout", logoutUser);
 router.post("/auth/refresh", refreshAccessToken);
 router.post("/auth/brand", authMiddleware, setActiveBrand);
