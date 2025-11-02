@@ -14,7 +14,7 @@ class SchedulerService {
    * Initialize all scheduled jobs
    */
   initialize() {
-    // Schedule trend generation every 5 minutes
+    // Schedule trend generation every 1 minutes
     this.jobs.trendGenerator = cron.schedule('*/60 * * * *', async () => {
       console.log('Running scheduled trend generation...');
       try {

@@ -17,7 +17,6 @@ export async function GET() {
   // Add cache headers for better performance
   if (response instanceof NextResponse) {
     response.headers.set('Cache-Control', 'private, max-age=300, stale-while-revalidate=60');
-    response.headers.set('ETag', `"trends-${Date.now()}"`);
   }
   
   return response;

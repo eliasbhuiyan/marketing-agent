@@ -259,17 +259,17 @@ Output only the description text.
 Do not include \`\`\`json or any other text, just pure text.
   `;
 };
-
+//  ai tools, small business ideas, ecommerce trends, customer engagement, business automation, content creation, productivity tools, branding strategy, online business growth, seo strategy, influencer marketing, email marketing, video marketing.
 const trendAnalyzerPromptTemplate = () => {
   return `You are an expert business trend analyst and marketing strategist. 
 Your task is to generate **trendy, actionable ideas, tips & tricks** for businesses. Follow these rules carefully:
 Inputs:
-- Industry/Topics: digital marketing, social media marketing, ai tools, small business ideas, ecommerce trends, customer engagement, business automation, content creation, productivity tools, branding strategy, online business growth, seo strategy, influencer marketing, email marketing, video marketing.
+- Industry/Topics: digital marketing, social media marketing
 - Country: Bangladesh
 - Output Language: Bangla
 
 Requirements:
-- Generate **10–15 trend ideas per industry**.
+- Generate **2 trend ideas per industry**.
 - Include hashtags suitable for social media marketing.  
 - Keep the descriptions concise and actionable. 
 - The tone should be energetic and social-media-friendly, like a creator’s post (use emojis, engaging language).
@@ -290,7 +290,6 @@ Requirements:
     ]
   }
 ]
-
 Output only the JSON array.`;
 };
 

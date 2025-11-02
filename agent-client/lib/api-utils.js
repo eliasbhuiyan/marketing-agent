@@ -81,7 +81,6 @@ export async function makeBackendRequest(endpoint, options = {}) {
  * Handle API route with automatic cookie forwarding
  */
 export async function handleApiRoute(endpoint, options = {}) {
-    console.log("=================endpointhandelapi",endpoint, options);
   try {
     const response = await makeBackendRequest(endpoint, options);
     

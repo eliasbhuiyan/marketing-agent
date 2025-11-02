@@ -25,7 +25,7 @@ import LoadingPage from "@/components/LoadingPage";
 
 export default function TrendsPage() {
   const [activePlatform, setActivePlatform] = useState("all");
-  const { trendsData, loading, error, lastFetched, refreshTrends } = useTrends();
+  const { trendsData, loading, error } = useTrends();
 
   const platforms = [
     { id: "all", name: "All Platforms", icon: Globe, color: "text-white" },
@@ -35,32 +35,20 @@ export default function TrendsPage() {
     { id: "facebook", name: "Facebook", icon: Facebook, color: "text-white" },
   ];
 
-  if (loading && !trendsData) return <LoadingPage title="Loading trends"/>;
-
-  // Flatten all trends from all industries and filter by platform
-  const allTrends = trendsData.flatMap((industryData) =>
-    industryData.trends.map((trend) => ({
-      ...trend,
-      industry: industryData.industry,
-    }))
-  );
-
-  const filteredTrends =
-    activePlatform === "all"
-      ? allTrends
-      : allTrends.filter((trend) => trend.platform === activePlatform);
-
+  if (loading && !trendsData) return <LoadingPage title="Loading trends" />;
+ console.log(trendsData);
+ 
   return (
     <div className="space-y-8">
       {/* Header */}
       <div className="text-center">
-          <h1 className="text-3xl font-bold text-white">
-            Discover Weekly Business Trends
-          </h1>
+        <h1 className="text-3xl font-bold text-white">
+          Discover Weekly Business Trends
+        </h1>
         <p className="text-white mt-2 max-w-2xl m-auto">
           Get fresh insights and trending ideas across various industries.
-          Explore short, actionable trends that update every week to help you 
-         <span className="font-bold"> make smarter business decisions.</span>
+          Explore short, actionable trends that update every week to help you
+          <span className="font-bold"> make smarter business decisions.</span>
         </p>
       </div>
 
@@ -109,8 +97,8 @@ export default function TrendsPage() {
                   activePlatform === "all"
                     ? industryData.trends
                     : industryData.trends.filter(
-                        (trend) => trend.platform === activePlatform
-                      );
+                      (trend) => trend.platform === activePlatform
+                    );
 
                 if (industryTrends.length === 0) return null;
 

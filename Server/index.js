@@ -1,4 +1,5 @@
 require("dotenv").config();
+const schedulerService = require('./services/schedulerService');
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -20,7 +21,9 @@ app.use(router);
 
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB connected"))
+  .then(() => {
+    console.log("✅ MongoDB connected");
+  })
   .catch((err) => console.log(err));
 
 app.listen(8000, () => {
