@@ -113,8 +113,8 @@ export function isAuthenticated() {
   
   try {
     // Check if we have any auth-related data in localStorage
-    const brandId = getBrandId();
-    return !!brandId || document.cookie.includes('_optimise_access_token');
+
+    return document.cookie.includes('_optimise_access_token');
   } catch {
     return false;
   }

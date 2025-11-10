@@ -73,10 +73,10 @@ export default function ContentPage({ children }) {
           {descriptions[activeTab].description}
         </p>
       </div>
-      <div className="grid grid-cols-4 gap-8 mt-5">
+      <div className="grid grid-cols-4 gap-8 mt-20">
         {/* Sidebar */}
         <div className="lg:col-span-1">
-          <Card className="overflow-hidden">
+          <Card className="overflow-hidden sticky top-20 left-0 w-full">
             <CardContent className="p-0 ">
               <nav className="space-y-1">
                 {tabs.map((tab) => (

@@ -43,6 +43,16 @@ const createOrUpdateBrandSettings = async (req, res) => {
       return res.status(404).json({ message: "Company Name is required." });
     if (!details)
       return res.status(404).json({ message: "Company Details is required." });
+
+    // A user can create single brand only (for now)
+    const existingBrand = await BrandSettingsSchema.findOne({ owner: userId });
+    if (existingBrand) {
+      return res
+        .status(400)
+        .json({ message: "You have already created a brand." });
+    }
+
+
     // No brandId: create a new brand for this user; user becomes admin
     const brand = new BrandSettingsSchema({
       owner: userId,

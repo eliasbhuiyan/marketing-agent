@@ -16,12 +16,6 @@ export function useAuth() {
         setLoading(true);
         setError(null);
 
-        // Check if user appears to be authenticated
-        if (!isAuthenticated()) {
-          setUser(null);
-          return;
-        }
-
         const data = await apiClient.auth.getProfile();
         setUser(data.user);
       } catch (err) {

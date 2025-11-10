@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import apiClient from "../api";
+import { getBrandId } from "../utils";
 
 /**
  * Custom hook for managing brand data with caching
@@ -12,6 +13,8 @@ export const useBrandData = () => {
   const fetchBrandData = useCallback(async () => {
     setLoading(true);
     setError(null);
+    // Checl brandid exists or not
+    if (!getBrandId()) return setBrandData(null);
     try {
       const data = await apiClient.brand.get();
       setBrandData(data.brand);
