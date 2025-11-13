@@ -60,6 +60,7 @@ const {
 const virtualTryOnController = require("../controllers/virtualTryOnController");
 const { getImagesByBrandId } = require("../controllers/libraryController");
 const { getUsageHistory, getSingleHistory } = require("../controllers/usageHistoryController");
+const { postAffiliateLink, updateAffiliateLinkStatus, getAffiliateLinks, getAllAffiliateLinks } = require("../controllers/AffiliateController");
 
 const upload = multer();
 const router = express.Router();
@@ -175,6 +176,12 @@ router.get("/queue/stats", authMiddleware, getQueueStats);
 router.get("/library", authMiddleware, getImagesByBrandId);
 router.get("/usagehistory", authMiddleware, getUsageHistory);
 router.get("/usagehistory/single", authMiddleware, getSingleHistory);
+
+// Affiliate routes
+router.post("/affiliate", authMiddleware, postAffiliateLink);
+router.post("/affiliate/status", authMiddleware, updateAffiliateLinkStatus);
+router.get("/affiliate", authMiddleware, getAffiliateLinks);
+router.get("/allaffiliate", authMiddleware, getAllAffiliateLinks);
 
 router.use((req, res) => {
   res.status(404).send("Page not found!");

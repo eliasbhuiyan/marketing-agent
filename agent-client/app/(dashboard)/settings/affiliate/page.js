@@ -1,10 +1,19 @@
+"use client";
+import ApiError from "@/components/ui/ApiError";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowRight, Award, Link, Send, DollarSign, Zap, Gift } from "lucide-react";
-
+import SuccessMessage from "@/components/ui/SuccessMessage";
+import apiClient from "@/lib/api";
+import { Award, Link, Send } from "lucide-react";
+import { useEffect, useState } from "react";
+import toast, { Toaster } from 'react-hot-toast';
 export default function AffiliatePage() {
+  const [postLink, setPostLink] = useState("");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [affiliateLinks, setAffiliateLinks] = useState([]);
   const submissions = [
     { id: 1, link: "https://twitter.com/user/status/1", status: "Approved" },
     { id: 2, link: "https://facebook.com/user/post/2", status: "Pending" },
@@ -25,38 +34,77 @@ export default function AffiliatePage() {
       answer: "Our team reviews submissions within 3-5 business days. You will be notified via email once your submission has been reviewed.",
     },
   ];
-
+  const linkValidator = (link) => {
+    try {
+      new URL(link);
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+  const handelPostLink = async () => {
+    if (!postLink) return setError("Please enter a post link");
+    if (!linkValidator(postLink)) return setError("Please enter a valid post link");
+    try {
+      const res = await apiClient.affiliate.postAffiliateLink(postLink);
+      setMessage(res.message);
+      setPostLink("");
+      setTimeout(() => {
+        setMessage("");
+      }, 4000);
+    } catch (error) {
+      setError(error.message);
+    }
+  }
+  useEffect(() => {
+    const data = async () => {
+      const res = await apiClient.affiliate.getAffiliateLinks();
+      setAffiliateLinks(res.affiliate.post.reverse());
+    }
+    data();
+  }, [message]);
   return (
     <div className="space-y-12">
+      <Toaster position="top-right" />
       <Card className="mx-auto">
         <CardContent className="pt-6">
           <h3 className="text-2xl font-bold text-center text-white">Submit Your Post</h3>
-          <form className="mt-6 space-y-4">
+          <div className="mt-6 space-y-4">
             <div>
-              <Label htmlFor="post-link" className="text-gray-300">Post Link</Label>
-              <Input id="post-link" placeholder="https://twitter.com/your-username/status/12345" className="mt-1" />
+              <Label className="text-gray-300">Post Link</Label>
+              <Input value={postLink} onChange={(e) => { setPostLink(e.target.value); setError("") }} placeholder="https://twitter.com/your-username/status/12345" className={`mt-1 ${error ? "border-red-500" : ""}`} />
+              {
+                error && <ApiError>{error}</ApiError>
+              }
+              {
+                message && <SuccessMessage>{message}</SuccessMessage>
+              }
             </div>
-            <Button type="submit" className="w-full">Submit for Review</Button>
-          </form>
+            <Button onClick={handelPostLink} className="w-full">Submit for Review</Button>
+          </div>
         </CardContent>
       </Card>
       <Card className="p-12">
         <h2 className="text-3xl font-bold text-center text-white">Submission History</h2>
         <div className="mt-6 space-y-4">
-          {submissions.map((submission) => (
-            <div key={submission.id} className="flex items-center justify-between p-4 rounded-lg bg-gray-800/50">
-              <p className="font-medium text-white">{submission.link}</p>
-              <span
-                className={`px-2 py-1 rounded-full text-xs font-semibold ${{
-                  Approved: "bg-green-500/20 text-green-400",
-                  Pending: "bg-yellow-500/20 text-yellow-400",
-                  Rejected: "bg-red-500/20 text-red-400",
-                }[submission.status]}`}
-              >
-                {submission.status}
-              </span>
-            </div>
-          ))}
+
+          {
+            affiliateLinks.length === 0 ? <p className="text-center text-gray-400">No affiliate links found.</p>
+              :
+              affiliateLinks.map((submission) => (
+                <div key={submission._id} className="flex items-center justify-between p-4 rounded-lg bg-white/10">
+                  <p className="font-medium text-white">{submission.postlink}</p>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-semibold capitalize ${{
+                      approved: "bg-green-500/20 text-green-400",
+                      pending: "bg-yellow-500/20 text-yellow-400",
+                      rejected: "bg-red-500/20 text-red-400",
+                    }[submission.status.toLowerCase()]}`}
+                  >
+                    {submission.status}
+                  </span>
+                </div>
+              ))}
         </div>
       </Card>
       <Card className="p-12">

@@ -15,6 +15,7 @@ import {
   LogOut,
   Search,
   User,
+  HandCoins,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,7 +27,7 @@ const navigation = [
   { name: "Brands", href: "/admin/brands", icon: Building2 },
   { name: "Billing & Payments", href: "/admin/billing", icon: CreditCard },
   { name: "Usage & Analytics", href: "/admin/analytics", icon: BarChart3 },
-  { name: "Affiliates", href: "/admin/affilates", icon: Bell },
+  { name: "Affiliates", href: "/admin/affilates", icon: HandCoins },
   { name: "System Logs", href: "/admin/logs", icon: Bell },
   { name: "Settings", href: "/admin/settings", icon: Settings },
 ];

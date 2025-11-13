@@ -401,6 +401,22 @@ class ApiClient {
   revalidate = {
     revalidatePath: (path) => this.get(`/revalidate?path=${path}`),
   };
+  // Affiliate
+  affiliate = {
+    postAffiliateLink: (postLink) =>
+      this.post(`/affiliate`, {
+        postLink,
+      }),
+    getAffiliateLinks: () => this.get("/affiliate"),
+    getAllAffiliateLinks: () => this.get("/affiliate/get-all"),
+    updateAffiliateLinkStatus: (brandId, postId, credits, status) =>
+      this.post(`/affiliate/update-status`, {
+        brandId,
+        postId,
+        credits,
+        status,
+      }),
+  };
 }
 // Create and export a singleton instance
 const apiClient = new ApiClient();

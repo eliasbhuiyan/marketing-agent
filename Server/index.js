@@ -1,5 +1,5 @@
 require("dotenv").config();
-const schedulerService = require('./services/schedulerService');
+// const schedulerService = require('./services/schedulerService');
 const express = require("express");
 const app = express();
 const cors = require("cors");
