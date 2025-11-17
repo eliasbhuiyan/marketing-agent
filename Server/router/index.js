@@ -179,8 +179,8 @@ router.get("/usagehistory/single", authMiddleware, getSingleHistory);
 
 // Affiliate routes
 router.post("/affiliate", authMiddleware, postAffiliateLink);
-router.post("/affiliate/status", authMiddleware, updateAffiliateLinkStatus);
 router.get("/affiliate", authMiddleware, getAffiliateLinks);
+router.post("/affiliate/status", authMiddleware, updateAffiliateLinkStatus);
 router.get("/allaffiliate", authMiddleware, getAllAffiliateLinks);
 
 router.use((req, res) => {
