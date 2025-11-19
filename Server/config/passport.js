@@ -19,6 +19,7 @@ passport.use(
             email: profile.emails[0].value,
             fullName: profile.displayName,
             avatar: profile.photos[0].value,
+            role: "user",
           });
         } else if (!user.googleId) {
           // If user exists but no Google ID, attach it

@@ -1,6 +1,6 @@
-export const checkRole = (roles) => {
+export const superAdminCheck = () => {
     return (req, res, next) => {
-        if (!req.user || !roles.includes(req.user.role)) {
+        if (!req.user || req.user.role !== "superadmin") {
             return res.status(403).json({ message: "Forbidden: insufficient rights" });
         }
         next();

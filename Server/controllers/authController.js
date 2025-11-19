@@ -11,13 +11,13 @@ const googleCallback = async (req, res) => {
   const accessToken = generateAccessToken(req.user, undefined);
   const refreshToken = generateRefreshToken(req.user, undefined);
 
-  res.cookie("_optimise_access_token", accessToken, {
+  res.cookie("_mg_acc_tn", accessToken, {
     httpOnly: true,
     secure: false, // set true in production
     // sameSite: "none",
     // Access token is short-lived; let browser manage via expiry in token as well
   });
-  res.cookie("_optimise_refresh_token", refreshToken, {
+  res.cookie("_mg_ref_tn", refreshToken, {
     httpOnly: true,
     secure: false, // set true in production
     // sameSite: "none",
@@ -59,32 +59,33 @@ const userProfile = async (req, res) => {
 };
 
 const logoutUser = async (req, res) => {
-  res.clearCookie("_optimise_access_token");
-  res.clearCookie("_optimise_refresh_token");
+  res.clearCookie("_mg_acc_tn");
+  res.clearCookie("_mg_ref_tn");
   res.status(200).json("Logged out successfully");
 };
 
 // ✅ Refresh access token using refresh token cookie
 const refreshAccessToken = async (req, res) => {
   try {
-    const token = req.cookies["_optimise_refresh_token"];
+    const token = req.cookies["_mg_ref_tn"];  
     if (!token) return res.status(401).json({ error: "No refresh token" });
     const decoded = verifyRefreshToken(token);
     // Optional: ensure the user still exists
     const user = {
       _id: decoded.id,
-      email: decoded.email
+      email: decoded.email,
+      role: decoded.role,
     }
     // Rotate refresh token for better security
     const newRefresh = generateRefreshToken(user, decoded.brandId);
     const newAccess = generateAccessToken(user, decoded.brandId);
 
-    res.cookie("_optimise_access_token", newAccess, {
+    res.cookie("_mg_acc_tn", newAccess, {
       httpOnly: true,
       secure: false,
       // sameSite: "none",
     });
-    res.cookie("_optimise_refresh_token", newRefresh, {
+    res.cookie("_mg_ref_tn", newRefresh, {
       httpOnly: true,
       secure: false,
       // sameSite: "none",
@@ -104,7 +105,7 @@ const setActiveBrand = async (req, res) => {
     const decoded = req.user; // from access token
     if (!decoded?.id) return res.status(401).json({ error: "Unauthorized" });
     
-    const user = await userSchema.findById(decoded.id).select("_id email brandList");
+    const user = await userSchema.findById(decoded.id).select("_id email role brandList");
     if (!user) return res.status(404).json({ error: "User not found" });
 
     // Ensure user belongs to the brandId if provided
@@ -115,13 +116,13 @@ const setActiveBrand = async (req, res) => {
 
     const newRefresh = generateRefreshToken(user, brandId);
     const newAccess = generateAccessToken(user, brandId);    
-    res.cookie("_optimise_access_token", newAccess, {
+    res.cookie("_mg_acc_tn", newAccess, {
       httpOnly: true,
       secure: false, // set true in production
       // sameSite: "none",
       // Access token is short-lived; let browser manage via expiry in token as well
     });
-    res.cookie("_optimise_refresh_token", newRefresh, {
+    res.cookie("_mg_ref_tn", newRefresh, {
       httpOnly: true,
       secure: false, // set true in production
       // sameSite: "none",

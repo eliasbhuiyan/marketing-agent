@@ -410,7 +410,7 @@ class ApiClient {
     getAffiliateLinks: () => this.get("/affiliate"),
     getAllAffiliateLinks: (page = 1, limit = 10) =>
       this.get(`/affiliate/getall?page=${page}&limit=${limit}`),
-    updateAffiliateLinkStatus: (brandId, postId, credits, status) =>
+    updateAffiliateLinkStatus: ({brandId, postId, credits, status}) =>
       this.post(`/affiliate/update-status`, {
         brandId,
         postId,

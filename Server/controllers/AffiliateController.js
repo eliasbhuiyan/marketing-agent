@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const AffiliateSchema = require("../models/AffiliateSchema");
 const BrandSettingsSchema = require("../models/BrandSettingsSchema");
 
@@ -40,18 +41,37 @@ const updateAffiliateLinkStatus = async (req, res) => {
   const { brandId, postId, credits, status } = req.body;
 
   try {
-    if (!brandId || !postId || !credits || !status)
+    if (status === "approved" && !credits)
+      return res.status(400).json({ message: "Credits is required" });
+    if (!brandId || !postId || !status)
       return res.status(400).json({ message: "Invalid request, try again" });
 
-    const affiliate = await AffiliateSchema.findOne({ brand: brandId });
-    if (!affiliate)
-      return res.status(404).json({ message: "No affiliate link found" });
+    const affiliate = await AffiliateSchema.updateOne(
+      { brand: brandId, "post._id": postId },
+      [
+        {
+          $set: {
+            post: {
+              $map: {
+                input: "$post",
+                as: "p",
+                in: {
+                  $cond: [
+                    { $eq: ["$$p._id", new mongoose.Types.ObjectId(postId)] },
+                    { $mergeObjects: ["$$p", { status }] },
+                    "$$p",
+                  ],
+                },
+              },
+            },
+          },
+        },
+      ]
+    );
+    if (affiliate.modifiedCount === 0)
+      return res.status(404).json({ message: "No post link found" });
+    console.log(affiliate);
 
-    const post = affiliate.post.find((p) => p._id === postId);
-    if (!post) return res.status(404).json({ message: "No post link found" });
-
-    post.status = status;
-    await affiliate.save();
     // if status is approved then give credits to brand
     if (status === "approved") {
       const brand = await BrandSettingsSchema.findById(brandId);

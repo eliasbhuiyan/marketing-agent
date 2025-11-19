@@ -5,7 +5,7 @@ const REFRESH_TOKEN_TTL = process.env.REFRESH_TOKEN_TTL || "10d";
 
 function generateAccessToken(user, brandId) {
   return jwt.sign(
-    { id: user._id, email: user.email, brandId },
+    { id: user._id, email: user.email, brandId, role: user.role },
     process.env.JWT_SECRET,
     { expiresIn: ACCESS_TOKEN_TTL }
   );
@@ -13,7 +13,7 @@ function generateAccessToken(user, brandId) {
 
 function generateRefreshToken(user, brandId) {
   return jwt.sign(
-    { id: user._id, email: user.email, brandId },
+    { id: user._id, email: user.email, brandId, role: user.role },
     process.env.JWT_REFRESH_SECRET,
     { expiresIn: REFRESH_TOKEN_TTL }
   );

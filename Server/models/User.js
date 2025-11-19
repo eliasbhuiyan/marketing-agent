@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, unique: true, required: true },
   googleId: { type: String },
   avatar: String,
+  role: { type: String, enum: ["user", "superadmin"], default: "user" },
   brandList: [
     {
       brand: { type: mongoose.Schema.Types.ObjectId, ref: "BrandSetting" },

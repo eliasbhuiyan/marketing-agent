@@ -59,13 +59,11 @@ export default function AffiliateReviewDashboard() {
     return submissions
       .map((item) => {
         const posts = (item.post || []).filter((p) => {
-          const matchesStatus = statusFilter
-            ? p.status === statusFilter
-            : true;
+          const matchesStatus = statusFilter ? p.status === statusFilter : true;
           const link = sanitizeLink(p.postlink).toLowerCase();
           const matchesSearch = term
             ? item.brand?.companyName?.toLowerCase().includes(term) ||
-            link.includes(term)
+              link.includes(term)
             : true;
           return matchesStatus && matchesSearch;
         });
@@ -74,23 +72,23 @@ export default function AffiliateReviewDashboard() {
       .filter((item) => item.post && item.post.length > 0);
   }, [submissions, search, statusFilter]);
 
-  const updateStatus = async (brandId, postId, status) => {
-    const credits = Number(creditsByPost[postId]) || 1;
+  const updateStatus = async (post, brandId, status) => {
+    const credits = Number(creditsByPost[post._id]) || 0;
     setLoading(true);
     try {
-      await apiClient.affiliate.updateAffiliateLinkStatus(
+      await apiClient.affiliate.updateAffiliateLinkStatus({
         brandId,
-        postId,
+        postId: post._id,
         credits,
-        status
-      );
+        status,
+      });
       setSubmissions((prev) =>
         prev.map((item) => {
           if (item.brand?._id !== brandId) return item;
           return {
             ...item,
             post: item.post.map((p) =>
-              p._id === postId ? { ...p, status } : p
+              p._id === post._id ? { ...p, status } : p
             ),
           };
         })
@@ -118,8 +116,9 @@ export default function AffiliateReviewDashboard() {
           </div>
           <Button
             variant="outline"
-            className={`bg-gray-800 border-gray-700 ${statusFilter === "pending" ? "border-blue-500" : ""
-              }`}
+            className={`bg-gray-800 border-gray-700 ${
+              statusFilter === "pending" ? "border-blue-500" : ""
+            }`}
             onClick={() =>
               setStatusFilter((prev) => (prev === "pending" ? "" : "pending"))
             }
@@ -128,24 +127,22 @@ export default function AffiliateReviewDashboard() {
           </Button>
           <Button
             variant="outline"
-            className={`bg-gray-800 border-gray-700 ${statusFilter === "approved" ? "border-blue-500" : ""
-              }`}
+            className={`bg-gray-800 border-gray-700 ${
+              statusFilter === "approved" ? "border-blue-500" : ""
+            }`}
             onClick={() =>
-              setStatusFilter((prev) =>
-                prev === "approved" ? "" : "approved"
-              )
+              setStatusFilter((prev) => (prev === "approved" ? "" : "approved"))
             }
           >
             Approved
           </Button>
           <Button
             variant="outline"
-            className={`bg-gray-800 border-gray-700 ${statusFilter === "rejected" ? "border-blue-500" : ""
-              }`}
+            className={`bg-gray-800 border-gray-700 ${
+              statusFilter === "rejected" ? "border-blue-500" : ""
+            }`}
             onClick={() =>
-              setStatusFilter((prev) =>
-                prev === "rejected" ? "" : "rejected"
-              )
+              setStatusFilter((prev) => (prev === "rejected" ? "" : "rejected"))
             }
           >
             Rejected
@@ -157,7 +154,9 @@ export default function AffiliateReviewDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
-              <CardTitle className="text-lg font-medium text-gray-400">Pending Reviews</CardTitle>
+              <CardTitle className="text-lg font-medium text-gray-400">
+                Pending Reviews
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold">{counts.pending}</p>
@@ -165,7 +164,9 @@ export default function AffiliateReviewDashboard() {
           </Card>
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
-              <CardTitle className="text-lg font-medium text-gray-400">Approved Posts</CardTitle>
+              <CardTitle className="text-lg font-medium text-gray-400">
+                Approved Posts
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold">{counts.approved}</p>
@@ -173,7 +174,9 @@ export default function AffiliateReviewDashboard() {
           </Card>
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
-              <CardTitle className="text-lg font-medium text-gray-400">Total Credits Given</CardTitle>
+              <CardTitle className="text-lg font-medium text-gray-400">
+                Total Credits Given
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold">0</p>
@@ -181,7 +184,9 @@ export default function AffiliateReviewDashboard() {
           </Card>
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
-              <CardTitle className="text-lg font-medium text-gray-400">Rejected Posts</CardTitle>
+              <CardTitle className="text-lg font-medium text-gray-400">
+                Rejected Posts
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold">{counts.rejected}</p>
@@ -200,7 +205,7 @@ export default function AffiliateReviewDashboard() {
             {filteredSubmissions.map((submission) => {
               const isOpen = openId === submission._id;
               return (
-                <div key={submission._id} className="">
+                <div key={submission._id} className="bg-white/5 my-2">
                   <div className="grid grid-cols-5 p-4 items-center">
                     <div className="flex items-center gap-2">
                       <button
@@ -221,7 +226,7 @@ export default function AffiliateReviewDashboard() {
                       <span>{submission.brand?.companyName}</span>
                     </div>
                     <div className="col-span-2 text-white/80">
-                      {(submission.post?.length || 0)} posts
+                      {submission.post?.length || 0} posts
                     </div>
                     <div>
                       {submission.createdAt
@@ -230,7 +235,6 @@ export default function AffiliateReviewDashboard() {
                     </div>
                     <div className="text-end">
                       <Button
-                        variant="outline"
                         size="sm"
                         onClick={() =>
                           setOpenId((prev) =>
@@ -249,7 +253,7 @@ export default function AffiliateReviewDashboard() {
                         {submission.post.map((p) => (
                           <div
                             key={p._id}
-                            className="grid grid-cols-5 items-center gap-2 rounded bg-gray-900/50 p-3"
+                            className="grid grid-cols-4 items-center gap-2 rounded bg-gray-900/50 p-3"
                           >
                             <div className="col-span-2">
                               <a
@@ -263,59 +267,62 @@ export default function AffiliateReviewDashboard() {
                             </div>
                             <div className="text-sm">
                               <span
-                                className={`px-2 py-1 rounded text-xs ${p.status === "approved"
+                                className={`px-2 py-1 rounded text-xs capitalize ${
+                                  p.status === "approved"
                                     ? "bg-green-700"
                                     : p.status === "rejected"
-                                      ? "bg-red-700"
-                                      : "bg-yellow-700"
-                                  }`}
+                                    ? "bg-red-700"
+                                    : "bg-yellow-700"
+                                }`}
                               >
                                 {p.status}
                               </span>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <Input
-                                type="number"
-                                min={1}
-                                value={creditsByPost[p._id] || ""}
-                                onChange={(e) =>
-                                  setCreditsByPost((prev) => ({
-                                    ...prev,
-                                    [p._id]: e.target.value,
-                                  }))
-                                }
-                                placeholder="Credits"
-                                className="w-24 bg-gray-800 border-gray-700"
-                              />
-                              <Button
-                                size="sm"
-                                className="bg-green-600 hover:bg-green-700"
-                                disabled={loading}
-                                onClick={() =>
-                                  updateStatus(
-                                    submission.brand?._id,
-                                    p._id,
-                                    "approved"
-                                  )
-                                }
-                              >
-                                Approve
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="destructive"
-                                disabled={loading}
-                                onClick={() =>
-                                  updateStatus(
-                                    submission.brand?._id,
-                                    p._id,
-                                    "rejected"
-                                  )
-                                }
-                              >
-                                Reject
-                              </Button>
-                            </div>
+                            {p.status === "approved" ? null : (
+                              <div className="flex items-center gap-2">
+                                <Input
+                                  type="number"
+                                  min={1}
+                                  value={creditsByPost[p._id] || ""}
+                                  onChange={(e) =>
+                                    setCreditsByPost((prev) => ({
+                                      ...prev,
+                                      [p._id]: e.target.value,
+                                    }))
+                                  }
+                                  placeholder="Credits"
+                                  className="w-24 bg-gray-800 border-gray-700"
+                                />
+                                <Button
+                                  size="sm"
+                                  className="bg-green-600 hover:bg-green-700"
+                                  disabled={loading}
+                                  onClick={() =>
+                                    updateStatus(
+                                      p,
+                                      submission.brand._id,
+                                      "approved"
+                                    )
+                                  }
+                                >
+                                  Approve
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  disabled={loading}
+                                  onClick={() =>
+                                    updateStatus(
+                                      p,
+                                      submission.brand._id,
+                                      "rejected"
+                                    )
+                                  }
+                                >
+                                  Reject
+                                </Button>
+                              </div>
+                            )}
                           </div>
                         ))}
                         {submission.post.length === 0 && (
@@ -355,9 +362,7 @@ export default function AffiliateReviewDashboard() {
           </Card>
         </div>
 
-        {error && (
-          <div className="text-red-400 text-sm">{error}</div>
-        )}
+        {error && <div className="text-red-400 text-sm">{error}</div>}
       </main>
     </div>
   );

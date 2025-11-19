@@ -99,7 +99,7 @@ export default function SettingsPage() {
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-blue-600 rounded-full overflow-hidden flex items-center justify-center">
                     <Image
-                      src={brandData?.owner.avatar}
+                      src={brandData?.owner?.avatar}
                       width={200}
                       height={200}
                       alt="profile"
@@ -129,7 +129,7 @@ export default function SettingsPage() {
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-blue-600 rounded-full overflow-hidden flex items-center justify-center">
                         <Image
-                          src={member.user.avatar}
+                          src={member?.user?.avatar}
                           width={200}
                           height={200}
                           alt="profile"
