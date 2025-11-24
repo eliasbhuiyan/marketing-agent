@@ -63,7 +63,7 @@ export default function AffiliateReviewDashboard() {
           const link = sanitizeLink(p.postlink).toLowerCase();
           const matchesSearch = term
             ? item.brand?.companyName?.toLowerCase().includes(term) ||
-              link.includes(term)
+            link.includes(term)
             : true;
           return matchesStatus && matchesSearch;
         });
@@ -104,50 +104,6 @@ export default function AffiliateReviewDashboard() {
     <div className="flex flex-col h-screen  text-white">
       <header className="flex items-center justify-between p-6 border-b border-gray-700">
         <h1 className="text-2xl font-bold">Affiliate Review Dashboard</h1>
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-            <Input
-              placeholder="Search by brand or link..."
-              className="pl-10 w-64 bg-gray-800 border-gray-700"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          <Button
-            variant="outline"
-            className={`bg-gray-800 border-gray-700 ${
-              statusFilter === "pending" ? "border-blue-500" : ""
-            }`}
-            onClick={() =>
-              setStatusFilter((prev) => (prev === "pending" ? "" : "pending"))
-            }
-          >
-            Pending
-          </Button>
-          <Button
-            variant="outline"
-            className={`bg-gray-800 border-gray-700 ${
-              statusFilter === "approved" ? "border-blue-500" : ""
-            }`}
-            onClick={() =>
-              setStatusFilter((prev) => (prev === "approved" ? "" : "approved"))
-            }
-          >
-            Approved
-          </Button>
-          <Button
-            variant="outline"
-            className={`bg-gray-800 border-gray-700 ${
-              statusFilter === "rejected" ? "border-blue-500" : ""
-            }`}
-            onClick={() =>
-              setStatusFilter((prev) => (prev === "rejected" ? "" : "rejected"))
-            }
-          >
-            Rejected
-          </Button>
-        </div>
       </header>
 
       <main className="flex-1 p-6 space-y-6">
@@ -195,11 +151,48 @@ export default function AffiliateReviewDashboard() {
         </div>
 
         <div className="bg-white/10 border-gray-700 rounded-lg">
-          <div className="grid grid-cols-5 p-4 font-semibold border-b border-gray-700">
-            <div>Brand</div>
-            <div className="col-span-2">Post Link</div>
-            <div>Submitted At</div>
-            <div className="text-end">Actions</div>
+          <div className="p-4 flex justify-between font-semibold border-b border-gray-700">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Input
+                  placeholder="Search by brand or link..."
+                  className="pl-10 w-64 bg-gray-800 border-gray-700"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
+            <div className="flex items-center gap-4">
+              <Button
+                variant="outline"
+                className={`bg-yellow-700 border-gray-700 ${statusFilter === "pending" ? "border-blue-500" : ""
+                  }`}
+                onClick={() =>
+                  setStatusFilter((prev) => (prev === "pending" ? "" : "pending"))
+                }
+              >
+                Pending
+              </Button>
+              <Button
+                variant="outline"
+                className={`bg-green-700 border-gray-700 ${statusFilter === "approved" ? "border-blue-500" : ""
+                  }`}
+                onClick={() =>
+                  setStatusFilter((prev) => (prev === "approved" ? "" : "approved"))
+                }
+              >
+                Approved
+              </Button>
+              <Button
+                variant="outline"
+                className={`bg-red-700 border-gray-700 ${statusFilter === "rejected" ? "border-blue-500" : ""
+                  }`}
+                onClick={() =>
+                  setStatusFilter((prev) => (prev === "rejected" ? "" : "rejected"))
+                }
+              >
+                Rejected
+              </Button>
+            </div>
           </div>
           <Card>
             {filteredSubmissions.map((submission) => {
@@ -253,7 +246,7 @@ export default function AffiliateReviewDashboard() {
                         {submission.post.map((p) => (
                           <div
                             key={p._id}
-                            className="grid grid-cols-4 items-center gap-2 rounded bg-gray-900/50 p-3"
+                            className="grid grid-cols-5 items-center gap-2 rounded bg-gray-900/50 p-3"
                           >
                             <div className="col-span-2">
                               <a
@@ -267,16 +260,18 @@ export default function AffiliateReviewDashboard() {
                             </div>
                             <div className="text-sm">
                               <span
-                                className={`px-2 py-1 rounded text-xs capitalize ${
-                                  p.status === "approved"
+                                className={`px-2 py-1 rounded text-xs capitalize ${p.status === "approved"
                                     ? "bg-green-700"
                                     : p.status === "rejected"
-                                    ? "bg-red-700"
-                                    : "bg-yellow-700"
-                                }`}
+                                      ? "bg-red-700"
+                                      : "bg-yellow-700"
+                                  }`}
                               >
                                 {p.status}
                               </span>
+                            </div>
+                            <div>
+                              {new Date(p.createdAt).toLocaleDateString()}
                             </div>
                             {p.status === "approved" ? null : (
                               <div className="flex items-center gap-2">

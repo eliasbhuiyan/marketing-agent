@@ -15,15 +15,15 @@ class SchedulerService {
    */
   initialize() {
     // Schedule trend generation every 1 minutes
-    this.jobs.trendGenerator = cron.schedule('*/60 * * * *', async () => {
-      console.log('Running scheduled trend generation...');
-      try {
-        await generateTrends();
-        console.log('Scheduled trend generation completed successfully');
-      } catch (error) {
-        console.error('Error in scheduled trend generation:', error);
-      }
-    });
+    // this.jobs.trendGenerator = cron.schedule('*/60 * * * *', async () => {
+    //   console.log('Running scheduled trend generation...');
+    //   try {
+    //     await generateTrends();
+    //     console.log('Scheduled trend generation completed successfully');
+    //   } catch (error) {
+    //     console.error('Error in scheduled trend generation:', error);
+    //   }
+    // });
 
     console.log('Scheduler service initialized');
   }

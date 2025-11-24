@@ -14,6 +14,20 @@ const postAffiliateLink = async (req, res) => {
 
     // create new affiliate link if dose not exist by brandId, is exist then update postlink
     const affiliate = await AffiliateSchema.findOne({ brand: brandId });
+    if (affiliate) {
+      const latestApproved = (affiliate.post || [])
+        .filter((p) => p.status === "approved" || p.status === "pending")
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+      if (latestApproved) {
+        const nextEligibleDate = new Date(latestApproved.createdAt);
+        nextEligibleDate.setMonth(nextEligibleDate.getMonth() + 1);
+        if (new Date() < nextEligibleDate) {
+          return res
+            .status(400)
+            .json({ message: `You can submit after ${nextEligibleDate.toLocaleString()}` });
+        }
+      }
+    }
     if (!affiliate) {
       await AffiliateSchema.create({
         brand: brandId,

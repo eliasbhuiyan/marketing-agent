@@ -180,8 +180,8 @@ router.get("/usagehistory/single", authMiddleware, getSingleHistory);
 // Affiliate routes
 router.post("/affiliate", authMiddleware, postAffiliateLink);
 router.get("/affiliate", authMiddleware, getAffiliateLinks);
-router.post("/affiliate/status", authMiddleware, superAdminCheck, updateAffiliateLinkStatus);
-router.get("/allaffiliate", authMiddleware, superAdminCheck, getAllAffiliateLinks);
+router.post("/affiliate/status", authMiddleware, superAdminCheck(), updateAffiliateLinkStatus);
+router.get("/allaffiliate", authMiddleware, superAdminCheck(), getAllAffiliateLinks);
 
 router.use((req, res) => {
   res.status(404).send("Page not found!");
