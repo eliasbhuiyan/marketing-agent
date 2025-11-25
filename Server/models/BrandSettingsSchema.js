@@ -9,6 +9,7 @@ const BrandSettingsSchema = new mongoose.Schema({
     companyName: { type: String , required: true},
     details: {type: String, required: true},
     credits: { type: Number, default: 0 },
+    outputLanguage: { type: String, default: "English" },
     colors: {
         primary: { type: String, default: "#000000" },
         secondary: { type: String, default: "#FFFFFF" },
@@ -18,10 +19,7 @@ const BrandSettingsSchema = new mongoose.Schema({
         headingFont: { type: String, default: "Poppins" },
         bodyFont: { type: String, default: "Roboto" }
     },
-    assets: {
-        logo: { type: String },
-        otherAssets: [{ type: String }]
-    },
+    assets: [{ type: String }],
     teamMembers: [
         {
           user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },

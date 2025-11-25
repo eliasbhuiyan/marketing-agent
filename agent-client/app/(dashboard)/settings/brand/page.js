@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Card,
   CardContent,
@@ -38,10 +38,9 @@ export default function BrandPage() {
     secondary: "#1E40AF",
     accent: "#F59E0B",
   });
-  const [brandFonts, setBrandFonts] = useState({
-    headingFont: "Inter",
-    bodyFont: "Inter",
-  });
+  const [outputLanguage, setOutputLanguage] = useState("English");
+  const [assets, setAssets] = useState([]);
+  const fileInputRef = useRef(null);
 
   // Initialize brand data from cached data
   useEffect(() => {
@@ -54,10 +53,17 @@ export default function BrandPage() {
         secondary: brandData.colors?.secondary || "#1E40AF",
         accent: brandData.colors?.accent || "#F59E0B",
       });
-      setBrandFonts({
-        headingFont: brandData.fonts?.headingFont || "Inter",
-        bodyFont: brandData.fonts?.bodyFont || "Inter",
-      });
+      setOutputLanguage(brandData.outputLanguage || "English");
+      setAssets(
+        Array.isArray(brandData.assets)
+          ? brandData.assets.map((src) => ({
+              id: Date.now() + Math.random(),
+              file: null,
+              url: src,
+              type: "asset",
+            }))
+          : []
+      );
     } else {
       // Initialize brandId from localStorage for UI state
       const storedBrandId = getBrandId();
@@ -76,13 +82,23 @@ export default function BrandPage() {
     try {
       setApiBusy(true);
       setError("");
-      const data = await apiClient.brand.save({
-        brandId: brandId || undefined,
-        companyName: brandCompanyName,
-        details: brandDetails,
-        colors: brandColors,
-        fonts: brandFonts,
+      const formData = new FormData();
+      if (brandId) formData.append("brandId", brandId);
+      formData.append("companyName", brandCompanyName);
+      formData.append("details", brandDetails);
+      formData.append("outputLanguage", outputLanguage);
+      formData.append("colors", JSON.stringify(brandColors));
+      const existingAssets = assets.filter((a) => !a.file).map((a) => a.url);
+      if (existingAssets.length) {
+        formData.append("existingAssets", JSON.stringify(existingAssets));
+      }
+      assets.forEach((a) => {
+        if (a.file) {
+          formData.append("assets", a.file, a.file.name || "asset.jpg");
+        }
       });
+
+      const data = await apiClient.brand.save(formData);
 
       if (data.brand?._id) {
         setBrandId(data.brand._id);
@@ -94,6 +110,28 @@ export default function BrandPage() {
     } finally {
       setApiBusy(false);
     }
+  };
+
+
+  const handleAssetsSelect = (e) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    if (assets.length + files.length > 5) {
+      alert("You can only upload a maximum of 5 assets");
+      return;
+    }
+    const newAssets = Array.from(files).map((file) => ({
+      id: Date.now() + Math.random(),
+      file,
+      url: URL.createObjectURL(file),
+      type: "asset",
+    }));
+    setAssets((prev) => [...prev, ...newAssets]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removeAssetAt = (id) => {
+    setAssets((prev) => prev.filter((asset) => asset.id !== id));
   };
 
   return (
@@ -116,6 +154,21 @@ export default function BrandPage() {
               onChange={(e) => setBrandDetails(e.target.value)}
               className='"flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
             />
+          </div>
+          <div>
+            <Label htmlFor="output-language">Default Output Language</Label>
+            <select
+              id="output-language"
+              className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+              value={outputLanguage}
+              onChange={(e) => setOutputLanguage(e.target.value)}
+            >
+              <option value="English">English</option>
+              <option value="Spanish">Spanish</option>
+              <option value="French">French</option>
+              <option value="German">German</option>
+              <option value="Arabic">Arabic</option>
+            </select>
           </div>
         </CardContent>
       </Card>
@@ -213,74 +266,57 @@ export default function BrandPage() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Brand Fonts</CardTitle>
-          <CardDescription>
-            Choose fonts that represent your brand
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="heading-font">Heading Font</Label>
-              <select
-                id="heading-font"
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-                value={brandFonts.headingFont}
-                onChange={(e) =>
-                  setBrandFonts({
-                    ...brandFonts,
-                    headingFont: e.target.value,
-                  })
-                }
-              >
-                <option value="Inter">Inter</option>
-                <option value="Roboto">Roboto</option>
-                <option value="Poppins">Poppins</option>
-                <option value="Montserrat">Montserrat</option>
-              </select>
-            </div>
-            <div>
-              <Label htmlFor="body-font">Body Font</Label>
-              <select
-                id="body-font"
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-                value={brandFonts.bodyFont}
-                onChange={(e) =>
-                  setBrandFonts({
-                    ...brandFonts,
-                    bodyFont: e.target.value,
-                  })
-                }
-              >
-                <option value="Inter">Inter</option>
-                <option value="Roboto">Roboto</option>
-                <option value="Poppins">Poppins</option>
-                <option value="Montserrat">Montserrat</option>
-              </select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      
 
       <Card>
         <CardHeader>
           <CardTitle>Brand Assets</CardTitle>
           <CardDescription>
-            Upload your logo and other brand assets
+            Upload your brand assets images
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-            <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-sm text-white/80 mb-4">
-              Upload your logo and brand assets
-            </p>
-            <Button variant="outline">
-              <Upload className="h-4 w-4 mr-2" />
-              Choose Files
-            </Button>
+          <div className="space-y-3">
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center"
+            >
+              <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-sm text-white/80 mb-4">
+                Upload multiple brand asset images
+              </p>
+              <div className="flex items-center justify-center gap-3">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  accept="image/jpeg, image/png, image/webp, image/jpg"
+                  onChange={handleAssetsSelect}
+                  className="hidden"
+                />
+                <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Choose Images
+                </Button>
+              </div>
+            </div>
+            <div>
+              <Label>Assets Preview</Label>
+              <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-3">
+                {assets.map((asset) => (
+                  <div key={asset.id} className="relative group border rounded overflow-hidden">
+                    <img src={asset.url} alt={"asset"} className="w-full h-24 object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removeAssetAt(asset.id)}
+                      className="absolute top-1 right-1 bg-red-600 text-white text-xs px-2 py-1 rounded opacity-80"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>

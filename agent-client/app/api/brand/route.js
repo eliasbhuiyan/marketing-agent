@@ -15,9 +15,17 @@ export async function GET() {
   return response;
 }
 export async function POST(request) {
-  const body = await request.json();
-  const { brandId, companyName, details, colors, fonts, assets } = body;
+  const contentType = request.headers.get("content-type") || "";
+  if (contentType.includes("multipart/form-data")) {
+    const formData = await request.formData();
+    return handleApiRoute("/brand", {
+      method: "POST",
+      body: formData,
+    });
+  }
 
+  const body = await request.json();
+  const { brandId, companyName, details, colors, assets, outputLanguage, existingAssets } = body;
   return handleApiRoute("/brand", {
     method: "POST",
     headers: {
@@ -28,8 +36,9 @@ export async function POST(request) {
       companyName,
       details,
       colors,
-      fonts,
       assets,
+      outputLanguage,
+      existingAssets,
     }),
   });
 }

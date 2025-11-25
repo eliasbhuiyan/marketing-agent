@@ -25,7 +25,7 @@ const googleCallback = async (req, res) => {
     maxAge: 30 * 24 * 60 * 60 * 1000,
   });
 
-  res.redirect(`${process.env.CLIENT_URL}/success`);
+  res.redirect(`${process.env.CLIENT_URL}/brands`);
 };
 
 const userProfile = async (req, res) => {

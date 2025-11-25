@@ -3,10 +3,25 @@ const BrandSettingsSchema = require("../models/BrandSettingsSchema");
 const userSchema = require("../models/User");
 const { generateInviteToken, verifyInviteToken } = require("../utils/jwt");
 const { sendInvite } = require("../utils/mail");
+const cloudinary = require("../services/cloudinary");
 const createOrUpdateBrandSettings = async (req, res) => {
   try {
-    const { brandId, companyName, details, colors, fonts, assets } = req.body;
+    const { brandId, companyName, details, colors, assets, outputLanguage, existingAssets } = req.body;
+    const uploadedFiles = Array.isArray(req.files) ? req.files : [];
     const userId = req.user?._id || req.user?.id;
+    const folderBrand = req.user?.brandId || userId;
+    const uploadToCloudinary = async (file) => {
+      const dataUri = `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
+      const res = await cloudinary.uploader.upload(dataUri, {
+        folder: `margenai/${folderBrand}/assets`,
+      });
+      return res.secure_url || res.url;
+    };
+    const uploadedAssetUrls = [];
+    for (const f of uploadedFiles) {
+      const url = await uploadToCloudinary(f);
+      if (url) uploadedAssetUrls.push(url);
+    }
     if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
     // If brandId provided: update only if requester is admin of that brand
@@ -29,9 +44,41 @@ const createOrUpdateBrandSettings = async (req, res) => {
 
       if (companyName !== undefined) brand.companyName = companyName;
       if (details !== undefined) brand.details = details;
-      if (colors !== undefined) brand.colors = colors;
-      if (fonts !== undefined) brand.fonts = fonts;
+      if (typeof colors === "string") {
+        try { brand.colors = JSON.parse(colors); } catch {}
+      } else if (colors !== undefined) brand.colors = colors;
       if (assets !== undefined) brand.assets = assets;
+      if (outputLanguage !== undefined) brand.outputLanguage = outputLanguage;
+
+      const providedExisting = (() => {
+        if (existingAssets) {
+          try { return JSON.parse(existingAssets); } catch { return []; }
+        }
+        return Array.isArray(brand.assets) ? brand.assets : [];
+      })();
+      const extractPublicIdFromUrl = (url) => {
+        try {
+          const parts = url.split('/upload/');
+          if (parts.length < 2) return null;
+          let tail = parts[1];
+          tail = tail.replace(/^v\d+\//, '');
+          const dot = tail.lastIndexOf('.');
+          if (dot !== -1) tail = tail.substring(0, dot);
+          return tail;
+        } catch { return null; }
+      };
+      const removedUrls = Array.isArray(brand.assets)
+        ? brand.assets.filter((u) => !providedExisting.includes(u))
+        : [];
+      for (const u of removedUrls) {
+        const pid = extractPublicIdFromUrl(u);
+        if (pid) {
+          try { await cloudinary.uploader.destroy(pid); } catch {}
+        }
+      }
+      if (uploadedAssetUrls.length || existingAssets) {
+        brand.assets = [...providedExisting, ...uploadedAssetUrls];
+      }
 
       await brand.save();
       return res
@@ -54,13 +101,22 @@ const createOrUpdateBrandSettings = async (req, res) => {
 
 
     // No brandId: create a new brand for this user; user becomes admin
+    let parsedColors = colors;
+    if (typeof colors === "string") {
+      try { parsedColors = JSON.parse(colors); } catch {}
+    }
+
+    const initialAssets = Array.isArray(existingAssets)
+      ? existingAssets
+      : (typeof existingAssets === "string" ? (() => { try { return JSON.parse(existingAssets); } catch { return []; } })() : []);
+
     const brand = new BrandSettingsSchema({
       owner: userId,
       companyName,
       details,
-      colors,
-      fonts,
-      assets,
+      colors: parsedColors,
+      assets: [...initialAssets, ...uploadedAssetUrls],
+      outputLanguage,
     });
 
     await brand.save();

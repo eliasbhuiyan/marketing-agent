@@ -93,7 +93,12 @@ router.post("/auth/brand", authMiddleware, setActiveBrand);
 
 // Brand routes
 router.get("/brand", authMiddleware, getBrandSettings);
-router.post("/brand", authMiddleware, createOrUpdateBrandSettings);
+router.post(
+  "/brand",
+  authMiddleware,
+  upload.array("assets", 10),
+  createOrUpdateBrandSettings
+);
 router.post("/inviteamember", authMiddleware, inviteTeamMember);
 router.get("/acceptinvite/:token", acceptInvitation);
 router.post("/removemember", authMiddleware, deleteTeamMember);
