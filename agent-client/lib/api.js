@@ -193,12 +193,7 @@ class ApiClient {
      * Create or update brand settings
      */
     save: (brandData) => this.post("/brand", brandData),
-
-    /**
-     * Invite a team member by email
-     */
-    inviteMember: (email) =>
-      this.post("/invite", { addTeamMemberEmail: email }),
+    
   };
 
   // Integration API methods
@@ -238,13 +233,16 @@ class ApiClient {
      */
     testConnection: (platform) => this.post(`/integrations/${platform}/test`),
   };
-
+  
   // Invite API methods
-  invite = {
+  team = {
+    getTeamMembers: () => this.get("/team"),
+    inviteMember: (email) =>
+      this.post("/team", { addTeamMemberEmail: email }),
     /**
      * Accept an invitation
      */
-    accept: (token) => this.get(`/invite/${token}`),
+    accept: (token) => this.get(`/team/${token}`),
   };
   removemember = {
     remove: (brandId, memberId) =>

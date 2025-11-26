@@ -20,6 +20,7 @@ const {
   inviteTeamMember,
   acceptInvitation,
   deleteTeamMember,
+  getTeamMembers,
 } = require("../controllers/brandSettingsController");
 const { checkRole, superAdminCheck } = require("../middleware/roleMiddleware");
 const {
@@ -99,6 +100,8 @@ router.post(
   upload.array("assets", 10),
   createOrUpdateBrandSettings
 );
+// Team routes
+router.get("/team", authMiddleware, getTeamMembers);
 router.post("/inviteamember", authMiddleware, inviteTeamMember);
 router.get("/acceptinvite/:token", acceptInvitation);
 router.post("/removemember", authMiddleware, deleteTeamMember);

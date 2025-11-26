@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -15,9 +15,9 @@ import apiClient from "@/lib/api";
 import { useBrandData } from "@/lib/hooks/useBrandData";
 import { Trash2, Plus, Users } from "lucide-react";
 import Image from "next/image";
+import { useTeamMember } from "@/lib/hooks/useTeamMember";
 
 export default function SettingsPage() {
-  // Invite member state
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteBusy, setInviteBusy] = useState(false);
@@ -29,8 +29,13 @@ export default function SettingsPage() {
     brandData,
     loading: brandLoading,
     error: brandError,
-    refrashBrand,
   } = useBrandData();
+  const {
+    teamMembers,
+    loading: teamLoading,
+    error: teamError,
+    inviteMember
+  } = useTeamMember();
 
   const handelInviteMember = async () => {
     try {
@@ -49,7 +54,7 @@ export default function SettingsPage() {
         setInviteError("Please enter a valid email address");
         return;
       }
-      await apiClient.brand.inviteMember(inviteEmail);
+      await inviteMember(inviteEmail);
       setInviteSuccess("Invite sent successfully");
       // optionally close after short delay
       setTimeout(() => setInviteOpen(false), 1200);
@@ -68,7 +73,6 @@ export default function SettingsPage() {
       }
       // Call the API to remove the team member
       await apiClient.removemember.remove(brandData._id, memberId);
-      refrashBrand()
       // Show success message
       console.log("Team member removed successfully");
     } catch (error) {
@@ -76,6 +80,9 @@ export default function SettingsPage() {
       console.log(error?.message || "Failed to remove team member");
     }
   };
+
+  console.log(teamMembers);
+
   return (
     <div className="lg:col-span-3 space-y-6">
       <>
@@ -93,13 +100,12 @@ export default function SettingsPage() {
                   <Plus className="mr-2 h-4 w-4" />
                   Invite Member
                 </Button>
-                <button onClick={()=>refrashBrand()}>Refresh</button>
               </div>
               <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-blue-600 rounded-full overflow-hidden flex items-center justify-center">
                     <Image
-                      src={brandData?.owner?.avatar}
+                      src={teamMembers?.owner?.avatar}
                       width={200}
                       height={200}
                       alt="profile"
@@ -107,10 +113,10 @@ export default function SettingsPage() {
                   </div>
                   <div>
                     <h3 className="font-medium text-white">
-                      {brandData?.owner.fullName}
+                      {teamMembers?.owner?.fullName}
                     </h3>
                     <p className="text-sm text-white/80">
-                      {brandData?.owner.email}
+                      {teamMembers?.owner?.email}
                     </p>
                   </div>
                 </div>
@@ -120,8 +126,9 @@ export default function SettingsPage() {
                   </span>
                 </div>
               </div>
-              {brandData &&
-                brandData?.teamMembers.map((member) => (
+              {
+                teamMembers?.teamMembers &&
+                teamMembers?.teamMembers.map((member) => (
                   <div
                     key={member._id}
                     className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"

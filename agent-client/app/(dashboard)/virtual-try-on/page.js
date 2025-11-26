@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import apiClient from "@/lib/api";
 import ApiError from "@/components/ui/ApiError";
+import BrandAssetDisplay from "@/lib/BrandAssetDisplay";
 
 export default function SelfModelingPage() {
   const [personImage, setPersonImage] = useState(null);
@@ -58,31 +59,40 @@ export default function SelfModelingPage() {
       type: "person",
     });
     if (errors.personImage) {
-      setErrors(prev => ({...prev, personImage: false}));
+      setErrors(prev => ({ ...prev, personImage: false }));
     }
+  };
+
+  const handleSelectAsset = (url) => {
+    setPersonImage({
+      id: Date.now() + Math.random(),
+      file: null,
+      url,
+      type: "person",
+    });
   };
 
   const handleAssetUpload = (event) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
-    
+
     // Check if adding new files would exceed the limit of 5
     if (assets.length + files.length > 5) {
       alert("You can only upload a maximum of 5 assets");
       return;
     }
-    
+
     const newAssets = Array.from(files).map(file => ({
       id: Date.now() + Math.random(),
       file,
       url: URL.createObjectURL(file),
       type: "asset",
     }));
-    
+
     setAssets([...assets, ...newAssets]);
-    
+
     if (errors.assets) {
-      setErrors(prev => ({...prev, assets: false}));
+      setErrors(prev => ({ ...prev, assets: false }));
     }
   };
 
@@ -92,7 +102,7 @@ export default function SelfModelingPage() {
 
   const handleGenerateModel = async () => {
     if (!validateInputs()) return;
-    
+
     setIsGenerating(true);
     setApiError(""); // Clear any previous errors
     try {
@@ -100,16 +110,16 @@ export default function SelfModelingPage() {
       formData.append("model", personImage.file);
       assets.forEach((asset) => formData.append("assets", asset.file));
       formData.append("customPrompt", customPrompt);
-      
+
       const response = await apiClient.ai.virtualTryOn(formData);
       console.log("response", response);
-      
+
       setGeneratedImage(response.image);
     } catch (error) {
       console.error("Error in virtual try-on:", error);
       setApiError(error.message || "Failed to generate model. Please try again.");
     }
-    finally{
+    finally {
       setIsGenerating(false);
     }
   };
@@ -143,43 +153,46 @@ export default function SelfModelingPage() {
               Person Image (Required)
             </CardTitle>
             <CardDescription>
-              Upload a clear full-body photo of yourself
+              Upload a clear photo of yourself
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div
-              onClick={() => personInputRef.current?.click()}
-              className="border-2 border-dashed border-gray-300 hover:bg-white/10 cursor-pointer rounded-lg p-6 text-center"
-            >
-              <input
-                ref={personInputRef}
-                type="file"
-                accept="image/jpeg, image/png, image/webp, image/jpg"
-                onChange={handlePersonUpload}
-                className="hidden"
-              />
-              {personImage ? (
-                <div className="space-y-2 flex flex-col items-center">
-                  <img
-                    src={personImage.url}
-                    alt="Person"
-                    className="max-w-28 object-cover rounded-lg"
-                  />
-                  <Button variant="glass" className="cursor-pointer">
-                    Replace Image
-                  </Button>
-                </div>
-              ) : (
-                <>
-                  <ImageIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-sm text-white mb-4">
-                    Upload a clear photo of yourself
-                  </p>
-                  <Button variant="outline" className="cursor-pointer">
-                    Choose File
-                  </Button>
-                </>
-              )}
+            <div className="flex gap-2">
+              <BrandAssetDisplay onSelectAsset={handleSelectAsset} />
+              <div
+                onClick={() => personInputRef.current?.click()}
+                className="w-full border-2 border-dashed border-gray-300 hover:bg-white/10 cursor-pointer rounded-lg p-6 text-center"
+              >
+                <input
+                  ref={personInputRef}
+                  type="file"
+                  accept="image/jpeg, image/png, image/webp, image/jpg"
+                  onChange={handlePersonUpload}
+                  className="hidden"
+                />
+                {personImage ? (
+                  <div className="space-y-2 flex flex-col items-center">
+                    <img
+                      src={personImage.url}
+                      alt="Person"
+                      className="max-w-28 object-cover rounded-lg"
+                    />
+                    <Button variant="glass" className="cursor-pointer">
+                      Replace Image
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    <ImageIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-sm text-white mb-4">
+                      Upload a clear photo of yourself
+                    </p>
+                    <Button variant="outline" className="cursor-pointer">
+                      Choose File
+                    </Button>
+                  </>
+                )}
+              </div>
             </div>
             {errors.personImage && (
               <p className="text-red-500 text-sm mt-1">
@@ -286,7 +299,7 @@ export default function SelfModelingPage() {
               />
             </div>
             {apiError && (
-             <ApiError>{apiError}</ApiError>
+              <ApiError>{apiError}</ApiError>
             )}
             <Button
               onClick={handleGenerateModel}

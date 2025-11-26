@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import apiClient from "@/lib/api";
 import ApiError from "@/components/ui/ApiError";
+import BrandAssetDisplay from "@/lib/BrandAssetDisplay";
 
 export default function PostersPage() {
   const [productImage, setProductImage] = useState(null);
@@ -65,6 +66,15 @@ export default function PostersPage() {
       id: Date.now() + Math.random(),
       file,
       url: URL.createObjectURL(file),
+      type: "model",
+    });
+  };
+  const handleSelectAsset = (url) => {
+    if (!url) return;
+    setModelImage({
+      id: Date.now() + Math.random(),
+      file: null,
+      url,
       type: "model",
     });
   };
@@ -223,10 +233,10 @@ export default function PostersPage() {
               Use a model to enhance lifestyle context
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="flex gap-4">
             <div
               onClick={() => modelInputRef.current?.click()}
-              className="border-2 border-dashed border-gray-300 hover:bg-white/10 cursor-pointer rounded-lg p-6 text-center"
+              className="w-full border-2 border-dashed border-gray-300 hover:bg-white/10 cursor-pointer rounded-lg p-6 text-center"
             >
               <input
                 ref={modelInputRef}
@@ -258,6 +268,7 @@ export default function PostersPage() {
                 </>
               )}
             </div>
+            <BrandAssetDisplay onSelectAsset={handleSelectAsset} />
           </CardContent>
         </Card>
         {/* Design Options */}

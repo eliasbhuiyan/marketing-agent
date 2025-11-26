@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import apiClient from "@/lib/api";
+import BrandAssetDisplay from "@/lib/BrandAssetDisplay";
 import {
   Download,
   DownloadIcon,
@@ -115,6 +116,13 @@ const ThumbnailDesign = () => {
     }
   };
 
+  const handleSelectAsset = (asset) => {
+    setUploadedImage({
+      file: asset,
+      url: asset,
+    });
+  };
+
   const validateForm = () => {
     const newErrors = {};
     if (!uploadedImage) {
@@ -183,10 +191,11 @@ const ThumbnailDesign = () => {
               Upload your product or model image
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="flex gap-2">
+            <BrandAssetDisplay onSelectAsset={handleSelectAsset} />
             <div
               onClick={() => imageInputRef.current?.click()}
-              className={`border-2 border-dashed cursor-pointer hover:bg-white/10 ${errors.image ? "border-red-500" : "border-gray-300"
+              className={`w-full border-2 border-dashed cursor-pointer hover:bg-white/10 ${errors.image ? "border-red-500" : "border-gray-300"
                 } rounded-lg p-6 text-center`}
             >
               <input

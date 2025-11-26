@@ -1,22 +1,22 @@
-import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 /**
  * Utility function to forward cookies from client to backend and back
  */
 export function createApiResponse(data, backendResponse) {
   const nextResponse = NextResponse.json(data);
-  
+
   // Forward new cookies from backend to client
   const setCookieHeaders = backendResponse.headers.getSetCookie();
   if (setCookieHeaders) {
-    setCookieHeaders.forEach(cookie => {
-      nextResponse.headers.append('Set-Cookie', cookie);
+    setCookieHeaders.forEach((cookie) => {
+      nextResponse.headers.append("Set-Cookie", cookie);
     });
   }
-  
+
   return nextResponse;
 }
 
@@ -34,9 +34,11 @@ export function getCookieHeader() {
 export async function makeBackendRequest(endpoint, options = {}) {
   const cookieHeader = getCookieHeader();
 
-  const isAuthProfileGet = endpoint === '/auth/profile' && (options.method || 'GET') === 'GET';
-  const isIntegrationsGet = endpoint === '/integrations' && (options.method || 'GET') === 'GET';
-  
+  const isAuthProfileGet =
+    endpoint === "/auth/profile" && (options.method || "GET") === "GET";
+  const isIntegrationsGet =
+    endpoint === "/integrations" && (options.method || "GET") === "GET";
+
   // Determine caching strategy based on endpoint
   // If options.next is provided (e.g., for brand with tags), use it directly
   // Otherwise, set defaults for specific endpoints
@@ -60,20 +62,20 @@ export async function makeBackendRequest(endpoint, options = {}) {
   // Destructure to exclude next from options to avoid duplication, then explicitly set it
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { next: _unused, ...optionsWithoutNext } = options;
-  
+
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...optionsWithoutNext,
     headers: {
-      'Cookie': cookieHeader,
+      Cookie: cookieHeader,
       ...options.headers,
     },
     // Explicitly set next config to ensure tags are properly applied
     // If options.next was provided (e.g., { tags: ['brand-data'], revalidate: 300 }), use it
     // Otherwise, use the computed nextConfig for default endpoints
     next: nextConfig,
-    cache: isIntegrationsGet ? 'no-store' : options.cache,
+    cache: isIntegrationsGet ? "no-store" : options.cache,
   });
-  
+
   return response;
 }
 
@@ -83,7 +85,7 @@ export async function makeBackendRequest(endpoint, options = {}) {
 export async function handleApiRoute(endpoint, options = {}) {
   try {
     const response = await makeBackendRequest(endpoint, options);
-    
+
     // Parse JSON body if present; fall back to text, then empty object
     let data;
     try {
@@ -103,16 +105,27 @@ export async function handleApiRoute(endpoint, options = {}) {
     const setCookieHeaders = response.headers.getSetCookie();
     if (setCookieHeaders) {
       setCookieHeaders.forEach((cookie) => {
-        nextResponse.headers.append('Set-Cookie', cookie);
+        nextResponse.headers.append("Set-Cookie", cookie);
       });
     }
 
     // Apply cache headers for GET endpoints to enable short-lived private caching
-    if ((options.method || 'GET') === 'GET') {
-      if (endpoint === '/auth/profile') {
-        nextResponse.headers.set('Cache-Control', 'private, max-age=60, stale-while-revalidate=300');
-      } else if (endpoint === '/integrations') {
-        nextResponse.headers.set('Cache-Control', 'private, max-age=300, stale-while-revalidate=600');
+    if ((options.method || "GET") === "GET") {
+      if (endpoint === "/auth/profile") {
+        nextResponse.headers.set(
+          "Cache-Control",
+          "private, max-age=60, stale-while-revalidate=300"
+        );
+      } else if (endpoint === "/integrations") {
+        nextResponse.headers.set(
+          "Cache-Control",
+          "private, max-age=300, stale-while-revalidate=600"
+        );
+      } else if (endpoint === "/team") {
+        nextResponse.headers.set(
+          "Cache-Control",
+          "private, max-age=300, stale-while-revalidate=600"
+        );
       }
     }
 
@@ -120,7 +133,7 @@ export async function handleApiRoute(endpoint, options = {}) {
   } catch (error) {
     console.error(`API route error for ${endpoint}:`, error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

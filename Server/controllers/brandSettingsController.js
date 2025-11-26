@@ -6,12 +6,22 @@ const { sendInvite } = require("../utils/mail");
 const cloudinary = require("../services/cloudinary");
 const createOrUpdateBrandSettings = async (req, res) => {
   try {
-    const { brandId, companyName, details, colors, assets, outputLanguage, existingAssets } = req.body;
+    const {
+      brandId,
+      companyName,
+      details,
+      colors,
+      assets,
+      outputLanguage,
+      existingAssets,
+    } = req.body;
     const uploadedFiles = Array.isArray(req.files) ? req.files : [];
     const userId = req.user?._id || req.user?.id;
     const folderBrand = req.user?.brandId || userId;
     const uploadToCloudinary = async (file) => {
-      const dataUri = `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
+      const dataUri = `data:${file.mimetype};base64,${file.buffer.toString(
+        "base64"
+      )}`;
       const res = await cloudinary.uploader.upload(dataUri, {
         folder: `margenai/${folderBrand}/assets`,
       });
@@ -45,27 +55,35 @@ const createOrUpdateBrandSettings = async (req, res) => {
       if (companyName !== undefined) brand.companyName = companyName;
       if (details !== undefined) brand.details = details;
       if (typeof colors === "string") {
-        try { brand.colors = JSON.parse(colors); } catch {}
+        try {
+          brand.colors = JSON.parse(colors);
+        } catch {}
       } else if (colors !== undefined) brand.colors = colors;
       if (assets !== undefined) brand.assets = assets;
       if (outputLanguage !== undefined) brand.outputLanguage = outputLanguage;
 
       const providedExisting = (() => {
         if (existingAssets) {
-          try { return JSON.parse(existingAssets); } catch { return []; }
+          try {
+            return JSON.parse(existingAssets);
+          } catch {
+            return [];
+          }
         }
         return Array.isArray(brand.assets) ? brand.assets : [];
       })();
       const extractPublicIdFromUrl = (url) => {
         try {
-          const parts = url.split('/upload/');
+          const parts = url.split("/upload/");
           if (parts.length < 2) return null;
           let tail = parts[1];
-          tail = tail.replace(/^v\d+\//, '');
-          const dot = tail.lastIndexOf('.');
+          tail = tail.replace(/^v\d+\//, "");
+          const dot = tail.lastIndexOf(".");
           if (dot !== -1) tail = tail.substring(0, dot);
           return tail;
-        } catch { return null; }
+        } catch {
+          return null;
+        }
       };
       const removedUrls = Array.isArray(brand.assets)
         ? brand.assets.filter((u) => !providedExisting.includes(u))
@@ -73,7 +91,9 @@ const createOrUpdateBrandSettings = async (req, res) => {
       for (const u of removedUrls) {
         const pid = extractPublicIdFromUrl(u);
         if (pid) {
-          try { await cloudinary.uploader.destroy(pid); } catch {}
+          try {
+            await cloudinary.uploader.destroy(pid);
+          } catch {}
         }
       }
       if (uploadedAssetUrls.length || existingAssets) {
@@ -99,16 +119,25 @@ const createOrUpdateBrandSettings = async (req, res) => {
         .json({ message: "You have already created a brand." });
     }
 
-
     // No brandId: create a new brand for this user; user becomes admin
     let parsedColors = colors;
     if (typeof colors === "string") {
-      try { parsedColors = JSON.parse(colors); } catch {}
+      try {
+        parsedColors = JSON.parse(colors);
+      } catch {}
     }
 
     const initialAssets = Array.isArray(existingAssets)
       ? existingAssets
-      : (typeof existingAssets === "string" ? (() => { try { return JSON.parse(existingAssets); } catch { return []; } })() : []);
+      : typeof existingAssets === "string"
+      ? (() => {
+          try {
+            return JSON.parse(existingAssets);
+          } catch {
+            return [];
+          }
+        })()
+      : [];
 
     const brand = new BrandSettingsSchema({
       owner: userId,
@@ -142,44 +171,35 @@ const createOrUpdateBrandSettings = async (req, res) => {
 
 const getBrandSettings = async (req, res) => {
   console.log("getting brand");
-  
+
   try {
     // Prefer active brandId from token; fallback to query; else find owner's/first brand
     // const { brandId: brandIdQuery } = req.query;
-    const tokenBrandId = req.user?.brandId;
-    const selectedBrandId = tokenBrandId;
+    const selectedBrandId = req.user?.brandId;
 
-    const userId = req.user?._id || req.user?.id;
-    let brand;
-    if (selectedBrandId) {
-      // Get brand with owner + team in one query
-      brand = await BrandSettingsSchema.findById(selectedBrandId)
-        .populate("owner", "fullName email avatar")
-        .populate("teamMembers.user", "fullName email avatar");
+    // Get brand with owner + team in one query
+    const brand = await BrandSettingsSchema.findById(selectedBrandId).select("-owner -teamMembers -createdAt -updatedAt -__v");
 
-      if (!brand)
-        return res.status(404).json({ message: "Brand settings not found" });
+    if (!brand)
+      return res.status(404).json({ message: "Brand settings not found" });
 
-      // Check membership (owner or editor)
-      const isOwner = brand.owner._id.toString() === userId.toString();
-      const isMember = brand.teamMembers.some(
-        (tm) =>
-          tm.user?._id?.toString() === userId.toString() &&
-          tm.status === "active"
-      );
+    return res
+      .status(200)
+      .json({ message: "Brand fetched successfully.", brand });
 
-      if (!isOwner && !isMember) {
-        return res
-          .status(403)
-          .json({ message: "Forbidden: not a member of this brand" });
-      }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-      return res
-        .status(200)
-        .json({ message: "Brand fetched successfully.", brand });
-    }
-    // No selected brand: do not auto-pick. Signal client to create a new brand
-    return res.status(404).json({ message: "No active brand selected" });
+const getTeamMembers = async (req, res) => {
+  try {
+    const Team = await BrandSettingsSchema.findById(req.user.brandId)
+      .select("owner teamMembers")
+      .populate("owner", "fullName email avatar")
+      .populate("teamMembers.user", "fullName email avatar");
+    if (!Team) return res.status(404).json({ message: "Team not found" });
+    return res.status(200).json(Team);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -193,7 +213,7 @@ const inviteTeamMember = async (req, res) => {
         .status(404)
         .json({ message: "Member email address is required." });
     const brand = await BrandSettingsSchema.findOne({ owner: req.user.id });
-     
+
     if (!brand)
       return res.status(404).json({ message: "Unauthorized request." });
 
@@ -230,7 +250,7 @@ const inviteTeamMember = async (req, res) => {
       memberName: user.fullName,
       link: inviteLink,
       brandName: brand.companyName,
-    }
+    };
     sendInvite(mailData);
 
     brand.teamMembers.push({
@@ -311,7 +331,7 @@ const deleteTeamMember = async (req, res) => {
     // Check if the requester is the brand owner/admin
     const brand = await BrandSettingsSchema.findById(brandId).select("owner");
     if (!brand) return res.status(404).json({ message: "Brand not found" });
-    
+
     if (brand.owner.toString() !== userId.toString()) {
       return res
         .status(403)
@@ -324,7 +344,9 @@ const deleteTeamMember = async (req, res) => {
       { $pull: { teamMembers: { user: memberId } } }
     );
     if (brandUpdate.modifiedCount === 0) {
-      return res.status(404).json({ message: "Member not found in this brand" });
+      return res
+        .status(404)
+        .json({ message: "Member not found in this brand" });
     }
 
     // Step 2: Remove brand from user's brandList
@@ -333,16 +355,18 @@ const deleteTeamMember = async (req, res) => {
       { $pull: { brandList: { brand: brandId } } }
     );
 
-    return res.status(200).json({ message: "Team member removed successfully." });
+    return res
+      .status(200)
+      .json({ message: "Team member removed successfully." });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-
 module.exports = {
   createOrUpdateBrandSettings,
   getBrandSettings,
+  getTeamMembers,
   inviteTeamMember,
   acceptInvitation,
   deleteTeamMember,

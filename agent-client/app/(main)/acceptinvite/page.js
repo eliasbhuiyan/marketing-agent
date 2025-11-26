@@ -31,7 +31,7 @@ export default function AcceptInvitePage() {
           return;
         }
         // const response = await fetch(`/api/invite/accept?token=${token}`);
-        const response = await apiClient.invite.accept(token);
+        const response = await apiClient.team.accept(token);
         console.log(response);
 
         setStatus("success");
