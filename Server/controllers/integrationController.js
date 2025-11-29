@@ -56,34 +56,21 @@ const getIntegrationDetails = async (req, res) => {
       return res.status(404).json({ error: 'Integration not found' });
     }
 
-    // Check if token is still valid
     const ServiceClass = platformServices[platform];
-    if (ServiceClass && platform !== 'wordpress') {
+    if (ServiceClass && platform !== 'wordpress' && integration.accessToken) {
       try {
         const service = new ServiceClass();
-        const accessToken = undefined; // skip for non-WordPress if tokens not needed here
-        const isValid = await service.validateToken(accessToken);
-        
+        const isValid = await service.validateToken(integration.accessToken);
         if (!isValid && integration.refreshToken) {
-          // Try to refresh the token
-          const { refreshToken } = integration.getDecryptedTokens();
-          const refreshedTokens = await service.refreshAccessToken(refreshToken);
+          const refreshedTokens = await service.refreshAccessToken(integration.refreshToken);
           integration.accessToken = refreshedTokens.accessToken;
           integration.refreshToken = refreshedTokens.refreshToken;
-          integration.expiresAt = refreshedTokens.expiresIn ? 
-            new Date(Date.now() + refreshedTokens.expiresIn * 1000) : null;
+          integration.expiresAt = refreshedTokens.expiresIn ? new Date(Date.now() + refreshedTokens.expiresIn * 1000) : null;
           integration.status = 'active';
           await integration.save();
         }
       } catch (error) {
         console.error(`Token validation failed for ${platform}:`, error);
-        integration.status = 'error';
-        integration.lastError = {
-          message: error.message,
-          occurredAt: new Date(),
-          errorCode: 'VALIDATION_FAILED'
-        };
-        await integration.save();
       }
     }
 
@@ -237,6 +224,17 @@ const initiateOAuth = async (req, res) => {
         const ServiceClass = platformServices[platform];
         const service = new ServiceClass();
         
+        // Early validation of app credentials to provide actionable errors
+        try {
+          await service.validateAppCredentials(appId, appSecret);
+        } catch (validationErr) {
+          return res.status(400).json({
+            error: 'Facebook app is not active or credentials invalid',
+            details: validationErr.message,
+            help: 'Set the app to Live or add your account as a Tester/Admin. Also whitelist the redirect URI in Facebook App settings.'
+          });
+        }
+
         // Temporarily set credentials for OAuth URL generation
         service.clientId = appId;
         service.clientSecret = appSecret;
@@ -413,7 +411,7 @@ const disconnectIntegration = async (req, res) => {
 const publishContent = async (req, res) => {
   try {
     const { platform } = req.params;
-    const { content, scheduledTime } = req.body;
+    const { content, scheduledTime, mediaUrls = [] } = req.body;
     const brandId = req.user.brandId;
     
     if (!brandId) {

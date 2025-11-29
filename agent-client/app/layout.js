@@ -12,8 +12,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Marketing Agent - AI-Powered Marketing Tools",
+  title: "MarkGenAI - AI-Powered Marketing Agent",
   description: "Create stunning posters, generate engaging content, analyze trends, and schedule posts across all social media platforms with our comprehensive marketing agent.",
+  icons: {
+    icon: "/fav.jpeg",
+  }
 };
 
 export default function RootLayout({ children }) {

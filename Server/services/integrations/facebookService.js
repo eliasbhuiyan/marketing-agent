@@ -12,6 +12,28 @@ class FacebookService extends BaseIntegrationService {
     this.clientSecret = process.env.FACEBOOK_APP_SECRET;
   }
 
+  async validateAppCredentials(appId, appSecret) {
+    try {
+      const params = new URLSearchParams({
+        client_id: appId,
+        client_secret: appSecret,
+        grant_type: 'client_credentials'
+      });
+      const response = await fetch(`https://graph.facebook.com/v18.0/oauth/access_token?${params}`, {
+        method: 'GET'
+      });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const message = errorData.error?.message || 'Invalid app credentials or app disabled';
+        throw new Error(message);
+      }
+      const data = await response.json();
+      return !!data.access_token;
+    } catch (error) {
+      throw new Error(`Facebook app validation failed: ${error.message}`);
+    }
+  }
+
   generateAuthURL(state) {
     const scopes = [
       'pages_manage_posts',
@@ -22,7 +44,7 @@ class FacebookService extends BaseIntegrationService {
     
     const params = new URLSearchParams({
       client_id: this.clientId,
-      redirect_uri: `${process.env.CLIENT_URL}/integrations/callback/facebook`,
+      redirect_uri: `${process.env.SERVER_URL || 'http://localhost:8000'}/integrations/callback/facebook`,
       response_type: 'code',
       scope: scopes.join(','),
       state: state
@@ -36,7 +58,7 @@ class FacebookService extends BaseIntegrationService {
       const params = new URLSearchParams({
         client_id: this.clientId,
         client_secret: this.clientSecret,
-        redirect_uri: `${process.env.CLIENT_URL}/integrations/callback/facebook`,
+        redirect_uri: `${process.env.SERVER_URL || 'http://localhost:8000'}/integrations/callback/facebook`,
         code: code
       });
 

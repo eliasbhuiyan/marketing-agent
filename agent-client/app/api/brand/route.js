@@ -4,8 +4,6 @@ import { NextResponse } from "next/server";
 export async function GET() {
   const response = await handleApiRoute("/brand", {
     method: "GET",
-    // Set cache tag so we can revalidate it via revalidateTag('brand-data')
-    next: { tags: ["brand-data"] },
   });
 
   if (response instanceof NextResponse) {

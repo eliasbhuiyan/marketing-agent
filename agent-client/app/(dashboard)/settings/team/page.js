@@ -34,7 +34,9 @@ export default function SettingsPage() {
     teamMembers,
     loading: teamLoading,
     error: teamError,
-    inviteMember
+    inviteMember,
+    fetchTeam,
+    removeMember
   } = useTeamMember();
 
   const handelInviteMember = async () => {
@@ -72,7 +74,8 @@ export default function SettingsPage() {
         return;
       }
       // Call the API to remove the team member
-      await apiClient.removemember.remove(brandData._id, memberId);
+      await removeMember(brandData._id, memberId);
+      fetchTeam();
       // Show success message
       console.log("Team member removed successfully");
     } catch (error) {
@@ -126,8 +129,7 @@ export default function SettingsPage() {
                   </span>
                 </div>
               </div>
-              {
-                teamMembers?.teamMembers &&
+              {teamMembers?.teamMembers &&
                 teamMembers?.teamMembers.map((member) => (
                   <div
                     key={member._id}

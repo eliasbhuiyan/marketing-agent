@@ -193,7 +193,6 @@ class ApiClient {
      * Create or update brand settings
      */
     save: (brandData) => this.post("/brand", brandData),
-    
   };
 
   // Integration API methods
@@ -233,20 +232,17 @@ class ApiClient {
      */
     testConnection: (platform) => this.post(`/integrations/${platform}/test`),
   };
-  
+
   // Invite API methods
   team = {
     getTeamMembers: () => this.get("/team"),
-    inviteMember: (email) =>
-      this.post("/team", { addTeamMemberEmail: email }),
+    inviteMember: (email) => this.post("/team", { addTeamMemberEmail: email }),
     /**
      * Accept an invitation
      */
     accept: (token) => this.get(`/team/${token}`),
-  };
-  removemember = {
     remove: (brandId, memberId) =>
-      this.post(`/removemember`, {
+      this.post(`/team`, {
         brandId,
         memberId,
       }),
@@ -408,7 +404,7 @@ class ApiClient {
     getAffiliateLinks: () => this.get("/affiliate"),
     getAllAffiliateLinks: (page = 1, limit = 10) =>
       this.get(`/affiliate/getall?page=${page}&limit=${limit}`),
-    updateAffiliateLinkStatus: ({brandId, postId, credits, status}) =>
+    updateAffiliateLinkStatus: ({ brandId, postId, credits, status }) =>
       this.post(`/affiliate/update-status`, {
         brandId,
         postId,

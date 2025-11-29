@@ -121,11 +121,6 @@ export async function handleApiRoute(endpoint, options = {}) {
           "Cache-Control",
           "private, max-age=300, stale-while-revalidate=600"
         );
-      } else if (endpoint === "/team") {
-        nextResponse.headers.set(
-          "Cache-Control",
-          "private, max-age=300, stale-while-revalidate=600"
-        );
       }
     }
 

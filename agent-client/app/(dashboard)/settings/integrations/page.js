@@ -25,7 +25,12 @@ import CreateBrandFirstMessage from "@/components/CreateBrandFirstMessage";
 
 export default function IntegrationsPage() {
   const [error, setError] = useState("");
-  const { integrations, connectPlatform, disconnectPlatform, refreshIntegrations } = useIntegrations();
+  const {
+    integrations,
+    connectPlatform,
+    disconnectPlatform,
+    refreshIntegrations,
+  } = useIntegrations();
 
   // WordPress connect modal state
   const [wpOpen, setWpOpen] = useState(false);
@@ -47,26 +52,12 @@ export default function IntegrationsPage() {
   const [facebookAppId, setFacebookAppId] = useState("");
   const [facebookAppSecret, setFacebookAppSecret] = useState("");
   const [facebookBusy, setFacebookBusy] = useState(false);
-  const [facebookError, setFacebookError] = useState("");
+  const [facebookError, setFacebookError] = useState(
+    "This Feature is coming soon!"
+  );
 
   // Define available platforms
   const availablePlatforms = [
-    {
-      id: 1,
-      platform: "facebook",
-      name: "Facebook",
-      description: "Connect your Facebook page to publish posts",
-      icon: Facebook,
-      bg: "bg-blue-600",
-    },
-    {
-      id: 2,
-      platform: "instagram",
-      name: "Instagram",
-      description: "Connect your Instagram Business account",
-      icon: Instagram,
-      bg: "bg-[linear-gradient(to_right,_#833ab4,_#fd1d1d,_#fcb045)]",
-    },
     {
       id: 3,
       platform: "wordpress",
@@ -83,33 +74,49 @@ export default function IntegrationsPage() {
       icon: Bold,
       bg: "bg-yellow-400",
     },
+    {
+      id: 1,
+      platform: "facebook",
+      name: "Facebook",
+      description: "Connect your Facebook page to publish posts",
+      icon: Facebook,
+      bg: "bg-blue-600",
+    },
+    {
+      id: 2,
+      platform: "instagram",
+      name: "Instagram",
+      description: "Connect your Instagram Business account",
+      icon: Instagram,
+      bg: "bg-[linear-gradient(to_right,_#833ab4,_#fd1d1d,_#fcb045)]",
+    },
   ];
 
   const handleConnectAccount = async (platform) => {
     try {
       console.log("platform", platform);
 
-      if (platform === 'wordpress') {
+      if (platform === "wordpress") {
         setWpError("");
         setWpOpen(true);
         return;
       }
 
-      if (platform === 'blogger') {
+      if (platform === "blogger") {
         setBloggerError("");
         setBloggerOpen(true);
         return;
       }
 
-      if (platform === 'facebook') {
-        setFacebookError("");
+      if (platform === "facebook" || platform === "instagram") {
+        // setFacebookError("");
         setFacebookOpen(true);
         return;
       }
 
       await connectPlatform(platform);
     } catch (error) {
-      console.error('Failed to connect platform:', error);
+      console.error("Failed to connect platform:", error);
       setError(`Failed to connect ${platform}: ${error.message}`);
     }
   };
@@ -119,11 +126,17 @@ export default function IntegrationsPage() {
       setWpBusy(true);
       setWpError("");
       if (!wpSiteUrl || !wpUsername || !wpPassword) {
-        setWpError('All fields are required');
+        setWpError("All fields are required");
         return;
       }
-      const payload = { credentials: { siteUrl: wpSiteUrl.trim(), username: wpUsername.trim(), appPassword: wpPassword } };
-      const data = await connectPlatform('wordpress', payload);
+      const payload = {
+        credentials: {
+          siteUrl: wpSiteUrl.trim(),
+          username: wpUsername.trim(),
+          appPassword: wpPassword,
+        },
+      };
+      const data = await connectPlatform("wordpress", payload);
       if (data?.integration || data?.message) {
         setWpOpen(false);
         setWpSiteUrl("");
@@ -132,7 +145,7 @@ export default function IntegrationsPage() {
         await refreshIntegrations();
       }
     } catch (e) {
-      setWpError(e?.message || 'Failed to connect WordPress');
+      setWpError(e?.message || "Failed to connect WordPress");
     } finally {
       setWpBusy(false);
     }
@@ -143,11 +156,16 @@ export default function IntegrationsPage() {
       setBloggerBusy(true);
       setBloggerError("");
       if (!bloggerSiteName || !bloggerBlogId) {
-        setBloggerError('Site name and Blog ID are required');
+        setBloggerError("Site name and Blog ID are required");
         return;
       }
-      const payload = { credentials: { siteName: bloggerSiteName.trim(), blogId: bloggerBlogId.trim() } };
-      const data = await connectPlatform('blogger', payload);
+      const payload = {
+        credentials: {
+          siteName: bloggerSiteName.trim(),
+          blogId: bloggerBlogId.trim(),
+        },
+      };
+      const data = await connectPlatform("blogger", payload);
       if (data?.integration || data?.message) {
         setBloggerOpen(false);
         setBloggerSiteName("");
@@ -155,7 +173,7 @@ export default function IntegrationsPage() {
         await refreshIntegrations();
       }
     } catch (e) {
-      setBloggerError(e?.message || 'Failed to connect Blogger');
+      setBloggerError(e?.message || "Failed to connect Blogger");
     } finally {
       setBloggerBusy(false);
     }
@@ -166,11 +184,16 @@ export default function IntegrationsPage() {
       setFacebookBusy(true);
       setFacebookError("");
       if (!facebookAppId || !facebookAppSecret) {
-        setFacebookError('App ID and App Secret are required');
+        setFacebookError("App ID and App Secret are required");
         return;
       }
-      const payload = { credentials: { appId: facebookAppId.trim(), appSecret: facebookAppSecret.trim() } };
-      const data = await connectPlatform('facebook', payload);
+      const payload = {
+        credentials: {
+          appId: facebookAppId.trim(),
+          appSecret: facebookAppSecret.trim(),
+        },
+      };
+      const data = await connectPlatform("facebook", payload);
       if (data?.integration || data?.message) {
         setFacebookOpen(false);
         setFacebookAppId("");
@@ -178,7 +201,7 @@ export default function IntegrationsPage() {
         await refreshIntegrations();
       }
     } catch (e) {
-      setFacebookError(e?.message || 'Failed to connect Facebook');
+      setFacebookError(e?.message || "Failed to connect Facebook");
     } finally {
       setFacebookBusy(false);
     }
@@ -189,18 +212,22 @@ export default function IntegrationsPage() {
       await disconnectPlatform(platform);
       await refreshIntegrations();
     } catch (error) {
-      console.error('Failed to disconnect platform:', error);
+      console.error("Failed to disconnect platform:", error);
       setError(`Failed to disconnect ${platform}: ${error.message}`);
     }
   };
 
   const getPlatformIcon = (platform) => {
-    const platformData = availablePlatforms.find(p => p.platform === platform);
+    const platformData = availablePlatforms.find(
+      (p) => p.platform === platform
+    );
     return platformData?.icon || LinkIcon;
   };
 
   const getPlatformColor = (platform) => {
-    const platformData = availablePlatforms.find(p => p.platform === platform);
+    const platformData = availablePlatforms.find(
+      (p) => p.platform === platform
+    );
     return platformData?.color || "text-white/80";
   };
   return (
@@ -219,18 +246,36 @@ export default function IntegrationsPage() {
             return (
               <div
                 key={platform.id}
-                className="border rounded-lg p-4 flex justify-between items-center"
+                className={`border ${
+                  platform.platform == "facebook" ||
+                  platform.platform == "instagram"
+                    ? "border-amber-500 bg-amber-100/10"
+                    : ""
+                } rounded-lg p-4 flex justify-between items-center`}
               >
                 <div className="flex items-center space-x-3">
-                  <div className={`w-10 h-10 rounded-full ${platform.bg} flex items-center justify-center`}>
+                  <div
+                    className={`w-10 h-10 rounded-full ${platform.bg} flex items-center justify-center`}
+                  >
                     <Icon className={`h-5 w-5 text-white/80`} />
                   </div>
-                  <div>
-                    <h4 className="font-medium">{platform.name}</h4>
-                    <p className="text-sm text-white/60">
-                      {platform.description}
-                    </p>
-                  </div>
+
+                  {platform.platform == "facebook" ||
+                  platform.platform == "instagram" ? (
+                    <div>
+                      <p>This feature is coming soon !</p>
+                      <p className="text-sm text-white/60">
+                       You can Connect your {platform.name} page to publish and schedule posts
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <h4 className="font-medium">{platform.name}</h4>
+                      <p className="text-sm text-white/60">
+                        {platform.description}
+                      </p>
+                    </div>
+                  )}
                 </div>
                 <Button
                   variant={isConnected ? "destructive" : "default"}
@@ -239,6 +284,12 @@ export default function IntegrationsPage() {
                     isConnected
                       ? handleDisconnectAccount(platform.platform)
                       : handleConnectAccount(platform.platform)
+                  }
+                  disabled={
+                    platform.platform == "facebook" ||
+                    platform.platform == "instagram"
+                      ? true
+                      : false
                   }
                 >
                   {isConnected ? "Disconnect" : "Connect"}
@@ -252,10 +303,14 @@ export default function IntegrationsPage() {
         {wpOpen && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 w-full max-w-md">
-              <h3 className="text-lg font-medium mb-4 text-black">Connect WordPress</h3>
+              <h3 className="text-lg font-medium mb-4 text-black">
+                Connect WordPress
+              </h3>
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="wp-site-url" className="text-black">Site URL</Label>
+                  <Label htmlFor="wp-site-url" className="text-black">
+                    Site URL
+                  </Label>
                   <Input
                     id="wp-site-url"
                     value={wpSiteUrl}
@@ -265,7 +320,9 @@ export default function IntegrationsPage() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="wp-username" className="text-black">Username</Label>
+                  <Label htmlFor="wp-username" className="text-black">
+                    Username
+                  </Label>
                   <Input
                     id="wp-username"
                     value={wpUsername}
@@ -274,7 +331,9 @@ export default function IntegrationsPage() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="wp-password" className="text-black">App Password</Label>
+                  <Label htmlFor="wp-password" className="text-black">
+                    App Password
+                  </Label>
                   <Input
                     id="wp-password"
                     type="password"
@@ -296,10 +355,7 @@ export default function IntegrationsPage() {
                   >
                     Cancel
                   </Button>
-                  <Button
-                    onClick={handleConnectWordPress}
-                    disabled={wpBusy}
-                  >
+                  <Button onClick={handleConnectWordPress} disabled={wpBusy}>
                     {wpBusy ? "Connecting..." : "Connect"}
                   </Button>
                 </div>
@@ -312,10 +368,14 @@ export default function IntegrationsPage() {
         {bloggerOpen && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 w-full max-w-md">
-              <h3 className="text-lg font-medium mb-4 text-black">Connect Blogger</h3>
+              <h3 className="text-lg font-medium mb-4 text-black">
+                Connect Blogger
+              </h3>
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="blogger-site-name" className="text-black">Site Name</Label>
+                  <Label htmlFor="blogger-site-name" className="text-black">
+                    Site Name
+                  </Label>
                   <Input
                     id="blogger-site-name"
                     value={bloggerSiteName}
@@ -325,7 +385,9 @@ export default function IntegrationsPage() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="blogger-blog-id" className="text-black">Blog ID</Label>
+                  <Label htmlFor="blogger-blog-id" className="text-black">
+                    Blog ID
+                  </Label>
                   <Input
                     id="blogger-blog-id"
                     value={bloggerBlogId}
@@ -347,10 +409,7 @@ export default function IntegrationsPage() {
                   >
                     Cancel
                   </Button>
-                  <Button
-                    onClick={handleConnectBlogger}
-                    disabled={bloggerBusy}
-                  >
+                  <Button onClick={handleConnectBlogger} disabled={bloggerBusy}>
                     {bloggerBusy ? "Connecting..." : "Connect"}
                   </Button>
                 </div>
@@ -363,9 +422,11 @@ export default function IntegrationsPage() {
         {facebookOpen && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 w-full max-w-md">
-              <h3 className="text-lg font-medium mb-4 text-black">Connect Facebook</h3>
+              <h3 className="text-lg font-medium mb-4 text-black">
+                Connect Facebook
+              </h3>
               <div className="space-y-4">
-                <div>
+                {/* <div>
                   <Label htmlFor="facebook-app-id" className="text-black">App ID</Label>
                   <Input
                     id="facebook-app-id"
@@ -385,7 +446,7 @@ export default function IntegrationsPage() {
                     placeholder="Your Facebook App Secret"
                     className="text-black"
                   />
-                </div>
+                </div> */}
                 {facebookError && (
                   <div className="p-3 bg-red-50 border border-red-200 rounded-md">
                     <p className="text-sm text-red-600">{facebookError}</p>
@@ -399,27 +460,25 @@ export default function IntegrationsPage() {
                   >
                     Cancel
                   </Button>
-                  <Button
+                  {/* <Button
                     onClick={handleConnectFacebook}
                     disabled={facebookBusy}
                   >
                     {facebookBusy ? "Connecting..." : "Connect"}
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
             </div>
           </div>
         )}
       </CardContent>
-      {
-        !getBrandId() && (
-          <div className="w-full h-full bg-black/60 flex items-center justify-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-            <CreateBrandFirstMessage>
-              You need to create a brand before you can manage integrations.
-            </CreateBrandFirstMessage>
-          </div>
-        )
-      }
+      {!getBrandId() && (
+        <div className="w-full h-full bg-black/60 flex items-center justify-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+          <CreateBrandFirstMessage>
+            You need to create a brand before you can manage integrations.
+          </CreateBrandFirstMessage>
+        </div>
+      )}
     </Card>
   );
 }

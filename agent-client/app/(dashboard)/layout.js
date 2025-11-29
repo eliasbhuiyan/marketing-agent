@@ -2,9 +2,10 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   LayoutDashboard,
-  Image,
+  Image as imageIcon,
   FileText,
   TrendingUp,
   Calendar,
@@ -22,8 +23,12 @@ import { cn } from "@/lib/utils";
 import { useBrandData } from "@/lib/hooks/useBrandData";
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Posters & Designs", href: "/posters", icon: Image },
-  { name: "Intelligent Poster Studio", href: "/poster-studio", icon: Image },
+  { name: "Posters & Designs", href: "/posters", icon: imageIcon },
+  {
+    name: "Intelligent Poster Studio",
+    href: "/poster-studio",
+    icon: imageIcon,
+  },
   { name: "Virtual Try-On", href: "/virtual-try-on", icon: SquareUser },
   {
     name: "Content & Copywriting",
@@ -46,7 +51,7 @@ const navigation = [
   },
   { name: "Trend Analyzer", href: "/trends", icon: TrendingUp },
   // { name: "Modify Image", href: "/modify-image", icon: TrendingUp },
-  { name: "Social Media Scheduler", href: "/scheduler", icon: Calendar },
+  // { name: "Social Media Scheduler", href: "/scheduler", icon: Calendar },
   { name: "Library", href: "/library", icon: Images },
   // { name: "Templates", href: "/templates", icon: Palette },
   { name: "Settings", href: "/settings/profile", icon: Settings },
@@ -55,7 +60,7 @@ const navigation = [
 export default function DashboardLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
-   const { brandData } = useBrandData();
+  const { brandData } = useBrandData();
 
   return (
     <div className="min-h-screen site-bg">
@@ -72,7 +77,9 @@ export default function DashboardLayout({ children }) {
         />
         <div className="fixed inset-y-0 left-0 flex w-64 flex-col card-surface">
           <div className="flex h-16 items-center justify-between px-4">
-            <h1 className="text-xl font-bold text-white">Marketing Agent</h1>
+            <Link href="/dashboard">
+              <Image src="/logo-light.png" alt="Logo" width={150} height={50} />
+            </Link>
             <Button
               variant="ghost"
               size="sm"
@@ -178,7 +185,9 @@ export default function DashboardLayout({ children }) {
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
         <div className="flex flex-col flex-grow card-surface border-r border-[#ffffff3b]">
           <div className="flex h-16 items-center px-4">
-            <h1 className="text-xl font-bold text-white">Marketing Agent</h1>
+            <Link href="/dashboard">
+              <Image src="/logo-light.png" alt="Logo" width={150} height={50} />
+            </Link>
           </div>
           <nav className="flex-1 space-y-1 px-2 py-4">
             {navigation.map((item) => {
@@ -286,10 +295,15 @@ export default function DashboardLayout({ children }) {
             <Menu className="h-6 w-6" />
           </Button>
           {/* Coin wallet history */}
-          <Link href="/settings/billing" className="flex items-center space-x-4 bg-yellow-400 px-4 py-1 rounded-md">
+          <Link
+            href="/settings/billing"
+            className="flex items-center space-x-4 bg-yellow-400 px-4 py-1 rounded-md"
+          >
             <div className="flex items-center space-x-2">
               <span className="text-base font-medium text-white">Credits:</span>
-              <span className="text-base font-bold text-white">{brandData?.credits}.0</span>
+              <span className="text-base font-bold text-white">
+                {brandData?.credits}.0
+              </span>
             </div>
           </Link>
         </div>

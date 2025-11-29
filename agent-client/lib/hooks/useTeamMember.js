@@ -39,6 +39,20 @@ export const useTeamMember = () => {
       setLoading(false);
     }
   }, []);
+  const removeMember = useCallback(async (brandId, memberId) => {
+    try {
+      setLoading(true);
+      setError(null);
+      await apiClient.team.remove(brandId, memberId);
+      await fetchTeam(); // Refresh team members after removal
+    } catch (err) {
+      console.error("Failed to remove member:", err);
+      setError(err.message || "Failed to remove member");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
   // Initial load
   useEffect(() => {
     fetchTeam();
@@ -49,6 +63,7 @@ export const useTeamMember = () => {
     loading,
     error,
     fetchTeam,
-    inviteMember
+    inviteMember,
+    removeMember,
   };
 };
