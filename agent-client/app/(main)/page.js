@@ -7,6 +7,8 @@ import ThumbnailProduct from "@/components/landing/ThumbnailProduct";
 import Scheduler from "@/components/landing/Scheduler";
 import AllFeatures from "@/components/landing/AllFeatures";
 import Testimonials from "@/components/landing/Testimonials";
+import FAQ from "@/components/landing/FAQ";
+import DemoTemplates from "@/components/landing/DemoTemplates";
 
 export default function Home() {
   return (
@@ -15,11 +17,13 @@ export default function Home() {
       <FeatureScroller />
       <PosterStudio />
       <VirtualTryOn />
+      <DemoTemplates/>
       <WritingTools />
       <ThumbnailProduct />
       <Scheduler />
       <AllFeatures />
       <Testimonials />
+      <FAQ/>
     </div>
   );
 }

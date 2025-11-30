@@ -35,9 +35,10 @@ export default function Scheduler() {
   return (
     <section className="py-32 container mx-auto px-6">
       <div className="text-center mb-16">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-sm text-green-400 mb-6">
+        <div className="inline-flex relative items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-sm text-green-400 mb-6">
           <CalendarIcon className="w-4 h-4" />
           <span>Smart Scheduler</span>
+          {/* <span>Commig</span> */}
         </div>
         <h2 className="text-4xl font-bold text-white mb-4">Plan Once, Post Everywhere</h2>
         <p className="text-gray-400">Drag, drop, and let AI handle the best posting times.</p>
@@ -74,9 +75,9 @@ export default function Scheduler() {
                           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                           className={`absolute inset-1 rounded-lg p-2 flex flex-col justify-between shadow-lg
                             ${post.platform === 'instagram' ? 'bg-gradient-to-br from-purple-600 to-pink-600' :
-                              post.platform === 'twitter' ? 'bg-blue-500' :
+                              post.platform === 'twitter' ? 'bg-green-500' :
                               post.platform === 'linkedin' ? 'bg-blue-700' :
-                              'bg-blue-600'}
+                              'bg-pink-600'}
                           `}
                         >
                           <div className="flex justify-between items-start">

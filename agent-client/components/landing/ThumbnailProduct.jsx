@@ -1,110 +1,343 @@
 "use client";
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, ShoppingBag, Globe } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import {
+  Upload,
+  Wand2,
+  Loader2,
+  CheckCircle2,
+  Shirt,
+  User,
+  ScanLine,
+  RefreshCw,
+  Download,
+  Share2,
+} from "lucide-react";
+
+const assets = [
+  {
+    id: 1,
+    label: "Garment",
+    src: "/shirt.jpg",
+  },
+  {
+    id: 2,
+    label: "Model",
+    src: "/pant.jpg",
+  },
+  {
+    id: 3,
+    label: "Pose / Mask",
+    src: "/shose.jpg",
+  },
+];
 
 export default function ThumbnailProduct() {
-  const [platform, setPlatform] = useState('amazon');
+  const [status, setStatus] = useState("idle");
+  const [scanProgress, setScanProgress] = useState(0);
+
+  // Animation loop for the demo
+  useEffect(() => {
+    let timeout;
+
+    const runSequence = () => {
+      setStatus("idle");
+
+      // Start Upload
+      timeout = setTimeout(() => {
+        setStatus("uploading");
+
+        // Start Processing
+        timeout = setTimeout(() => {
+          setStatus("processing");
+
+          // Start Completed
+          timeout = setTimeout(() => {
+            setStatus("completed");
+
+            // Reset
+            timeout = setTimeout(() => {
+              runSequence();
+            }, 5000); // Show result for 5s
+          }, 3500); // Processing time
+        }, 1500); // Upload time
+      }, 1000); // Idle time
+    };
+
+    runSequence();
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+  // Progress bar simulation during processing
+  useEffect(() => {
+    if (status === "processing") {
+      const interval = setInterval(() => {
+        setScanProgress((prev) => (prev >= 100 ? 100 : prev + 2));
+      }, 50);
+      return () => {
+        clearInterval(interval);
+        setScanProgress(0);
+      };
+    }
+  }, [status]);
 
   return (
-    <section className="py-32 bg-[#0A0A0A]">
-      <div className="container mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-          
-          {/* Left: Thumbnail Carousel */}
-          <div>
-            <div className="flex items-center justify-between mb-8">
-              <h3 className="text-2xl font-bold text-white">Generated Thumbnails</h3>
-              <div className="flex gap-2">
-                <span className="w-2 h-2 rounded-full bg-white"></span>
-                <span className="w-2 h-2 rounded-full bg-white/20"></span>
-                <span className="w-2 h-2 rounded-full bg-white/20"></span>
-              </div>
-            </div>
-            
-            <div className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 group">
-              <img src="/generated_images/fashion_sale_poster_design.png" alt="Thumbnail" className="w-full h-full object-cover" />
-              
-              {/* Hover Overlay */}
-              <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button className="rounded-full bg-white text-black hover:bg-white/90">
-                  Download HD
-                </Button>
-              </div>
+    <section className="py-32 bg-[#0A0A0A] relative overflow-hidden">
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="flex flex-col lg:flex-row items-center gap-16">
+          {/* Left: Text Content */}
+          <div className="lg:w-1/2 space-y-8">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-sm text-purple-400">
+              <Wand2 className="w-4 h-4" />
+              <span>AI Studio Magic</span>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 mt-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="aspect-video rounded-lg overflow-hidden border border-white/10 opacity-50 hover:opacity-100 cursor-pointer transition-opacity">
-                   <img src="/generated_images/fashion_sale_poster_design.png" alt="Thumb" className="w-full h-full object-cover" />
+            <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight">
+              Turn Flat Lays into <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                Realistic Models
+              </span>
+            </h2>
+
+            <p className="text-xl text-gray-400">
+              Upload a simple product photo and let our AI instantly dress a
+              professional model. No photo shoots, no models, just instant
+              high-converting assets.
+            </p>
+
+            <div className="grid grid-cols-2 gap-4 pt-4">
+              {[
+                {
+                  icon: Upload,
+                  title: "Upload Asset",
+                  desc: "Drag & drop clothing",
+                },
+                {
+                  icon: User,
+                  title: "Choose Model",
+                  desc: "Diverse AI models",
+                },
+                {
+                  icon: ScanLine,
+                  title: "AI Mapping",
+                  desc: "Perfect fit warping",
+                },
+                { icon: Download, title: "Export HD", desc: "Ready for store" },
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className="flex items-start gap-3 p-4 rounded-xl bg-white/5 border border-white/10"
+                >
+                  <div className="p-2 rounded-lg bg-white/5 text-white">
+                    <item.icon className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-white text-sm">
+                      {item.title}
+                    </h4>
+                    <p className="text-xs text-gray-500">{item.desc}</p>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Right: Product Description */}
-          <div className="flex flex-col justify-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-500/10 border border-pink-500/20 text-sm text-pink-400 mb-6 self-start">
-              <ShoppingBag className="w-4 h-4" />
-              <span>E-commerce Optimized</span>
-            </div>
-
-            <h2 className="text-4xl font-bold text-white mb-8">Product Descriptions That Sell</h2>
-
-            <div className="bg-[#111] rounded-2xl border border-white/10 overflow-hidden">
-              <div className="flex items-center border-b border-white/10">
-                <button 
-                  onClick={() => setPlatform('amazon')}
-                  className={`flex-1 py-4 text-sm font-bold flex items-center justify-center gap-2 transition-colors ${platform === 'amazon' ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-white'}`}
-                >
-                  <ShoppingBag className="w-4 h-4" /> Amazon Style
-                </button>
-                <div className="w-px h-full bg-white/10" />
-                <button 
-                  onClick={() => setPlatform('shopify')}
-                  className={`flex-1 py-4 text-sm font-bold flex items-center justify-center gap-2 transition-colors ${platform === 'shopify' ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-white'}`}
-                >
-                  <Globe className="w-4 h-4" /> Shopify Style
-                </button>
+          {/* Right: Dashboard Animation */}
+          <div className="lg:w-1/2 w-full">
+            <div className="relative bg-[#111] rounded-3xl border border-white/10 shadow-2xl overflow-hidden aspect-[4/3]">
+              {/* Dashboard Header */}
+              <div className="h-14 border-b border-white/10 bg-white/5 flex items-center px-6 justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-red-500/20" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-500/20" />
+                  <div className="w-3 h-3 rounded-full bg-green-500/20" />
+                </div>
+                <div className="text-xs font-mono text-gray-500">
+                  Virtual_Try_On
+                </div>
               </div>
 
-              <div className="p-8 min-h-[300px]">
-                <motion.div
-                  key={platform}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {platform === 'amazon' ? (
-                    <div className="space-y-4">
-                      <h4 className="text-lg font-bold text-white">Premium Wireless Headphones - Noise Cancelling, 30h Battery</h4>
-                      <ul className="space-y-3 text-gray-400 list-disc pl-5">
-                        <li><strong className="text-white">IMMERSIVE SOUND:</strong> Experience crystal clear audio with deep bass and precision highs.</li>
-                        <li><strong className="text-white">ALL-DAY COMFORT:</strong> Plush memory foam earcups designed for extended listening sessions.</li>
-                        <li><strong className="text-white">30-HOUR BATTERY:</strong> Keep the music playing all day and night on a single charge.</li>
-                        <li><strong className="text-white">NOISE CANCELLATION:</strong> Advanced ANC technology blocks out ambient noise effectively.</li>
-                      </ul>
+              <div className="p-8 h-[calc(100%-3.5rem)] flex gap-6">
+                {/* Sidebar / Tools */}
+                <div className="w-16 flex flex-col items-center gap-4 py-4 border-r border-white/10 pr-6">
+                  <div className="w-10 h-10 rounded-xl bg-purple-500 flex items-center justify-center text-white shadow-[0_0_15px_rgba(168,85,247,0.5)]">
+                    <Shirt className="w-5 h-5" />
+                  </div>
+                  {[User, ScanLine, Share2].map((Icon, i) => (
+                    <div
+                      key={i}
+                      className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-500"
+                    >
+                      <Icon className="w-5 h-5" />
                     </div>
-                  ) : (
-                    <div className="space-y-6">
-                      <h4 className="text-2xl font-serif italic text-white">The Sound of Silence.</h4>
-                      <p className="text-gray-400 leading-relaxed">
-                        Escape the noise of the everyday. Our Premium Wireless Headphones aren't just a gadget; they're your personal sanctuary. Crafted with precision-engineered drivers and wrapped in cloud-soft memory foam, they deliver an auditory experience that feels as good as it sounds.
-                      </p>
-                      <p className="text-gray-400 leading-relaxed">
-                        Whether you're commuting, working, or just relaxing, the 30-hour battery life ensures your soundtrack never fades.
-                      </p>
-                      <Button className="bg-black text-white border border-white/20 w-full hover:bg-white hover:text-black">
-                        Add to Cart - $299
-                      </Button>
-                    </div>
-                  )}
-                </motion.div>
+                  ))}
+                </div>
+
+                {/* Main Area */}
+                <div className="flex-1 relative flex items-center justify-center bg-black/20 rounded-xl border border-white/5 overflow-hidden">
+                  <AnimatePresence mode="wait">
+                    {/* State: IDLE / UPLOADING */}
+                    {(status === "idle" || status === "uploading") && (
+                      <motion.div
+                        key="upload"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="flex flex-col items-center justify-center text-center"
+                      >
+                        {status === "uploading" ? (
+                          <motion.div
+                            key="multi-upload"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="flex items-center gap-2"
+                          >
+                            {assets.map((asset, index) => (
+                              <motion.div
+                                key={asset.id}
+                                initial={{ opacity: 0, y: 30, scale: 0.8 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                transition={{ delay: index * 0.2 }}
+                                className="relative w-28 h-28 bg-white p-2 rounded-xl shadow-xl"
+                              >
+                                <img
+                                  src={asset.src}
+                                  alt={asset.label}
+                                  className="w-full h-full object-contain"
+                                />
+
+                                {/* Label */}
+                                <div className="absolute -top-3 -right-3 bg-green-500 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1 shadow-lg">
+                                  <CheckCircle2 className="w-3 h-3" /> Uploaded
+                                </div>
+
+                                {/* Uploaded Badge */}
+                                <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-1">
+                                  <CheckCircle2 className="w-3 h-3" />
+                                </div>
+                              </motion.div>
+                            ))}
+                          </motion.div>
+                        ) : (
+                          <div className="border-2 border-dashed border-white/20 rounded-xl p-12 flex flex-col items-center">
+                            <Upload className="w-12 h-12 text-gray-500 mb-4" />
+                            <p className="text-gray-400 font-medium">
+                              Drop garment here
+                            </p>
+                          </div>
+                        )}
+                      </motion.div>
+                    )}
+
+                    {/* State: PROCESSING */}
+                    {status === "processing" && (
+                      <motion.div
+                        key="processing"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute inset-0 flex items-center justify-center"
+                      >
+                        {/* Scanning Effect */}
+                        <div className="relative w-64 h-80 bg-[#0E0E0E] rounded-xl border border-white/10 overflow-hidden">
+                          {/* Garment ghost */}
+                          <img
+                            src="/shose.jpg"
+                            className="absolute inset-10 w-full h-full object-cover opacity-30 scale-75"
+                          />
+                          <img
+                            src="/pant.jpg"
+                            className="absolute inset-20 w-full h-full object-cover opacity-30 scale-75"
+                          />
+                          <img
+                            src="/shirt.jpg"
+                            className="absolute inset-0 w-full h-full object-cover opacity-30 scale-75"
+                          />
+
+                          {/* Scanning Grid */}
+                          <div className="absolute inset-0 bg-[linear-gradient(rgba(168,85,247,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(168,85,247,0.1)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_at_center,black,transparent)]" />
+
+                          {/* Scan Line */}
+                          <motion.div
+                            className="absolute top-0 left-0 right-0 h-1 bg-purple-500 shadow-[0_0_20px_rgba(168,85,247,1)] z-10"
+                            animate={{ top: ["0%", "100%"] }}
+                            transition={{
+                              duration: 1.5,
+                              repeat: Infinity,
+                              ease: "linear",
+                            }}
+                          />
+                        </div>
+
+                        <div className="absolute bottom-8 bg-black/80 backdrop-blur border border-white/10 px-6 py-3 rounded-full flex items-center gap-4 shadow-xl z-20">
+                          <Loader2 className="w-4 h-4 text-purple-400 animate-spin" />
+                          <div className="flex flex-col">
+                            <span className="text-xs text-white font-bold">
+                              Generating fit...
+                            </span>
+                            <div className="w-24 h-1 bg-gray-700 rounded-full mt-1 overflow-hidden">
+                              <motion.div
+                                className="h-full bg-purple-500"
+                                style={{ width: `${scanProgress}%` }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {/* State: COMPLETED */}
+                    {status === "completed" && (
+                      <motion.div
+                        key="completed"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="relative w-full h-full"
+                      >
+                        <img
+                          src="/virtual-try-on.png"
+                          className="w-full h-full object-contain"
+                        />
+
+                        <motion.div
+                          initial={{ y: 20, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          transition={{ delay: 0.2 }}
+                          className="absolute bottom-4 right-4 flex gap-2"
+                        >
+                          <Button
+                            size="sm"
+                            
+                          >
+                            <Download className="w-3 h-3 mr-2" /> Save
+                          </Button>
+                        </motion.div>
+
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 300,
+                            damping: 20,
+                          }}
+                          className="absolute top-4 right-4 bg-green-500 text-white p-2 rounded-full shadow-lg"
+                        >
+                          <CheckCircle2 className="w-5 h-5" />
+                        </motion.div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
+
+              {/* Decor Elements */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-purple-500/5 blur-3xl -z-10 rounded-full pointer-events-none" />
             </div>
           </div>
-
         </div>
       </div>
     </section>
