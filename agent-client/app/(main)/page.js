@@ -1,25 +1,25 @@
-import Banner from "@/components/Home/Banner";
-import ChooseUs from "@/components/Home/ChooseUs";
-import Features from "@/components/Home/Features";
-import WorkSteps from "@/components/Home/WorkSteps";
-import DemoShowcase from "@/components/Home/DemoShowcase";
-import Testimonial from "@/components/Home/Testimonial";
-import Pricing from "@/components/Home/Pricing";
-import FAQ from "@/components/Home/FAQ";
-import CTA from "@/components/Home/CTA";
+import Hero from "@/components/landing/Hero";
+import FeatureScroller from "@/components/landing/FeatureScroller";
+import PosterStudio from "@/components/landing/PosterStudio";
+import VirtualTryOn from "@/components/landing/VirtualTryOn";
+import WritingTools from "@/components/landing/WritingTools";
+import ThumbnailProduct from "@/components/landing/ThumbnailProduct";
+import Scheduler from "@/components/landing/Scheduler";
+import AllFeatures from "@/components/landing/AllFeatures";
+import Testimonials from "@/components/landing/Testimonials";
 
 export default function Home() {
   return (
-    <>
-      <Banner />
-      <ChooseUs />
-      <Features />
-      <WorkSteps />
-      <DemoShowcase />
-      <Testimonial />
-      <Pricing />
-      <FAQ />
-      <CTA />
-    </>
+    <div className="bg-[#0e0e0e] text-white selection:bg-purple-500/30">
+      <Hero />
+      <FeatureScroller />
+      <PosterStudio />
+      <VirtualTryOn />
+      <WritingTools />
+      <ThumbnailProduct />
+      <Scheduler />
+      <AllFeatures />
+      <Testimonials />
+    </div>
   );
 }
