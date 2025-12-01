@@ -16,7 +16,7 @@ export const metadata = {
   description: "Create stunning posters, generate engaging content, analyze trends, and schedule posts across all social media platforms with our comprehensive marketing agent.",
   icons: {
     icon: "/fav.jpeg",
-  }
+  },
 };
 
 export default function RootLayout({ children }) {
@@ -24,6 +24,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        style={{scrollBehavior: "smooth"}}
       >
         {children}
       </body>

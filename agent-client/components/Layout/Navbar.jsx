@@ -35,14 +35,14 @@ export default function Navbar() {
         </Link>
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-8">
-          {["Features", "Resources", "Enterprise"].map((item) => (
-            <a
+          {["Features", "Pricing", "FAQ"].map((item) => (
+            <Link
               key={item}
               href={`#${item.toLowerCase()}`}
               className="text-sm font-medium text-white/70 hover:text-white transition-colors"
             >
               {item}
-            </a>
+            </Link>
           ))}
         </div>
 
@@ -70,15 +70,15 @@ export default function Navbar() {
           className="md:hidden bg-[#0E0E0E] border-b border-white/10"
         >
           <div className="flex flex-col p-6 gap-4">
-            {["Features", "Pricing", "Resources", "Enterprise"].map((item) => (
-              <a
+            {["Features", "Pricing", "FAQ"].map((item) => (
+              <Link
                 key={item}
                 href={`#${item.toLowerCase()}`}
                 className="text-lg font-medium text-white/70 hover:text-white"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {item}
-              </a>
+              </Link>
             ))}
             <div className="h-px bg-white/10 my-2" />
             <Link href="/login">

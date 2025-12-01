@@ -8,19 +8,16 @@ import {
   Type,
   Layout,
   ShoppingBag,
+  TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-[#0E0E0E]/80 z-10" />
-        <img
-          src="/generated_images/dark_abstract_3d_shapes_background.png"
-          alt="Background"
-          className="w-full h-full object-cover opacity-60"
-        />
         {/* Particle effects */}
         <div className="absolute inset-0 z-10 opacity-30">
           {[...Array(20)].map((_, i) => (
@@ -51,7 +48,7 @@ export default function Hero() {
         <div className="absolute inset-0 z-20 bg-gradient-to-b from-[#0E0E0E]/0 via-[#0E0E0E]/0 to-[#0E0E0E]" />
         <div className="absolute inset-0 z-20 bg-[radial-gradient(circle_at_center,transparent_0%,#0E0E0E_120%)]" />
       </div>
-      <div className="container mx-auto px-6 relative z-30 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div className="container px-6 relative z-30 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -105,14 +102,14 @@ export default function Hero() {
 
         {/* Right Content - 3D Demo */}
         <motion.div
-          className="relative h-[600px] w-full hidden lg:block"
+          className="relative h-full w-full hidden lg:block"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, delay: 0.4 }}
         >
           {/* Rotating Icon Cube Center */}
           <motion.div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 z-20"
+            className="absolute top-1/3 left-3/5 -translate-x-1/2 -translate-y-1/2 w-32 h-32 z-20"
             animate={{ rotateY: 360, rotateX: 360 }}
             transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
             style={{ transformStyle: "preserve-3d" }}
@@ -124,13 +121,13 @@ export default function Hero() {
 
           {/* Floating Posters */}
           {[
-            { img: "/thumbnail.png", x: -180, y: -100, delay: 0, rot: -15 },
-            { img: "/poster-battle.png", x: 180, y: -50, delay: 1, rot: 10 },
+            { img: "/poster-battle.png", x: -180, y: -100, delay: 0, rot: -15 },
+            { img: "/poster/perfume.png", x: 180, y: -50, delay: 1, rot: 10 },
             { img: "/poster.png", x: -50, y: 150, delay: 2, rot: 5 },
           ].map((item, i) => (
             <motion.div
               key={i}
-              className="absolute top-1/2 left-1/2 w-48 aspect-[3/4] rounded-xl overflow-hidden border border-white/10 shadow-2xl"
+              className="absolute top-1/3 left-1/2 w-48 aspect-[3/4] rounded-xl overflow-hidden border border-white/10 shadow-2xl"
               initial={{ x: 0, y: 0, opacity: 0 }}
               animate={{
                 x: item.x,
@@ -151,9 +148,10 @@ export default function Hero() {
                 default: { ease: "easeOut" },
               }}
             >
-              <img
+              <Image
                 src={item.img}
                 alt="Poster"
+                fill={true}
                 className="w-full h-full object-fit"
               />
             </motion.div>
@@ -164,11 +162,11 @@ export default function Hero() {
             { icon: ImageIcon, label: "Poster", x: 120, y: -180 },
             { icon: Type, label: "Caption", x: -150, y: 80 },
             { icon: Layout, label: "Blog", x: 100, y: 160 },
-            { icon: ShoppingBag, label: "Shop", x: -100, y: -160 },
+            { icon: TrendingUp, label: "Trend", x: -100, y: -160 },
           ].map((item, i) => (
             <motion.div
               key={i}
-              className="absolute top-1/2 left-1/2 bg-[#1A1A1A] border border-white/10 p-3 rounded-2xl shadow-lg flex items-center gap-2 z-10"
+              className="absolute top-1/3 left-1/2 bg-[#1A1A1A] border border-white/10 p-3 rounded-2xl shadow-lg flex items-center gap-2 z-10"
               initial={{ scale: 0, opacity: 0 }}
               animate={{
                 x: item.x,

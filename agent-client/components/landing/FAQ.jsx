@@ -30,7 +30,7 @@ export default function FAQ() {
   const [openIndex, setOpenIndex] = useState(0);
 
   return (
-    <section className="py-32 container mx-auto px-6">
+    <section id='faq' className="py-32 container mx-auto px-6">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
         <div className="lg:col-span-5">
           <h2 className="text-4xl font-bold text-white mb-6">Frequently Asked Questions</h2>

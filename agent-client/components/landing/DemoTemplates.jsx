@@ -2,27 +2,28 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Layout, Sparkles } from "lucide-react";
+import Image from "next/image";
 
 const templates = [
   {
     id: 1,
-    img: "/generated_images/dark_abstract_3d_shapes_background.png",
-    title: "Modern Event",
+    img: "/poster/bag.png",
+    title: "Poster & Design",
     rotate: -6,
     y: 0,
     delay: 0,
   },
   {
     id: 2,
-    img: "/generated_images/dark_abstract_3d_shapes_background.png",
-    title: "Fashion Sale",
+    img: "/poster/perfume.png",
+    title: "Poster & Design",
     rotate: 4,
     y: 40,
     delay: 1,
   },
   {
     id: 3,
-    img: "/generated_images/dark_abstract_3d_shapes_background.png",
+    img: "/thumbnail/thumbnail.png",
     title: "Tech Conf",
     rotate: -3,
     y: -20,
@@ -30,7 +31,7 @@ const templates = [
   },
   {
     id: 4,
-    img: "/generated_images/dark_abstract_3d_shapes_background.png",
+    img: "/thumbnail/thumbnail-markgen.png",
     title: "Restaurant Menu",
     rotate: 5,
     y: 60,
@@ -46,7 +47,7 @@ const templates = [
   },
   {
     id: 6,
-    img: "/generated_images/dark_abstract_3d_shapes_background.png",
+    img: "/thumbnail/thumbnail-yt.png",
     title: "Real Estate",
     rotate: 3,
     y: -30,
@@ -122,10 +123,11 @@ export default function DemoTemplates() {
                 className="relative aspect-[3/4] rounded-2xl overflow-hidden border-4 border-white/5 shadow-2xl bg-[#111]"
                 style={{ rotate: template.rotate }}
               >
-                <img
+                <Image
+                  fill={true}
                   src={template.img}
                   alt={template.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="w-full h-full object-fit transition-transform duration-700 group-hover:scale-110"
                 />
 
                 {/* Hover Overlay */}

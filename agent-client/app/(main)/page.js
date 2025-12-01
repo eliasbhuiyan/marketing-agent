@@ -1,14 +1,16 @@
 import Hero from "@/components/landing/Hero";
 import FeatureScroller from "@/components/landing/FeatureScroller";
 import PosterStudio from "@/components/landing/PosterStudio";
-import VirtualTryOn from "@/components/landing/VirtualTryOn";
 import WritingTools from "@/components/landing/WritingTools";
-import ThumbnailProduct from "@/components/landing/ThumbnailProduct";
 import Scheduler from "@/components/landing/Scheduler";
 import AllFeatures from "@/components/landing/AllFeatures";
 import Testimonials from "@/components/landing/Testimonials";
 import FAQ from "@/components/landing/FAQ";
 import DemoTemplates from "@/components/landing/DemoTemplates";
+import ThumbnailGenerator from "@/components/landing/ThumbnailGenerator";
+import VirtualTryOn from "@/components/landing/VirtualTryOn";
+import BlogGeneratorSection from "@/components/landing/BlogGeneratorSection";
+import Pricing from "@/components/landing/Pricing";
 
 export default function Home() {
   return (
@@ -16,13 +18,15 @@ export default function Home() {
       <Hero />
       <FeatureScroller />
       <PosterStudio />
-      <VirtualTryOn />
+      <ThumbnailGenerator />
       <DemoTemplates/>
       <WritingTools />
-      <ThumbnailProduct />
+      <VirtualTryOn />
       <Scheduler />
       <AllFeatures />
+      <BlogGeneratorSection/>
       <Testimonials />
+      <Pricing/>
       <FAQ/>
     </div>
   );
