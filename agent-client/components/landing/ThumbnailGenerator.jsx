@@ -90,7 +90,7 @@ export default function ThumbnailGenerator() {
                 src="/thumbnail/thumbnail.png"
                 alt="After"
                 className="absolute inset-0 w-full h-full object-cover"
-                fill
+                fill={true}
               />
               <div className="absolute top-4 right-4 bg-black/50 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-white">
                 GENERATED
@@ -110,7 +110,7 @@ export default function ThumbnailGenerator() {
                       ? containerRef.current.offsetWidth
                       : "100%",
                   }}
-                  fill
+                  fill="true"
                 />
                 <div className="absolute top-4 left-4 bg-black/50 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-white">
                   ORIGINAL
@@ -127,7 +127,7 @@ export default function ThumbnailGenerator() {
                     width="16"
                     height="16"
                     viewBox="0 0 24 24"
-                    fill="none"
+                    // fill="none"
                     stroke="currentColor"
                     strokeWidth="2"
                     strokeLinecap="round"

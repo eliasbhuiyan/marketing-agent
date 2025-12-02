@@ -1,55 +1,78 @@
-"use client";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import {
-  ArrowRight,
-  Zap,
-  Image,
   Type,
   Layout,
   Video,
   Hash,
-  Mail,
-  Globe,
   BarChart,
   Calendar,
   Users,
-  PenTool,
+  Images,
+  RectangleGogglesIcon,
+  ReceiptText,
+  ScanEye,
 } from "lucide-react";
-
+import { GetFeatureDemo } from "./FeatureDemos";
 const features = [
   {
-    icon: Image,
-    title: "Poster Generator",
-    desc: "Create marketing visuals in seconds",
+    tag: "poster",
+    title: "Poster & Design",
+    desc: "Create stunning marketing visuals in seconds",
   },
   {
-    icon: Type,
-    title: "Caption Writer",
-    desc: "Engaging copy for any platform",
+    tag: "intelligent",
+    title: "Intelligent Poster Studio",
+    desc: "AI-powered design tool for professional posters",
   },
   {
-    icon: Layout,
-    title: "Blog Writer",
-    desc: "SEO-optimized long form content",
+    tag: "virtual",
+    title: "Virtual Try-On",
+    desc: "Let customers visualize products before buying",
   },
-  { icon: Video, title: "Video Scripts", desc: "Viral hooks and storyboards" },
-  { icon: Hash, title: "Hashtag Finder", desc: "Trend-based tag suggestions" },
-  { icon: Mail, title: "Email Generator", desc: "High-converting newsletters" },
-  { icon: Globe, title: "Landing Pages", desc: "Copy and layout suggestions" },
   {
-    icon: BarChart,
-    title: "Analytics",
-    desc: "Track performance across channels",
+    tag: "caption",
+    title: "Caption Generator",
+    desc: "Generate engaging captions for any social platform",
   },
-  { icon: Calendar, title: "Scheduler", desc: "Auto-post to all platforms" },
-  { icon: Users, title: "Team Collab", desc: "Share workspaces and assets" },
   {
-    icon: PenTool,
-    title: "Brand Voice",
-    desc: "Custom AI personality training",
+    tag: "blog",
+    title: "Blog Generator",
+    desc: "Create SEO-optimized blog posts automatically",
   },
-  { icon: Zap, title: "Ad Generator", desc: "Facebook & Google ad variants" },
+  {
+    tag: "hash",
+    title: "Hashtags & Keywords",
+    desc: "Discover trending tags and keywords for your niche",
+  },
+  {
+    tag: "product",
+    title: "Product Description",
+    desc: "Write persuasive product descriptions that convert",
+  },
+  {
+    tag: "thumbnail",
+    title: "Thumbnail Generator",
+    desc: "Design eye-catching thumbnails for videos",
+  },
+  {
+    tag: "script",
+    title: "Script writer",
+    desc: "Generate viral video scripts and storyboards",
+  },
+  {
+    tag: "trend",
+    title: "Trend Analyzer",
+    desc: "Analyze trends and performance metrics across channels",
+  },
+  {
+    tag: "scheduler",
+    title: "Scheduler",
+    desc: "Schedule and auto-post content to all platforms",
+  },
+  {
+    tag: "team",
+    title: "Team Collab",
+    desc: "Collaborate with your team on shared projects",
+  },
 ];
 
 export default function AllFeatures() {
@@ -67,32 +90,20 @@ export default function AllFeatures() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((feature, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.05 }}
+            <div
+              key={feature.tag}
               className="glass-card p-6 rounded-2xl hover:bg-white/5 transition-all group cursor-pointer relative overflow-hidden"
             >
-              <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-white mb-4 group-hover:bg-purple-500/20 group-hover:text-purple-400 transition-colors">
-                <feature.icon className="w-5 h-5" />
+              <div className="h-50 mb-5">
+                <GetFeatureDemo title={feature.tag} />
               </div>
-
               <h3 className="text-lg font-bold text-white mb-2">
                 {feature.title}
               </h3>
-              <p className="text-sm text-gray-400 mb-4 group-hover:opacity-0 transition-opacity duration-200">
+              <p className="text-sm text-gray-400 mb-4 duration-200">
                 {feature.desc}
               </p>
-
-              {/* Reveal on hover */}
-              <div className="absolute bottom-6 left-6 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200">
-                <div className="flex items-center text-sm font-bold text-purple-400 gap-2">
-                  Try Demo <ArrowRight className="w-3 h-3" />
-                </div>
-              </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

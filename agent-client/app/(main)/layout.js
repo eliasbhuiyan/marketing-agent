@@ -3,10 +3,10 @@ import Footer from "@/components/Layout/Footer";
 
 export default function RootLayout({ children }) {
   return (
-    <div>
+    <>
       <Navbar />
       {children}
       <Footer />
-    </div>
+    </>
   );
 }

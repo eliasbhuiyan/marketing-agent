@@ -24,23 +24,23 @@ const templates = [
   {
     id: 3,
     img: "/thumbnail/thumbnail.png",
-    title: "Tech Conf",
+    title: "Video Thumbnail",
     rotate: -3,
     y: -20,
     delay: 2,
   },
   {
     id: 4,
-    img: "/thumbnail/thumbnail-markgen.png",
-    title: "Restaurant Menu",
+    img: "/features/thumbnail-2.png",
+    title: "Video Thumbnail",
     rotate: 5,
     y: 60,
     delay: 0.5,
   },
   {
     id: 5,
-    img: "/generated_images/dark_abstract_3d_shapes_background.png",
-    title: "Gym Flyer",
+    img: "/poster.png",
+    title: "Intelligent Poster",
     rotate: -5,
     y: 10,
     delay: 1.5,
@@ -48,7 +48,7 @@ const templates = [
   {
     id: 6,
     img: "/thumbnail/thumbnail-yt.png",
-    title: "Real Estate",
+    title: "Video Thumbnail",
     rotate: 3,
     y: -30,
     delay: 2.5,
@@ -63,6 +63,38 @@ const templates = [
   },
   {
     id: 8,
+    img: "/generated_images/dark_abstract_3d_shapes_background.png",
+    title: "Real Estate",
+    rotate: 3,
+    y: -30,
+    delay: 2.5,
+  },
+  {
+    id: 9,
+    img: "/generated_images/dark_abstract_3d_shapes_background.png",
+    title: "Real Estate",
+    rotate: 3,
+    y: -30,
+    delay: 2.5,
+  },
+  {
+    id: 10,
+    img: "/generated_images/dark_abstract_3d_shapes_background.png",
+    title: "Real Estate",
+    rotate: 3,
+    y: -30,
+    delay: 2.5,
+  },
+  {
+    id: 11,
+    img: "/generated_images/dark_abstract_3d_shapes_background.png",
+    title: "Real Estate",
+    rotate: 3,
+    y: -30,
+    delay: 2.5,
+  },
+  {
+    id: 12,
     img: "/generated_images/dark_abstract_3d_shapes_background.png",
     title: "Real Estate",
     rotate: 3,
@@ -84,18 +116,17 @@ export default function DemoTemplates() {
             <span>Infinite Possibilities</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Start with a{" "}
+            Explore Our {" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-              Head Start
+              AI-Generated Templates
             </span>
           </h2>
           <p className="text-gray-400 max-w-xl mx-auto text-lg">
-            Don't stare at a blank canvas. Pick from our library of AI-generated
-            templates and customize them in seconds.
+            Explore our diverse range of AI-generated templates
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 min-h-[800px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 min-h-[800px]">
           {templates.map((template, i) => (
             <motion.div
               key={template.id}

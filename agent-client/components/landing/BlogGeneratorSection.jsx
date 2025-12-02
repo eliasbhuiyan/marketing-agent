@@ -48,12 +48,12 @@ export default function BlogGeneratorSection() {
 
                 timeout = setTimeout(() => {
                   runSequence();
-                }, 6000);
-              }, 3000);
-            }, 2000);
-          }, 2500);
-        }, 1200);
-      }, 800);
+                }, 2000);
+              }, 1500);
+            }, 1500);
+          }, 1500);
+        }, 800);
+      }, 600);
     };
 
     runSequence();

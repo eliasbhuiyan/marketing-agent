@@ -14,7 +14,7 @@ import Pricing from "@/components/landing/Pricing";
 
 export default function Home() {
   return (
-    <div className="bg-[#0e0e0e] text-white selection:bg-purple-500/30">
+    <main className="bg-[#0e0e0e] text-white selection:bg-purple-500/30">
       <Hero />
       <FeatureScroller />
       <PosterStudio />
@@ -28,6 +28,6 @@ export default function Home() {
       <Testimonials />
       <Pricing/>
       <FAQ/>
-    </div>
+    </main>
   );
 }
