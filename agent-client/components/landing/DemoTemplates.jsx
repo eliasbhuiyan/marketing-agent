@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Layout, Sparkles } from "lucide-react";
+import { Layout, Sparkles } from "lucide-react";
 import Image from "next/image";
 
 const templates = [
@@ -108,7 +108,6 @@ export default function DemoTemplates() {
     <section className="py-32 bg-[#0A0A0A] relative overflow-hidden">
       {/* Background Decorations */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] bg-purple-900/10 rounded-full blur-[120px] pointer-events-none" />
-
       <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-20">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-sm text-purple-400 mb-6">
@@ -116,7 +115,7 @@ export default function DemoTemplates() {
             <span>Infinite Possibilities</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Explore Our {" "}
+            Explore Our{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
               AI-Generated Templates
             </span>
@@ -125,8 +124,7 @@ export default function DemoTemplates() {
             Explore our diverse range of AI-generated templates
           </p>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 min-h-[800px]">
+        <div className="grid grid-cols-3 lg:grid-cols-6 min-h-[800px]">
           {templates.map((template, i) => (
             <motion.div
               key={template.id}
@@ -160,7 +158,6 @@ export default function DemoTemplates() {
                   alt={template.title}
                   className="w-full h-full object-fit transition-transform duration-700 group-hover:scale-110"
                 />
-
                 {/* Hover Overlay */}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                   <Button variant="glass">
@@ -169,10 +166,9 @@ export default function DemoTemplates() {
                   </Button>
                 </div>
               </motion.div>
-
               {/* Decorative blobs behind some cards */}
               {i % 2 === 0 && (
-                <div className="absolute -inset-4 bg-gradient-to-br from-purple-500/10 to-blue-500/10 blur-2xl -z-10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute -inset-4 bg-gradient-to-br from-red-500 to-green-500 blur-2xl -z-10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               )}
             </motion.div>
           ))}

@@ -3,12 +3,9 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
-  Wand2,
   Layout,
   Palette,
   Download,
-  Check,
-  Loader2,
   ImageUp,
   ImageDown,
   Wand2Icon,
@@ -51,7 +48,6 @@ export default function PosterStudio() {
                 Poster & Design Creator
               </div>
             </div>
-
             <div className="flex h-[500px]">
               {/* Sidebar */}
               <div className="w-16 border-r border-white/10 flex flex-col items-center py-6 gap-6">
@@ -68,7 +64,6 @@ export default function PosterStudio() {
                   </div>
                 ))}
               </div>
-
               {/* Canvas Area */}
               <div className="flex-1 bg-[#0A0A0A] p-4 flex items-center justify-center relative overflow-hidden">
                 <AnimatePresence mode="wait">
@@ -104,7 +99,6 @@ export default function PosterStudio() {
                     )}
                   </motion.div>
                 </AnimatePresence>
-
                 {/* Floating Tools */}
                 <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-[#1A1A1A] border border-white/10 rounded-full px-4 py-2 flex gap-4 shadow-xl">
                   <button className="text-xs text-white hover:text-purple-400 transition-colors">
@@ -116,7 +110,6 @@ export default function PosterStudio() {
                   </button>
                 </div>
               </div>
-
               {/* Right Panel */}
               <div className="w-64 border-l border-white/10 bg-[#111] p-6">
                 <div className="space-y-6">
@@ -150,7 +143,6 @@ export default function PosterStudio() {
                       <div className="h-8 rounded bg-white/5 w-3/4" />
                     </div>
                   </div>
-
                   <div className="pt-4 border-t border-white/10">
                     <Button className="w-full" variant="glass">
                       <Download className="w-4 h-4 mr-2" /> Export
@@ -161,7 +153,6 @@ export default function PosterStudio() {
             </div>
           </div>
         </motion.div>
-
         {/* Right: Text Content */}
         <div className="space-y-8">
           <div>
@@ -174,7 +165,6 @@ export default function PosterStudio() {
               layouts, and professional designs all generated automatically.
             </p>
           </div>
-
           <div className="space-y-6">
             {[
               {
@@ -211,7 +201,6 @@ export default function PosterStudio() {
               </motion.div>
             ))}
           </div>
-
           <div className="flex items-center gap-4 pt-4">
             <Link href="/posters">
               <Button size="lg">Create Poster</Button>
@@ -219,9 +208,6 @@ export default function PosterStudio() {
           </div>
         </div>
       </div>
-
-      {/* Import helper for icons that I used inside the component but didn't import at top */}
-      {/* Done */}
     </section>
   );
 }

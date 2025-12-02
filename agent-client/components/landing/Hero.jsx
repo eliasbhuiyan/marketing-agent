@@ -7,7 +7,6 @@ import {
   Image as ImageIcon,
   Type,
   Layout,
-  ShoppingBag,
   TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
@@ -43,7 +42,6 @@ export default function Hero() {
             />
           ))}
         </div>
-
         {/* Vignette */}
         <div className="absolute inset-0 z-20 bg-gradient-to-b from-[#0E0E0E]/0 via-[#0E0E0E]/0 to-[#0E0E0E]" />
         <div className="absolute inset-0 z-20 bg-[radial-gradient(circle_at_center,transparent_0%,#0E0E0E_120%)]" />
@@ -99,7 +97,6 @@ export default function Hero() {
             <p>Trusted by 10,000+ marketers</p>
           </div>
         </motion.div>
-
         {/* Right Content - 3D Demo */}
         <motion.div
           className="relative h-full w-full hidden lg:block"
@@ -118,7 +115,6 @@ export default function Hero() {
               <Sparkles className="w-12 h-12 text-white" />
             </div>
           </motion.div>
-
           {/* Floating Posters */}
           {[
             { img: "/poster-battle.png", x: -180, y: -100, delay: 0, rot: -15 },
@@ -156,7 +152,6 @@ export default function Hero() {
               />
             </motion.div>
           ))}
-
           {/* Floating Feature Icons */}
           {[
             { icon: ImageIcon, label: "Poster", x: 120, y: -180 },

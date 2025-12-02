@@ -1,5 +1,5 @@
 "use client";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   BarChart,
   Calendar,
@@ -17,6 +17,7 @@ import {
   Video,
   Wand2,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 // 1. Poster & Design / Intelligent Poster Studio / Thumbnail
 export const DesignDemo = ({ demo }) => {
@@ -67,7 +68,9 @@ export const DesignDemo = ({ demo }) => {
                     ? "/features/thumbnail-group.png"
                     : demo === "poster"
                     ? "/poster/perfume.png"
-                    : demo === "intelligent" ? "/features/intelligent-poster-group.png" : "/features/thumbnail-group.png"
+                    : demo === "intelligent"
+                    ? "/features/intelligent-poster-group.png"
+                    : "/features/thumbnail-group.png"
                 }
                 alt={demo}
                 className="object-fit w-full h-full"
@@ -117,6 +120,26 @@ export const TryOnDemo = () => {
     </div>
   );
 };
+function Typewriter({ text }) {
+  const [displayed, setDisplayed] = useState("");
+  useEffect(() => {
+    setDisplayed("");
+    let i = 0;
+    const interval = setInterval(() => {
+      setDisplayed((prev) => prev + text.charAt(i));
+      i++;
+      if (i >= text.length) clearInterval(interval);
+    }, 30);
+    return () => clearInterval(interval);
+  }, [text]);
+
+  return (
+    <span>
+      {displayed}
+      <span className="animate-pulse text-purple-400">|</span>
+    </span>
+  );
+}
 
 // 3. Text Generator (Caption, Blog, Product Des, Script)
 export const TextDemo = ({ type = "Caption" }) => {
@@ -129,41 +152,17 @@ export const TextDemo = ({ type = "Caption" }) => {
         <div className="text-xs text-gray-300 font-medium">AI {type}</div>
       </div>
       <div className="flex-1 bg-white/5 rounded p-2 space-y-2">
-        <motion.div
-          initial={{ width: "0%" }}
-          animate={{ width: "100%" }}
-          transition={{
-            duration: 1.5,
-            ease: "easeOut",
-            repeat: Infinity,
-            repeatDelay: 2,
-          }}
-          className="h-2 bg-gray-700 rounded w-3/4"
-        />
-        <motion.div
-          initial={{ width: "0%" }}
-          animate={{ width: "80%" }}
-          transition={{
-            duration: 1.5,
-            delay: 0.2,
-            ease: "easeOut",
-            repeat: Infinity,
-            repeatDelay: 2,
-          }}
-          className="h-2 bg-gray-700 rounded w-full"
-        />
-        <motion.div
-          initial={{ width: "0%" }}
-          animate={{ width: "60%" }}
-          transition={{
-            duration: 1.5,
-            delay: 0.4,
-            ease: "easeOut",
-            repeat: Infinity,
-            repeatDelay: 2,
-          }}
-          className="h-2 bg-gray-700 rounded w-1/2"
-        />
+        <div className="bg-black/30 rounded-xl p-6 font-mono text-sm text-gray-300 leading-relaxed min-h-[120px]">
+          {/* {offset === 0 ? ( */}
+          <Typewriter
+            text={
+              "Upload your garments, select a model, and watch our AI generate photorealistic"
+            }
+          />
+          {/* // ) : (
+              //   <span className="opacity-50">{"tool.output"}</span>
+              // )} */}
+        </div>
       </div>
       <motion.button
         whileHover={{ scale: 1.05 }}
@@ -179,7 +178,9 @@ export const TextDemo = ({ type = "Caption" }) => {
 export const AnalyticsDemo = () => {
   return (
     <div className="w-full h-full bg-gray-900/50 backdrop-blur-sm p-4 flex flex-col justify-end gap-2 relative overflow-hidden rounded-xl border border-white/10">
-      <div className="absolute top-4 left-4 text-xs text-gray-400">Current Trends</div>
+      <div className="absolute top-4 left-4 text-xs text-gray-400">
+        Current Trends
+      </div>
       <div className="flex items-end justify-between gap-1 h-32 pb-2">
         {[40, 70, 50, 90, 60, 85].map((h, i) => (
           <motion.div

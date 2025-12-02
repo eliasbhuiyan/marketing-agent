@@ -65,14 +65,12 @@ export default function WritingTools() {
           your brand voice perfectly.
         </p>
       </div>
-
       <div className="max-w-4xl mx-auto relative h-[400px]">
         <AnimatePresence mode="popLayout">
           {tools.map((tool, index) => {
             // Only show 3 cards effectively to create stack effect
             const offset = (index - activeTool + tools.length) % tools.length;
             if (offset > 2) return null;
-
             return (
               <motion.div
                 key={tool.id}

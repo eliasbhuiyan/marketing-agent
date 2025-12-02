@@ -1,14 +1,12 @@
 "use client";
 import { useState, useRef } from "react";
-import { motion, useMotionValue, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Shirt, Upload, Sparkles, Video } from "lucide-react";
+import { Upload, Sparkles, Video } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 export default function ThumbnailGenerator() {
   const [sliderPosition, setSliderPosition] = useState(50);
   const containerRef = useRef(null);
-
   const handleMouseMove = (e) => {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
@@ -68,15 +66,9 @@ export default function ThumbnailGenerator() {
               </div>
             </div>
             <Link href="/youtube/thumbnail">
-              <Button
-                size="lg"
-                
-              >
-                Generate Thumbnail
-              </Button>
+              <Button size="lg">Generate Thumbnail</Button>
             </Link>
           </div>
-
           {/* Interactive Slider */}
           <div className="lg:w-1/2 order-1 lg:order-2">
             <div
@@ -116,7 +108,6 @@ export default function ThumbnailGenerator() {
                   ORIGINAL
                 </div>
               </div>
-
               {/* Slider Handle */}
               <div
                 className="absolute top-0 bottom-0 w-1 bg-white cursor-ew-resize z-10 shadow-[0_0_20px_rgba(0,0,0,0.5)]"
@@ -138,7 +129,6 @@ export default function ThumbnailGenerator() {
                 </div>
               </div>
             </div>
-
             <div className="mt-4 text-center text-sm text-gray-500">
               Drag slider to compare
             </div>
