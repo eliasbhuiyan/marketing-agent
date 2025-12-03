@@ -34,8 +34,6 @@ export function getCookieHeader() {
 export async function makeBackendRequest(endpoint, options = {}) {
   const cookieHeader = getCookieHeader();
 
-  const isAuthProfileGet =
-    endpoint === "/auth/profile" && (options.method || "GET") === "GET";
   const isIntegrationsGet =
     endpoint === "/integrations" && (options.method || "GET") === "GET";
 
@@ -44,9 +42,7 @@ export async function makeBackendRequest(endpoint, options = {}) {
   // Otherwise, set defaults for specific endpoints
   let nextConfig = options.next;
   if (!nextConfig) {
-    if (isAuthProfileGet) {
-      nextConfig = { revalidate: 60 }; // Cache profile for 1 minute
-    } else if (isIntegrationsGet) {
+    if (isIntegrationsGet) {
       // Always fetch fresh integrations to reflect immediate changes after connect/disconnect
       nextConfig = { revalidate: 0 };
     }
@@ -111,12 +107,7 @@ export async function handleApiRoute(endpoint, options = {}) {
 
     // Apply cache headers for GET endpoints to enable short-lived private caching
     if ((options.method || "GET") === "GET") {
-      if (endpoint === "/auth/profile") {
-        nextResponse.headers.set(
-          "Cache-Control",
-          "private, max-age=60, stale-while-revalidate=300"
-        );
-      } else if (endpoint === "/integrations") {
+      if (endpoint === "/integrations") {
         nextResponse.headers.set(
           "Cache-Control",
           "private, max-age=300, stale-while-revalidate=600"

@@ -1,9 +1,14 @@
-import { handleApiRoute } from '@/lib/api-utils';
-
-export const revalidate = 60;
+import { handleApiRoute } from "@/lib/api-utils";
+import { NextResponse } from "next/server";
 
 export async function GET() {
-  return handleApiRoute('/auth/profile', {
-    method: 'GET',
+  const response = await handleApiRoute("/auth/profile", {
+    method: "GET",
   });
+
+  if (response instanceof NextResponse) {
+    response.headers.set("Cache-Control", "public, max-age=300, s-maxage=300");
+  }
+
+  return response;
 }
