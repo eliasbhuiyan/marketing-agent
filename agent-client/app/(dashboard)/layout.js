@@ -136,8 +136,7 @@ export default function DashboardLayout({ children }) {
                     className={`pl-8 space-y-1 ${isActive ? "" : "hidden"}`}
                   >
                     {item.children.map((child) => {
-                      const childIsActive =
-                        pathname + window.location.search === child.href;
+                      const childIsActive = pathname === child.href;
                       return (
                         <Link
                           key={child.name}
@@ -146,7 +145,7 @@ export default function DashboardLayout({ children }) {
                             "block px-2 py-2 text-sm font-medium rounded-md",
                             childIsActive
                               ? "text-white"
-                              : "text-white/80 hover:text-white"
+                              : "text-white/60 hover:text-white"
                           )}
                         >
                           {child.name}
@@ -237,8 +236,7 @@ export default function DashboardLayout({ children }) {
                     className={`pl-8 space-y-1 ${isActive ? "" : "hidden"}`}
                   >
                     {item.children.map((child) => {
-                      const childIsActive =
-                        pathname + window.location.search === child.href;
+                      const childIsActive = pathname === child.href;
                       return (
                         <Link
                           key={child.name}
