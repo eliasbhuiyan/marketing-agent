@@ -23,6 +23,7 @@ import dynamic from "next/dynamic";
 import BlogHeadingPopup from "@/components/BlogHeadingPopup";
 import ContentPublisher from "@/components/ContentPublisher";
 import ApiError from "@/components/ui/ApiError";
+import Image from "next/image";
 
 // Dynamically import TiptapEditor to avoid SSR issues
 const TiptapEditor = dynamic(() => import("@/components/TiptapEditor"), {
@@ -375,10 +376,11 @@ return (
                     </div>
                     {heading.imageLink && (
                       <div className="w-12 h-12 rounded-lg overflow-hidden border border-gray-600">
-                        <img
+                        <Image
                           src={heading.imageLink}
                           alt={`Heading ${index + 1}`}
                           className="w-full h-full object-cover"
+                          fill={true}
                         />
                       </div>
                     )}

@@ -45,7 +45,7 @@ const Page = () => {
             Contact &amp; Support
           </h1>
           <p id="page-subtitle" className="text-lg opacity-90">
-            We're here to help you succeed with MarkGenAI
+            We&apos;re here to help you succeed with MarkGenAI
           </p>
         </div>
       </header>
@@ -396,8 +396,8 @@ const Page = () => {
                     </button>
                     <div className="faq-answer px-6 py-0">
                       <p className="text-slate-600 pb-4">
-                        Click on "Forgot Password" on the login page. Enter your
-                        email address and we'll send you a reset link. Follow
+                        Click on &quot;Forgot Password&quot; on the login page. Enter your
+                        email address and we&apos;ll send you a reset link. Follow
                         the instructions in the email to create a new password.
                       </p>
                     </div>
@@ -454,7 +454,7 @@ const Page = () => {
                     <div className="faq-answer px-6 py-0">
                       <p className="text-slate-600 pb-4">
                         Yes! You can cancel your subscription at any time from
-                        your account settings. You'll continue to have access
+                        your account settings. You&apos;ll continue to have access
                         until the end of your billing period. No cancellation
                         fees apply.
                       </p>
@@ -557,7 +557,7 @@ const Page = () => {
         <div className="max-w-7xl mx-auto text-center">
           <div className="text-3xl font-bold text-white mb-4">MarkGenAI</div>
           <p className="text-slate-400">
-            © 2025 MarkGenAI. We're here to help.
+            © 2025 MarkGenAI. We&apos;re here to help.
           </p>
         </div>
       </footer>

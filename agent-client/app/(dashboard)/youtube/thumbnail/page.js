@@ -21,6 +21,7 @@ import {
   Sparkles,
   Upload,
 } from "lucide-react";
+import Image from "next/image";
 import React, { useRef, useState } from "react";
 
 const ThumbnailDesign = () => {
@@ -207,7 +208,9 @@ const ThumbnailDesign = () => {
               />
               {uploadedImage ? (
                 <div className="space-y-2 flex flex-col items-center">
-                  <img
+                  <Image
+                    width={200}
+                    height={200}
                     src={uploadedImage.url}
                     alt="Uploaded"
                     className="max-w-3xs object-cover rounded-lg"
@@ -412,7 +415,9 @@ const ThumbnailDesign = () => {
             </CardHeader>
             <CardContent>
               <div className="bg-gray-100 rounded-lg text-center w-fit max-w-sm m-auto">
-                <img
+                <Image
+                  width={400}
+                  height={300}
                   src={generatedThumbnails}
                   alt="Generated Thumbnail"
                   className="max-w-full h-auto mx-auto rounded-lg shadow-lg"

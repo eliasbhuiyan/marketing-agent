@@ -32,7 +32,7 @@ export default function SettingsPage() {
   });
 
   const [emailTemplates, setEmailTemplates] = useState({
-    invite: "Welcome to {{platformName}}! You've been invited to join {{brandName}}.",
+    invite: "Welcome to {{platformName}}! You&apos;ve been invited to join {{brandName}}.",
     resetPassword: "Click the link below to reset your password: {{resetLink}}"
   });
 
@@ -79,7 +79,7 @@ export default function SettingsPage() {
             <CardHeader>
               <CardTitle className="text-white">Platform Information</CardTitle>
               <CardDescription className="text-white/60">
-                Configure your platform's basic information and branding
+                Configure your platform&apos;s basic information and branding
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">

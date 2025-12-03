@@ -26,6 +26,7 @@ import {
   Filter,
   Search
 } from 'lucide-react';
+import Image from 'next/image';
 
 export default function SchedulerPage() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -304,7 +305,9 @@ export default function SchedulerPage() {
                   
                   {post.image && (
                     <div className="ml-4">
-                      <img
+                      <Image
+                        width={80}
+                        height={80}
                         src={post.image}
                         alt="Post preview"
                         className="w-20 h-20 object-cover rounded-lg"

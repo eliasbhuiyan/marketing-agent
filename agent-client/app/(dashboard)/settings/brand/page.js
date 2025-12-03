@@ -14,6 +14,7 @@ import { Palette, Upload, Save } from "lucide-react";
 import apiClient from "@/lib/api";
 import { getBrandId, formatErrorMessage } from "@/lib/utils";
 import { useBrandData } from "@/lib/hooks/useBrandData";
+import Image from "next/image";
 
 export default function BrandPage() {
   const [apiBusy, setApiBusy] = useState(false);
@@ -304,7 +305,7 @@ export default function BrandPage() {
               <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-3">
                 {assets.map((asset) => (
                   <div key={asset.id} className="relative group border rounded overflow-hidden">
-                    <img src={asset.url} alt={"asset"} className="w-full h-24 object-cover" />
+                    <Image width={200} height={200} src={asset.url} alt={"asset"} className="w-full h-24 object-cover" />
                     <button
                       type="button"
                       onClick={() => removeAssetAt(asset.id)}

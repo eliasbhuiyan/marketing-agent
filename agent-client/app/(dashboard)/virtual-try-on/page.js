@@ -26,6 +26,7 @@ import {
 import apiClient from "@/lib/api";
 import ApiError from "@/components/ui/ApiError";
 import BrandAssetDisplay from "@/lib/BrandAssetDisplay";
+import Image from "next/image";
 
 export default function SelfModelingPage() {
   const [personImage, setPersonImage] = useState(null);
@@ -59,7 +60,7 @@ export default function SelfModelingPage() {
       type: "person",
     });
     if (errors.personImage) {
-      setErrors(prev => ({ ...prev, personImage: false }));
+      setErrors((prev) => ({ ...prev, personImage: false }));
     }
   };
 
@@ -82,7 +83,7 @@ export default function SelfModelingPage() {
       return;
     }
 
-    const newAssets = Array.from(files).map(file => ({
+    const newAssets = Array.from(files).map((file) => ({
       id: Date.now() + Math.random(),
       file,
       url: URL.createObjectURL(file),
@@ -92,7 +93,7 @@ export default function SelfModelingPage() {
     setAssets([...assets, ...newAssets]);
 
     if (errors.assets) {
-      setErrors(prev => ({ ...prev, assets: false }));
+      setErrors((prev) => ({ ...prev, assets: false }));
     }
   };
 
@@ -117,9 +118,10 @@ export default function SelfModelingPage() {
       setGeneratedImage(response.image);
     } catch (error) {
       console.error("Error in virtual try-on:", error);
-      setApiError(error.message || "Failed to generate model. Please try again.");
-    }
-    finally {
+      setApiError(
+        error.message || "Failed to generate model. Please try again."
+      );
+    } finally {
       setIsGenerating(false);
     }
   };
@@ -140,7 +142,9 @@ export default function SelfModelingPage() {
       <div className="text-center">
         <h1 className="text-3xl font-bold text-white">Vertual Try-On</h1>
         <p className="text-white/80 mt-2 m-auto max-w-3xl">
-          Virtual Try-On lets brands and retailers showcase their products on realistic models using AI. Upload a photo and your product images to instantly generate.
+          Virtual Try-On lets brands and retailers showcase their products on
+          realistic models using AI. Upload a photo and your product images to
+          instantly generate.
         </p>
       </div>
 
@@ -152,9 +156,7 @@ export default function SelfModelingPage() {
               <Upload className="h-5 w-5 mr-2" />
               Person Image (Required)
             </CardTitle>
-            <CardDescription>
-              Upload a clear photo of yourself
-            </CardDescription>
+            <CardDescription>Upload a clear photo of yourself</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex gap-2">
@@ -172,7 +174,9 @@ export default function SelfModelingPage() {
                 />
                 {personImage ? (
                   <div className="space-y-2 flex flex-col items-center">
-                    <img
+                    <Image
+                      width={200}
+                      height={200}
                       src={personImage.url}
                       alt="Person"
                       className="max-w-28 object-cover rounded-lg"
@@ -240,7 +244,9 @@ export default function SelfModelingPage() {
                 <div className="flex gap-2">
                   {assets.map((asset) => (
                     <div key={asset.id} className="relative group max-w-20">
-                      <img
+                      <Image
+                        width={80}
+                        height={80}
                         src={asset.url}
                         alt={asset.type}
                         className="w-full object-cover rounded-md"
@@ -298,9 +304,7 @@ export default function SelfModelingPage() {
                 }}
               />
             </div>
-            {apiError && (
-              <ApiError>{apiError}</ApiError>
-            )}
+            {apiError && <ApiError>{apiError}</ApiError>}
             <Button
               onClick={handleGenerateModel}
               disabled={isGenerating}
@@ -335,7 +339,9 @@ export default function SelfModelingPage() {
           <CardContent className="space-y-4">
             <div className="flex justify-center">
               {generatedImage ? (
-                <img
+                <Image
+                  width={400}
+                  height={400}
                   src={generatedImage}
                   alt="Generated Self Model"
                   className="max-w-full h-auto rounded-lg"
@@ -346,9 +352,12 @@ export default function SelfModelingPage() {
                     <div className="rounded-full bg-white/10 p-4 mb-4">
                       <ImageIcon className="h-8 w-8 text-gray-300" />
                     </div>
-                    <CardTitle className="text-lg text-white mb-2">No Model Generated Yet</CardTitle>
+                    <CardTitle className="text-lg text-white mb-2">
+                      No Model Generated Yet
+                    </CardTitle>
                     <CardDescription className="max-w-xs text-white/70">
-                      Upload a person image and optionally add assets, then click “Generate Self Model” to see the result here.
+                      Upload a person image and optionally add assets, then
+                      click “Generate Self Model” to see the result here.
                     </CardDescription>
                   </CardContent>
                 </Card>

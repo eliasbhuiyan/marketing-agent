@@ -235,10 +235,11 @@ export default function LibraryPage() {
               </Button>
             </div>
             <div className="p-2">
-              <img
+              <Image
                 src={selectedImage.image}
                 alt={selectedImage.type}
                 className="w-full h-auto max-h-[80vh] object-contain"
+                fill={true}
               />
             </div>
             <div className="p-4 bg-gray-800">

@@ -15,6 +15,7 @@ import {
   RotateCcw,
   Download,
 } from "lucide-react";
+import Image from "next/image";
 
 const BlogHeadingPopup = ({
   isOpen,
@@ -247,7 +248,9 @@ const BlogHeadingPopup = ({
                           onClick={() => handleImageSelect(index, imageUrl)}
                         >
                           <div className="aspect-square relative">
-                            <img
+                            <Image
+                              width={200}
+                              height={200}
                               src={imageUrl}
                               alt={`Option ${imageIndex + 1}`}
                               className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
@@ -284,7 +287,9 @@ const BlogHeadingPopup = ({
                         </div>
                         {customImageUrls[index] && selectedImages[index] === customImageUrls[index] && (
                           <div className="mt-2 p-2 bg-gray-800 rounded border border-gray-700">
-                            <img 
+                            <Image
+                              width={200}
+                              height={200} 
                               src={customImageUrls[index]} 
                               alt="Custom image preview" 
                               className="max-h-40 mx-auto object-contain"

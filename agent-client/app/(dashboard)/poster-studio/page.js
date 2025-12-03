@@ -22,6 +22,7 @@ import React, { useEffect, useRef, useState } from "react";
 import apiClient from "@/lib/api";
 import ApiError from "@/components/ui/ApiError";
 import useSingleHistory from "@/lib/hooks/useSingleHistory";
+import Image from "next/image";
 
 const PosterStudio = () => {
   const { historyData, loading, error } = useSingleHistory();
@@ -241,7 +242,8 @@ const PosterStudio = () => {
               />
               {uploadedLogo ? (
                 <div className="space-y-2 flex flex-col items-center">
-                  <img
+                  <Image
+                    fill={true}
                     src={uploadedLogo.url}
                     alt="Uploaded Logo"
                     className="max-w-xs max-h-16 object-contain rounded-lg"
@@ -491,7 +493,8 @@ const PosterStudio = () => {
             </CardHeader>
             <CardContent>
               <div className="bg-gray-100 rounded-lg text-center w-fit max-w-sm m-auto">
-                <img
+                <Image
+                 fill={true}
                   src={generatedPoster}
                   alt="Generated Poster"
                   className="max-w-full h-auto mx-auto rounded-lg shadow-lg"

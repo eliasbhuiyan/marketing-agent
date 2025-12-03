@@ -175,7 +175,7 @@ export default function AffiliatePage() {
               3. Earn Credits
             </h3>
             <p className="mt-2 text-gray-400">
-              Once approved, you'll receive free credits to use on MarkgenAI.
+              Once approved, you&apos;ll receive free credits to use on MarkgenAI.
             </p>
           </div>
         </div>

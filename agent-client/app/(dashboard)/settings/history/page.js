@@ -15,17 +15,18 @@ import { CalendarIcon, Search, Download, Filter } from "lucide-react";
 import apiClient from "@/lib/api";
 import LineLoading from "@/components/LineLoading";
 import Link from "next/link";
+import Image from "next/image";
 const redirectUrlWithType = (type) => {
-  if(type == "poster_design") return "/posters";
-  if(type == "intelligent_posters") return "/poster-studio";
-  if(type == "virtual_try-on") return "/virtual-try-on";
-  if(type == "script_writer") return "/youtube/script";
-  if(type == "thumbnail_generator") return "/youtube/thumbnail";
-  if(type == "caption") return "/content/caption";
-  if(type == "blog_headings") return "/content/blog";
-  if(type == "blog") return "/content/blog";
-  if(type == "keyword_hashtag") return "/content/hashtag";
-  if(type == "product_des") return "/content/product";
+  if (type == "poster_design") return "/posters";
+  if (type == "intelligent_posters") return "/poster-studio";
+  if (type == "virtual_try-on") return "/virtual-try-on";
+  if (type == "script_writer") return "/youtube/script";
+  if (type == "thumbnail_generator") return "/youtube/thumbnail";
+  if (type == "caption") return "/content/caption";
+  if (type == "blog_headings") return "/content/blog";
+  if (type == "blog") return "/content/blog";
+  if (type == "keyword_hashtag") return "/content/hashtag";
+  if (type == "product_des") return "/content/product";
 };
 const UsageHistory = () => {
   const [usageData, setUsageData] = useState([]);
@@ -117,7 +118,7 @@ const UsageHistory = () => {
 
     fetchUsageHistory();
   }, [pagination.currentPage, pagination.limit, filterType]);
-  
+
   const handleFilterChange = (value) => {
     setFilterType(value);
   };
@@ -302,12 +303,17 @@ const UsageHistory = () => {
                       </td>
                       <td className="py-3 px-4 hidden md:table-cell max-w-[300px] truncate">
                         <Link
-                          href={`${redirectUrlWithType(item.type)}?single-h-id=${item._id}`}
+                          href={`${redirectUrlWithType(
+                            item.type
+                          )}?single-h-id=${item._id}`}
                           className="hover:text-green-300"
                         >
                           {item.content?.text || ""}{" "}
                           {item.content.image ? (
-                            <img
+                            <Image
+                              width={200}
+                              height={200}
+                              alt="content-img"
                               src={item.content.image}
                               className="max-w-14"
                             />

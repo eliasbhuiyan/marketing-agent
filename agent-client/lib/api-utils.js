@@ -60,7 +60,7 @@ export async function makeBackendRequest(endpoint, options = {}) {
   }
 
   // Destructure to exclude next from options to avoid duplication, then explicitly set it
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   const { next: _unused, ...optionsWithoutNext } = options;
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
