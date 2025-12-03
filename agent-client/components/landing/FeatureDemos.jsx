@@ -1,12 +1,10 @@
 "use client";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion, scale } from "framer-motion";
 import {
   BarChart,
-  Calendar,
   Check,
   Pointer,
   Image as ImageIcon,
-  MessageSquare,
   MoreHorizontal,
   Plus,
   Search,
@@ -16,9 +14,12 @@ import {
   User,
   Video,
   Wand2,
+  MessageSquareCode,
+  Heart,
+  Zap,
+  Sparkles,
+  SearchCheck,
 } from "lucide-react";
-import { useEffect, useState } from "react";
-
 // 1. Poster & Design / Intelligent Poster Studio / Thumbnail
 export const DesignDemo = ({ demo }) => {
   return (
@@ -120,29 +121,43 @@ export const TryOnDemo = () => {
     </div>
   );
 };
-function Typewriter({ text }) {
-  const [displayed, setDisplayed] = useState("");
-  useEffect(() => {
-    setDisplayed("");
-    let i = 0;
-    const interval = setInterval(() => {
-      setDisplayed((prev) => prev + text.charAt(i));
-      i++;
-      if (i >= text.length) clearInterval(interval);
-    }, 30);
-    return () => clearInterval(interval);
-  }, [text]);
-
-  return (
-    <span>
-      {displayed}
-      <span className="animate-pulse text-purple-400">|</span>
-    </span>
-  );
-}
 
 // 3. Text Generator (Caption, Blog, Product Des, Script)
 export const TextDemo = ({ type = "Caption" }) => {
+  const demo = {
+    caption: [
+      {
+        icon: Heart,
+        text: "Engaging and authentic captions",
+      },
+      {
+        icon: Zap,
+        text: "Optimized for audience engagement",
+      },
+      {
+        icon: Sparkles,
+        text: "Tailored to your brand voice",
+      },
+    ],
+    blog: [
+      {
+        icon: Type,
+        text: "Well-structured and informative articles",
+      },
+      { icon: Search, text: "SEO-optimized content" },
+      { icon: Settings, text: "Customizable tone and style" },
+    ],
+    product: [
+      { icon: Video, text: "Compelling product descriptions" },
+      { icon: Share, text: "Highlighting key features" },
+      { icon: MoreHorizontal, text: "Persuasive and concise" },
+    ],
+    script: [
+      { icon: MessageSquareCode, text: "Engaging dialogue" },
+      { icon: BarChart, text: "Well-structured scenes" },
+      { icon: Pointer, text: "Tailored to your audience" },
+    ],
+  };
   return (
     <div className="w-full h-full bg-gray-900/50 backdrop-blur-sm p-4 flex flex-col gap-3 relative overflow-hidden rounded-xl border border-white/10">
       <div className="flex items-center gap-2">
@@ -150,26 +165,27 @@ export const TextDemo = ({ type = "Caption" }) => {
           <Wand2 size={12} />
         </div>
         <div className="text-xs text-gray-300 font-medium">AI {type}</div>
+        <button
+          className="w-fit cursor-pointer hover:scale-110 p-1 ml-auto  bg-blue-600/20 text-blue-400 text-[10px] rounded border border-blue-500/30"
+        >
+          Generate
+        </button>
       </div>
       <div className="flex-1 bg-white/5 rounded p-2 space-y-2">
-        <div className="bg-black/30 rounded-xl p-6 font-mono text-sm text-gray-300 leading-relaxed min-h-[120px]">
-          {/* {offset === 0 ? ( */}
-          <Typewriter
-            text={
-              "Upload your garments, select a model, and watch our AI generate photorealistic"
-            }
-          />
-          {/* // ) : (
-              //   <span className="opacity-50">{"tool.output"}</span>
-              // )} */}
+        <div className="bg-black/30 rounded-xl flex justify-center items-center p-2 font-mono text-sm text-gray-300 leading-relaxed min-h-[120px]">
+          <div className="flex flex-col gap-2 w-full">
+            {demo[type.toLowerCase()]?.map(({ icon: Icon, text }, i) => (
+              <div
+                className="flex items-center gap-2 hover:scale-110 transition-transform"
+                key={i}
+              >
+                <Icon className="h-4 w-4 text-white" />
+                <p className="text-xs text-white">{text}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        className="w-full py-1 bg-blue-600/20 text-blue-400 text-[10px] rounded border border-blue-500/30"
-      >
-        Generate
-      </motion.button>
     </div>
   );
 };
@@ -187,7 +203,8 @@ export const AnalyticsDemo = () => {
             key={i}
             initial={{ height: 0 }}
             animate={{ height: `${h}%` }}
-            transition={{ duration: 0.8, delay: i * 0.1 }}
+            // transition={{ duration: 0.8 }}
+            whileHover={{ height: `${h + 20}%` }}
             className="w-full bg-gradient-to-t from-purple-600/50 to-blue-500/50 rounded-t-sm relative group"
           >
             <motion.div
@@ -218,12 +235,14 @@ export const CalendarDemo = () => {
       </div>
       <div className="grid grid-cols-7 gap-1">
         {Array.from({ length: 14 }).map((_, i) => (
-          <div key={i} className="aspect-square bg-white/5 rounded-sm relative">
+          <div
+            key={i}
+            className="aspect-square hover:bg-white/20 bg-white/5 rounded-sm relative"
+          >
             {[2, 5, 8, 11].includes(i) && (
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                transition={{ delay: i * 0.1, type: "spring" }}
                 className="absolute inset-1 bg-green-500/30 rounded-full flex items-center justify-center"
               >
                 <Check size={8} className="text-green-400" />
@@ -247,17 +266,34 @@ export const CalendarDemo = () => {
 
 // 6. Hashtags
 export const HashtagDemo = () => {
-  const tags = ["#viral", "#trending", "#fyp", "#design", "#2025", "#ai"];
+  const hash = [
+    "#trending",
+    "#design",
+    "#ai",
+    "#marketing",
+    "#innovation",
+    "#creative",
+    "#business",
+    "#socialmedia",
+    "#growth",
+  ];
   return (
     <div className="w-full h-full bg-gray-900/50 backdrop-blur-sm p-4 flex flex-wrap content-center gap-2 relative overflow-hidden rounded-xl border border-white/10">
-      {tags.map((tag, i) => (
+      <div className="relative w-full mb-2">
+        <input
+          type="text"
+          value="Industry/Niche"
+          className="w-full rounded-2xl p-2 border text-xs"
+        />
+        <SearchCheck className="absolute top-2 right-2 text-gray-400 w-4 h-4" />
+      </div>
+      {hash.map((tag, i) => (
         <motion.div
           key={i}
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: i * 0.1 }}
           whileHover={{
-            scale: 1.1,
+            scale: 1.3,
             backgroundColor: "rgba(168, 85, 247, 0.2)",
           }}
           className="px-2 py-1 bg-white/10 rounded-full text-[10px] text-purple-300 cursor-pointer border border-white/5"

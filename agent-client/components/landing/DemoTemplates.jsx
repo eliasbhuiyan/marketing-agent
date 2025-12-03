@@ -166,10 +166,6 @@ export default function DemoTemplates() {
                   </Button>
                 </div>
               </motion.div>
-              {/* Decorative blobs behind some cards */}
-              {i % 2 === 0 && (
-                <div className="absolute -inset-4 bg-gradient-to-br from-red-500 to-green-500 blur-2xl -z-10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              )}
             </motion.div>
           ))}
         </div>

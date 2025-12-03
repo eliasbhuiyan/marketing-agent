@@ -5,14 +5,14 @@ import { Plus, Minus } from "lucide-react";
 
 const faqs = [
   {
-    question: "How does the credit system work?",
+    question: "What is MarkgenAI and how does it help my business?",
     answer:
-      "Credits are used for premium AI generations. 1 credit = 1 image or 1 short text generation. Complex tasks like video scripts or virtual try-on may use 2-3 credits. Starter plans renew credits monthly, while Business plans have unlimited usage.",
+      "MarkgenAI is an all-in-one AI marketing assistant that creates posters, captions, scripts, product descriptions, keywords, blogs, and schedules your content. It saves time, boosts creativity, and helps you produce professional marketing materials instantly.",
   },
   {
-    question: "Can I upload my own brand assets?",
+    question: "Can I generate multiple types of content from one place?",
     answer:
-      "Absolutely. You can upload your logo, brand colors, and custom fonts. Our 'Intelligent Studio' will automatically apply your brand identity to every design it generates, ensuring consistency across all your marketing materials.",
+      "Yes! MarkgenAI supports posters, blog posts, product descriptions, social captions, hashtags, thumbnails, virtual try-on visuals, and more. Everything is available in a single unified workspace.",
   },
   {
     question: "Is the generated content copyright-free?",
@@ -20,15 +20,20 @@ const faqs = [
       "Yes! You own full commercial rights to all content created with MarkgenAI. Whether it's a poster, a blog post, or an ad creative, you can use it for your business or client projects without any royalties.",
   },
   {
-    question: "Do you integrate with social media platforms?",
+    question: "Is my content and uploaded data secure?",
     answer:
-      "We support direct scheduling and publishing to Instagram, Facebook, Twitter/X, LinkedIn, and Pinterest. You can connect your accounts in the dashboard and manage your entire content calendar from one place.",
+      "Absolutely. We prioritize your privacy and data security. All your content and uploaded files are stored securely and are not shared with third parties. We use industry-standard encryption to protect your data.",
   },
   {
-    question: "Can I cancel my subscription anytime?",
+    question: "Can my team collaborate inside MarkgenAI?",
     answer:
-      "Yes, you can cancel or downgrade your plan at any time from your account settings. If you cancel, you'll keep access to your plan features until the end of your current billing cycle.",
+      "Yes! MarkgenAI offers team collaboration features, allowing multiple users to work together on projects. You can share content and manage tasks within the platform.",
   },
+  {
+    question: "Do you offer a free trial?",
+    answer:
+      "Yes, MarkgenAI comes with a free plan for testing essential features. You can upgrade anytime.",
+  }
 ];
 
 export default function FAQ() {
