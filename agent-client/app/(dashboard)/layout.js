@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -308,7 +308,7 @@ export default function DashboardLayout({ children }) {
         {/* Page content */}
         <main className="py-6">
           <div className="mx-auto px-4 sm:px-6 lg:px-8 text-white">
-            {children}
+            <Suspense fallback={<p>Loading..</p>}>{children}</Suspense>
           </div>
         </main>
       </div>

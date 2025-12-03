@@ -1,7 +1,11 @@
+import { useSearchParams } from "next/navigation";
+
 const { useState, useEffect, useCallback } = require("react");
 const { default: apiClient } = require("../api");
 
-const useSingleHistory = (historyId) => {
+const useSingleHistory = () => {
+  const searchParams = useSearchParams();
+  const historyId = searchParams.get("single-h-id");
   const [historyData, setHistoryData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

@@ -16,12 +16,9 @@ import apiClient from "@/lib/api";
 import LoaderAnim from "../../../../components/LoaderAnim";
 import ApiError from "@/components/ui/ApiError";
 import useSingleHistory from "@/lib/hooks/useSingleHistory";
-import { useSearchParams } from "next/navigation";
 
 export default function CaptionGenerator() {
-  const searchParams = useSearchParams();
-  const historyId = searchParams.get("single-h-id");
-  const { historyData, loading, error } = useSingleHistory(historyId);
+  const { historyData, loading, error } = useSingleHistory();
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState("");
   const [apiError, setApiError] = useState("");
@@ -44,8 +41,7 @@ export default function CaptionGenerator() {
   // Validate required fields
   const validateInputs = () => {
     const newErrors = {};
-    if (!captionOptions.productDescription.trim())
-      newErrors.productDescription = true;
+    if (!captionOptions.productDescription.trim()) newErrors.productDescription = true;
     if (!captionOptions.targetAudience.trim()) newErrors.targetAudience = true;
     if (!captionOptions.language.trim()) newErrors.language = true;
     setErrors(newErrors);
@@ -56,38 +52,19 @@ export default function CaptionGenerator() {
     const { id, value } = e.target;
     setCaptionOptions((prev) => ({
       ...prev,
-      [id === "product-description"
-        ? "productDescription"
-        : id === "target-audience"
-        ? "targetAudience"
-        : id === "tone"
-        ? "tone"
-        : id === "platform"
-        ? "platform"
-        : id === "language"
-        ? "language"
-        : id]: value,
+      [id === 'product-description' ? 'productDescription' :
+        id === 'target-audience' ? 'targetAudience' :
+          id === 'tone' ? 'tone' :
+            id === 'platform' ? 'platform' :
+              id === 'language' ? 'language' : id]: value
     }));
-    if (
-      errors[
-        id === "product-description"
-          ? "productDescription"
-          : id === "target-audience"
-          ? "targetAudience"
-          : id === "language"
-          ? "language"
-          : id
-      ]
-    ) {
+    if (errors[id === 'product-description' ? 'productDescription' :
+      id === 'target-audience' ? 'targetAudience' :
+        id === 'language' ? 'language' : id]) {
       setErrors((prev) => ({
-        ...prev,
-        [id === "product-description"
-          ? "productDescription"
-          : id === "target-audience"
-          ? "targetAudience"
-          : id === "language"
-          ? "language"
-          : id]: false,
+        ...prev, [id === 'product-description' ? 'productDescription' :
+          id === 'target-audience' ? 'targetAudience' :
+            id === 'language' ? 'language' : id]: false
       }));
     }
   };
@@ -116,9 +93,7 @@ export default function CaptionGenerator() {
       setGeneratedContent(response.caption);
     } catch (error) {
       console.log(error);
-      setApiError(
-        error.message || "Failed to generate content. Please try again."
-      );
+      setApiError(error.message || "Failed to generate content. Please try again.");
     } finally {
       setIsGenerating(false);
     }
@@ -149,20 +124,12 @@ export default function CaptionGenerator() {
                 </Label>
                 <textarea
                   id="product-description"
-                  className={`w-full mt-1 p-3 border ${
-                    errors.productDescription
-                      ? "border-red-500"
-                      : "border-gray-300"
-                  } rounded-md h-24 resize-none text-white`}
+                  className={`w-full mt-1 p-3 border ${errors.productDescription ? "border-red-500" : "border-gray-300"} rounded-md h-24 resize-none text-white`}
                   placeholder="Describe your product or service..."
                   value={captionOptions.productDescription}
                   onChange={handleInputChange}
                 />
-                {errors.productDescription && (
-                  <p className="text-red-500 text-sm mt-1">
-                    This field is required
-                  </p>
-                )}
+                {errors.productDescription && <p className="text-red-500 text-sm mt-1">This field is required</p>}
               </div>
               <div>
                 <Label htmlFor="target-audience" className="text-white">
@@ -170,18 +137,12 @@ export default function CaptionGenerator() {
                 </Label>
                 <Input
                   id="target-audience"
-                  className={`text-white ${
-                    errors.targetAudience ? "border-red-500" : ""
-                  }`}
+                  className={`text-white ${errors.targetAudience ? "border-red-500" : ""}`}
                   placeholder="e.g., Young professionals, Tech enthusiasts"
                   value={captionOptions.targetAudience}
                   onChange={handleInputChange}
                 />
-                {errors.targetAudience && (
-                  <p className="text-red-500 text-sm mt-1">
-                    This field is required
-                  </p>
-                )}
+                {errors.targetAudience && <p className="text-red-500 text-sm mt-1">This field is required</p>}
               </div>
               <div>
                 <Label htmlFor="tone" className="text-white">
@@ -193,10 +154,7 @@ export default function CaptionGenerator() {
                   className="w-full mt-1 p-2 border border-gray-300 rounded-md text-white"
                   value={captionOptions.tone}
                   onChange={(e) =>
-                    setCaptionOptions({
-                      ...captionOptions,
-                      tone: e.target.value,
-                    })
+                    setCaptionOptions({ ...captionOptions, tone: e.target.value })
                   }
                 >
                   <option value="promotional" className="text-white">
@@ -255,20 +213,16 @@ export default function CaptionGenerator() {
                 </Label>
                 <Input
                   id="language"
-                  className={`text-white ${
-                    errors.language ? "border-red-500" : ""
-                  }`}
+                  className={`text-white ${errors.language ? "border-red-500" : ""}`}
                   placeholder="e.g., Bangla"
                   value={captionOptions.language}
                   onChange={handleInputChange}
                 />
-                {errors.language && (
-                  <p className="text-red-500 text-sm mt-1">
-                    This field is required
-                  </p>
-                )}
+                {errors.language && <p className="text-red-500 text-sm mt-1">This field is required</p>}
               </div>
-              {apiError && <ApiError>{apiError}</ApiError>}
+              {apiError && (
+                <ApiError>{apiError}</ApiError>
+              )}
               <Button
                 className="w-full text-white"
                 disabled={isGenerating}
@@ -321,7 +275,8 @@ export default function CaptionGenerator() {
                 </div>
               </div>
             ) : isGenerating ? (
-              <LoaderAnim></LoaderAnim>
+              <LoaderAnim>
+              </LoaderAnim>
             ) : (
               <div className="flex flex-col items-center justify-center h-[400px] rounded-md p-6 text-center">
                 <MessageSquare className="h-12 w-12 text-white mb-4" />
