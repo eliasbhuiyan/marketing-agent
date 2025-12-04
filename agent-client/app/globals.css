@@ -28,7 +28,10 @@
     --card-border: rgba(255, 255, 255, 0.23);
   }
 }
-
+@utility container{
+  margin: auto;
+  padding: 0 1rem;
+}
 body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, -apple-system, Segoe UI,

@@ -1,6 +1,8 @@
 import React from "react";
 import { ScanFace, UserLock, MessageSquareLock } from "lucide-react";
 import AllFeatures from "@/components/landing/AllFeatures";
+import Image from "next/image";
+import Link from "next/link";
 
 const Page = () => {
   const coomitments = [
@@ -22,77 +24,40 @@ const Page = () => {
   ];
   return (
     <main className="min-h-screen bg-foreground text-white">
-      <section className="w-full px-6 py-20 relative overflow-hidden">
-        <div className="gradient-blob absolute top-0 right-0 w-96 h-96 rounded-full"></div>
-        <div className="container mx-auto relative z-10">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+      <section className="py-40 lg:py-20 overflow-hidden">
+        <div className="container">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h1
                 id="hero-headline"
-                className="text-6xl font-bold text-white leading-tight mb-6"
+                className="text-2xl sm:text-3xl md:text-4xl xl:text-6xl font-bold text-white leading-tight mb-6"
               >
                 Empowering Brands With Intelligent Marketing Automation
               </h1>
               <p
                 id="hero-subtext"
-                className="text-xl text-white/80 leading-relaxed"
+                className="text-base md:text-xl text-white/80 leading-relaxed"
               >
                 MarkgenAI helps creators, brands, and marketers design, write,
                 schedule, and publish content faster — powered by AI that
                 understands your goals.
               </p>
             </div>
-            <div className="relative">
-              <svg
-                className="w-full h-auto"
-                viewbox="0 0 400 400"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle
-                  cx="200"
-                  cy="200"
-                  r="120"
-                  fill="url(#gradient1)"
-                  opacity="0.2"
-                />{" "}
-                <circle
-                  cx="200"
-                  cy="200"
-                  r="80"
-                  fill="url(#gradient1)"
-                  opacity="0.3"
-                />{" "}
-                <circle
-                  cx="200"
-                  cy="200"
-                  r="40"
-                  fill="url(#gradient1)"
-                  opacity="0.5"
-                />{" "}
-                <path
-                  d="M200 160 L240 200 L200 240 L160 200 Z"
-                  fill="url(#gradient1)"
-                />{" "}
-                <defs>
-                  <lineargradient
-                    id="gradient1"
-                    x1="0%"
-                    y1="0%"
-                    x2="100%"
-                    y2="100%"
-                  >
-                    <stop offset="0%" style={{ stopColor: "#2563EB" }} />
-                    <stop offset="100%" style={{ stopColor: "#7C3AED" }} />
-                  </lineargradient>
-                </defs>
-              </svg>
+            <div className="hidden lg:block">
+              <Image
+                src="/gradient-shape.svg"
+                alt="Animated Gradient"
+                width={400}
+                height={400}
+                className="w-full h-full"
+                priority
+              />
             </div>
           </div>
         </div>
       </section>
-      <section className="w-full px-6 py-16 border-y border-white/5 bg-[#0A0A0A]">
-        <div className="container mx-auto">
+      <section className="py-16 border-y border-white/5 bg-[#0A0A0A]">
+        <div className="container">
           <div className="space-y-10 items-center">
             <div>
               <h2 className="text-2xl sm:text-3xl font-semibold">
@@ -129,8 +94,8 @@ const Page = () => {
         </div>
       </section>
       <AllFeatures />
-      <section className="w-full px-6 py-16 border-y border-white/5 bg-[#0A0A0A]">
-        <div className="container mx-auto">
+      <section className="py-16 border-y border-white/5 bg-[#0A0A0A]">
+        <div className="container">
           <h2 className="text-2xl sm:text-3xl font-semibold">Our Commitment</h2>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {coomitments.map((commitment) => (
@@ -148,20 +113,18 @@ const Page = () => {
           </div>
         </div>
       </section>
-      <section className="w-full px-6 py-20">
-        <div className="container mx-auto">
-          <div className="max-w-xl mx-auto text-center">
-            <h2 className="text-2xl sm:text-3xl font-semibold">
-              Start creating smarter content today
-            </h2>
-            <div className="mt-6">
-              <a
-                href="/dashboard"
-                className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium"
-              >
-                Get Started
-              </a>
-            </div>
+      <section className="py-20">
+        <div className="container text-center">
+          <h2 className="text-2xl sm:text-3xl font-semibold">
+            Start creating smarter content today
+          </h2>
+          <div className="mt-6">
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium"
+            >
+              Get Started
+            </Link>
           </div>
         </div>
       </section>

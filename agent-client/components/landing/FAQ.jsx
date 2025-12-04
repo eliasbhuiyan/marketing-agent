@@ -55,7 +55,7 @@ export default function FAQ() {
               className="w-full flex items-center justify-between p-6 text-left"
             >
               <span
-                className={`text-lg font-medium ${
+                className={`text-base lg:text-lg font-medium ${
                   openIndex === i ? "text-white" : "text-gray-300"
                 }`}
               >
@@ -85,9 +85,9 @@ export default function FAQ() {
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                   className="overflow-hidden"
                 >
-                  <div className="px-6 pb-6 text-gray-400 leading-relaxed">
+                  <p className="px-6 pb-6 text-sm lg:text-base text-gray-400 leading-relaxed">
                     {faq.answer}
-                  </div>
+                  </p>
                 </motion.div>
               )}
             </AnimatePresence>

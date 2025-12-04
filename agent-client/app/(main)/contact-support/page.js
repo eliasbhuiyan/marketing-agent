@@ -21,9 +21,9 @@ import Link from "next/link";
 const Page = () => {
   return (
     <>
-      <header className="bg-foreground gradient-header text-white py-48">
+      <header className="bg-foreground gradient-header text-white pt-40 pb-20 lg:py-48">
         <div className="container mx-auto text-center">
-          <h1 id="page-title" className="text-5xl font-bold mb-4 serif-font">
+          <h1 id="page-title" className="text-3xl lg:text-5xl font-bold mb-4">
             Contact &amp; Support
           </h1>
           <p id="page-subtitle" className="text-lg opacity-90">
@@ -31,10 +31,10 @@ const Page = () => {
           </p>
         </div>
       </header>
-      <section className="py-40 border-y border-white/5 bg-[#0A0A0A]">
+      <section className="py-20 lg:py-40 border-y border-white/5 bg-[#0A0A0A]">
         <div className="container mx-auto grid gap-12 md:grid-cols-2">
           <div>
-            <h2 className="text-4xl font-bold text-white mb-6">Get in Touch</h2>
+            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">Get in Touch</h2>
             <p className="text-gray-400 text-lg mb-8">
               Have questions or need assistance? Our support team is ready to
               help you with anything you need. Whether it&apos;s technical
@@ -70,7 +70,7 @@ const Page = () => {
           <div className="rounded-2xl p-8 shadow-lg border border-slate-100">
             <h2
               id="form-title"
-              className="text-3xl font-bold text-white mb-6 serif-font"
+              className="text-xl lg:text-3xl font-bold text-white mb-6 serif-font"
             >
               Submit a Support Ticket
             </h2>
