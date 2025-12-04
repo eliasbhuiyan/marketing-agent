@@ -26,7 +26,7 @@ const features = [
   { icon: Calendar, title: "Social Scheduler", desc: "Plan & auto-post" },
 ];
 
-export default function FeatureScroller() {
+export default function FeatureList() {
   return (
     <section className="py-20 border-y border-white/5 bg-[#0E0E0E]/50 overflow-hidden">
       <div className="mb-12 text-center px-6">

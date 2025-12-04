@@ -2,7 +2,7 @@
 
 :root {
   --background: linear-gradient(135deg, #001f1f 0%, #084b37 100%);
-  --foreground: #0b1020;
+  --foreground: #0e0e0e;
   --muted: #475569;
   --card: #003332;
   --card-border: rgba(255, 255, 255, 0.23);
@@ -22,7 +22,7 @@
 @media (prefers-color-scheme: light) {
   :root {
     --background: linear-gradient(135deg, #001f1f 0%, #084b37 100%);
-    --foreground: #0b1020;
+    --foreground: #0e0e0e;
     --muted: #475569;
     --card: #003332;
     --card-border: rgba(255, 255, 255, 0.23);

@@ -44,6 +44,12 @@ export default function Navbar() {
               {item}
             </Link>
           ))}
+          <Link
+            href="/contact-support"
+            className="text-sm font-medium text-white/70 hover:text-white transition-colors"
+          >
+            Contact
+          </Link>
         </div>
 
         {/* Desktop Actions */}

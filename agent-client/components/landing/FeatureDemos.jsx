@@ -284,6 +284,7 @@ export const HashtagDemo = () => {
           type="text"
           value="Industry/Niche"
           className="w-full rounded-2xl p-2 border text-xs"
+          readOnly
         />
         <SearchCheck className="absolute top-2 right-2 text-gray-400 w-4 h-4" />
       </div>

@@ -6,11 +6,6 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="bg-[#050505] border-t border-white/5 pt-20 pb-10 relative overflow-hidden">
-      {/* Animated Waves (CSS only for simplicity/performance) */}
-      <div className="absolute bottom-0 left-0 right-0 h-64 opacity-20 pointer-events-none">
-        <div className="absolute bottom-0 w-[200%] h-full bg-gradient-to-t from-purple-900/20 to-transparent animate-wave" />
-      </div>
-
       <div className="container mx-auto px-6 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1 md:col-span-2">
@@ -35,27 +30,31 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-white font-bold mb-6">Product</h4>
+            <h4 className="text-white font-bold mb-6">Quick Links</h4>
             <ul className="space-y-4 text-sm text-gray-400">
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <Link
+                  href="#features"
+                  className="hover:text-white transition-colors"
+                >
                   Features
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <Link
+                  href="#pricing"
+                  className="hover:text-white transition-colors"
+                >
                   Pricing
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
-                  Enterprise
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white transition-colors">
-                  Changelog
-                </a>
+                <Link
+                  href="#faq"
+                  className="hover:text-white transition-colors"
+                >
+                  FAQ
+                </Link>
               </li>
             </ul>
           </div>
@@ -64,51 +63,45 @@ export default function Footer() {
             <h4 className="text-white font-bold mb-6">Company</h4>
             <ul className="space-y-4 text-sm text-gray-400">
               <li>
-                <a href="#" className="hover:text-white transition-colors">
-                  About
-                </a>
+                <Link
+                  href="/about"
+                  className="hover:text-white transition-colors"
+                >
+                  About Us
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
-                  Blog
-                </a>
+                <Link
+                  href="/contact-support"
+                  className="hover:text-white transition-colors"
+                >
+                  Contact & Support
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
-                  Careers
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white transition-colors">
-                  Contact
-                </a>
+                <Link
+                  href="/refund-policy"
+                  className="hover:text-white transition-colors"
+                >
+                  Refund Policy
+                </Link>
               </li>
             </ul>
           </div>
         </div>
 
         <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-600">
-          <p>© 2025 MarkgenAI Inc. All rights reserved.</p>
+          <p>© 2026-27 MarkgenAI Inc. All rights reserved.</p>
           <div className="flex gap-8">
-            <a href="#" className="hover:text-gray-400">
+            <Link href="/privacy-policy" className="hover:text-gray-400">
               Privacy Policy
-            </a>
-            <a href="#" className="hover:text-gray-400">
+            </Link>
+            <Link href="/terms-service" className="hover:text-gray-400">
               Terms of Service
-            </a>
+            </Link>
           </div>
         </div>
       </div>
-
-      <style>{`
-        @keyframes wave {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        .animate-wave {
-          animation: wave 20s linear infinite;
-        }
-      `}</style>
     </footer>
   );
 }

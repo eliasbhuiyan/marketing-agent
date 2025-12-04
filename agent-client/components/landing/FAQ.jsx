@@ -33,14 +33,14 @@ const faqs = [
     question: "Do you offer a free trial?",
     answer:
       "Yes, MarkgenAI comes with a free plan for testing essential features. You can upgrade anytime.",
-  }
+  },
 ];
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState(0);
   return (
-    <section id="faq" className="py-32 container mx-auto px-6">
-      <div className="space-y-4">
+    <section id="faq" className="py-32 bg-foreground">
+      <div className="space-y-4 container mx-auto px-6">
         {faqs.map((faq, i) => (
           <div
             key={i}
