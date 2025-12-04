@@ -8,8 +8,6 @@ import {
   Image as imageIcon,
   FileText,
   TrendingUp,
-  Calendar,
-  Palette,
   Settings,
   Menu,
   X,
