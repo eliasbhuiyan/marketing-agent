@@ -71,7 +71,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <Script type="application/ld+json">
+        <Script type="application/ld+json" id="schema-markup">
           {`
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
